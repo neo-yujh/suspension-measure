@@ -127,13 +127,22 @@ const TASKS=[
  {id:"2-04c2",st:2,kind:"choice",key:"springR",title:"리어 스프링 형태",tip:"스프링이 쇽업소버에 끼워져 있으면 코일오버, 스프링이 따로 달려 있으면 분리형입니다.",cell:null,options:["코일오버","분리형"],noOther:true},
  {id:"2-09",st:2,kind:"measure",title:"프론트 댐퍼 체결부 기준 전장",tip:"잰 점을 표시해 두세요.",cell:"C10",shots:1},
  {id:"2-10",st:2,kind:"measure",title:"프론트 스프링 양끝 길이",tip:"상단 패드 ↔ 하단 패드. 잰 점을 표시해 두세요.",cell:"D10",shots:1},
- {id:"2-10b",st:2,kind:"choice",key:"bumpPosF",title:"프론트 범프스토퍼 위치",tip:"댐퍼 내부면 다음 측정은 건너뜁니다 (나중에 자동 계산 예정).",cell:"E16",options:["댐퍼 내부","차대","로어암"],other:"기타 (직접 입력)"},
- {id:"2-11",st:2,kind:"measure",title:"프론트 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼 끝에서 맞닿는 면까지.",onlyIf:{key:"bumpPosF",not:"댐퍼 내부"},cell:"E10",shots:1},
+ {id:"2-10b",st:2,kind:"choice",key:"bumpPosF",title:"프론트 범프스토퍼 위치",tip:"범프스토퍼가 보이게 사진을 찍으세요. 댐퍼 내부면 사진과 다음 측정을 건너뜁니다 (나중에 자동 계산 예정).",cell:"E16",options:["댐퍼 내부","차대","로어암"],other:"기타 (직접 입력)",shots:1,photoReq:{unlessKey:"bumpPosF",unless:"댐퍼 내부"}},
+ {id:"2-11",st:2,kind:"measure",title:"프론트 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼 끝에서 맞닿는 면까지.",onlyIf:{key:"bumpPosF",not:"댐퍼 내부"},cell:"E10",shots:1,photoReq:true},
  {id:"2-12b",st:2,kind:"measure",title:"리어 댐퍼 체결부 기준 전장",tip:"분리형이면 댐퍼만.",cell:"G10",shots:1},
  {id:"2-12c",st:2,kind:"measure",title:"리어 스프링 양끝 길이",tip:"분리형이면 스프링만 따로.",cell:"H10",shots:1},
- {id:"2-12c2",st:2,kind:"choice",key:"bumpPosR",title:"리어 범프스토퍼 위치",tip:"댐퍼 내부면 다음 측정은 건너뜁니다 (나중에 자동 계산 예정).",cell:"I16",options:["댐퍼 내부","차대","로어암"],other:"기타 (직접 입력)"},
- {id:"2-12d",st:2,kind:"measure",title:"리어 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼 끝에서 맞닿는 면까지.",onlyIf:{key:"bumpPosR",not:"댐퍼 내부"},cell:"I10",shots:1},
+ {id:"2-12c2",st:2,kind:"choice",key:"bumpPosR",title:"리어 범프스토퍼 위치",tip:"범프스토퍼가 보이게 사진을 찍으세요. 댐퍼 내부면 사진과 다음 측정을 건너뜁니다 (나중에 자동 계산 예정).",cell:"I16",options:["댐퍼 내부","차대","로어암"],other:"기타 (직접 입력)",shots:1,photoReq:{unlessKey:"bumpPosR",unless:"댐퍼 내부"}},
+ {id:"2-12d",st:2,kind:"measure",title:"리어 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼 끝에서 맞닿는 면까지.",onlyIf:{key:"bumpPosR",not:"댐퍼 내부"},cell:"I10",shots:1,photoReq:true},
  {id:"3-00",st:3,car:"droop",kind:"info",title:"차 띄우기 (드룹 상태로)",tip:"리프트로 차체를 들어 바퀴가 완전히 늘어지게 합니다. 다 됐으면 「확인 · 다음」.",items:["바퀴가 바닥이나 발판에서 떨어져 완전히 늘어졌는지","정하중 때 표시해 둔 측정점이 그대로 보이는지"]},
+ {id:"3-01",st:3,car:"droop",kind:"hub",title:"프론트 타이어 (허브 센터 ↔ 휀더) · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"B12",rimKey:"rimF",ref:"m2-08",shots:1},
+ {id:"3-02",st:3,car:"droop",kind:"hub",title:"리어 타이어 (허브 센터 ↔ 휀더) · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"F12",rimKey:"rimR",ref:"m2-12a",shots:1},
+ {id:"3-03",st:3,car:"droop",kind:"info",title:"차 하부로 이동",tip:"여기부터는 차 밑으로 들어가서 잽니다. 차는 든 채로 둡니다. 준비됐으면 「확인 · 다음」.",items:["다음 순서: 프론트 댐퍼 → 프론트 스프링 → 프론트 범프스토퍼 → 리어 댐퍼 → 리어 스프링 → 리어 범프스토퍼"]},
+ {id:"3-04",st:3,car:"droop",kind:"measure",title:"프론트 댐퍼 체결부 기준 전장 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"C12",ref:"m2-09",shots:1},
+ {id:"3-05",st:3,car:"droop",kind:"measure",title:"프론트 스프링 양끝 길이 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"D12",ref:"m2-10",shots:1},
+ {id:"3-06",st:3,car:"droop",kind:"measure",title:"프론트 범프스토퍼 끝 ↔ 차대 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"E12",ref:"m2-11",onlyIf:{key:"bumpPosF",not:"댐퍼 내부"},shots:1,photoReq:true},
+ {id:"3-07",st:3,car:"droop",kind:"measure",title:"리어 댐퍼 체결부 기준 전장 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"G12",ref:"m2-12b",shots:1},
+ {id:"3-08",st:3,car:"droop",kind:"measure",title:"리어 스프링 양끝 길이 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"H12",ref:"m2-12c",shots:1},
+ {id:"3-09",st:3,car:"droop",kind:"measure",title:"리어 범프스토퍼 끝 ↔ 차대 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"I12",ref:"m2-12d",onlyIf:{key:"bumpPosR",not:"댐퍼 내부"},shots:1,photoReq:true},
 ];
 // 아직 순서를 정하지 않아 흐름에서 빼 둔 화면. 형태 고르기(0-F·0-R)는 탈거 뒤 사진 찍으면서 하기로 함 (2026-10-22 유지호).
 const PARKED=[
@@ -343,6 +352,16 @@ function measureUI(t,c){
     const calc=el("div","calc");c.appendChild(calc);
     const upd=()=>{const rim=run.values[t.rimKey]&&run.values[t.rimKey].v;const raw=Number(inp.value);calc.textContent=fromRim.checked?(rim?("시트에 적을 값: "+(raw-rim/2).toFixed(1)+" mm (림 외경 "+rim+" mm)"):"림 외경이 비어 있습니다. 림 외경 화면에서 먼저 적어 주세요."):""};
     inp.oninput=upd;fromRim.onchange=upd;upd()}
+  if(t.ref){
+    const refv=run.values[t.ref];const chk=el("div","calc");c.appendChild(chk);
+    const cmp=()=>{if(!refv||refv.v==null){chk.textContent="정하중 값이 없습니다.";chk.style.color="";return}
+      let r=Number(inp.value);if(inp.value.trim()===""){chk.textContent="정하중 때 값: "+refv.v+" mm";chk.style.color="";return}
+      if(fromRim&&fromRim.checked){const rim=run.values[t.rimKey]&&run.values[t.rimKey].v;if(rim)r=r-rim/2}
+      const dlt=+(r-refv.v).toFixed(1);
+      if(dlt<0){chk.textContent="정하중 때 값 "+refv.v+" mm보다 "+(-dlt)+" mm 작습니다. 드룹이면 커야 합니다 — 측정점과 값을 다시 확인하세요.";chk.style.color="var(--warn)"}
+      else{chk.textContent="정하중 때 값 "+refv.v+" mm → 변위 +"+dlt+" mm";chk.style.color=""}};
+    inp.addEventListener("input",cmp);if(fromRim)fromRim.addEventListener("change",cmp);cmp();
+  }
   let na=null;
   if(t.optional){const ck=el("label","check");na=el("input");na.type="checkbox";na.id="na-"+t.id;na.checked=!!run.skipped[t.id];ck.appendChild(na);ck.appendChild(document.createTextNode("해당 없음"));c.appendChild(ck)}
   collect=()=>{
@@ -354,6 +373,11 @@ function measureUI(t,c){
   };
 }
 function applies(t){if(!t.onlyIf)return true;const v=run.values[t.onlyIf.key];return !(v&&v.v===t.onlyIf.not)}
+function photoNeeded(t){
+  if(!t.photoReq||!applies(t))return false;
+  if(t.photoReq.unlessKey){const v=run.values[t.photoReq.unlessKey];if(v&&v.v===t.photoReq.unless)return false}
+  return !(run.photos[t.id]||[]).length;
+}
 function missing(t){
   if(!applies(t))return false;
   if(t.kind==="shape"){const s=run.shape[t.axle]||{};return !s.low}
@@ -364,6 +388,7 @@ function missing(t){
 }
 async function go(d){
   if(collect)collect();const t=TASKS[idx];
+  if(d>0&&photoNeeded(t)){status("이 단계는 사진이 꼭 필요합니다. 사진을 찍은 뒤 넘어가세요.",true);return}
   if(d>0&&missing(t)&&!confirmSkip){confirmSkip=true;status(t.kind==="shape"?"하단 끝을 골라 주세요. 그대로 넘어가려면 한 번 더 누르세요.":"비어 있습니다. 비워 두고 넘어가려면 한 번 더 누르세요.",true);return}
   if(d>0&&idx===TASKS.length-1){await save();showEnd();return}
   let n=idx+d;
