@@ -101,13 +101,16 @@ const SHAPES={
 /* ===== 측정 순서 (마인드맵 0~2단계). cell = 측정시트 v.261008 첫 탭 칸 위치 (제목 줄 바로 아래 줄을 값 칸으로 봄 — 확인 필요) ===== */
 const TASKS=[
  {id:"1-04",st:1,kind:"form",title:"기본정보",tip:"측정시트 2행 제목 아래 3행에 들어갑니다.",fields:[["date","측정일","A3","date"],["worker","작업자","B3","pick:유지호,지민우,남정우"],["maker","차량 메이커","C3"],["model","모델명 (예: 쏘나타)","D3"],["code","코드명 (예: DN8)","E3"],["trim","세부모델 (예: 2.5T 2WD EDC)","F3"],["year","연식","H3"],["owner","고객/차주명","I3"]]},
- {id:"2-06",st:2,kind:"form",title:"휀더 갭 · 림 외경 (앞 · 뒤)",tip:"휀더 갭: 타이어 윗면 ↔ 휀더 안쪽 끝. 줄자 눈금이 보이게 찍으세요.",fields:[["gapF","앞 휀더 갭","B7","mm"],["gapR","뒤 휀더 갭","F7","mm"],["rimF","앞 림 외경","E7","mm"],["rimR","뒤 림 외경","I7","mm"]],shots:2},
- {id:"2-08",st:2,kind:"hub",title:"앞 타이어 (허브 센터 ↔ 휀더)",tip:"잰 점을 표시해 두세요. 들었을 때 같은 점을 다시 잽니다.",cell:"B10",rimKey:"rimF",shots:1},
- {id:"2-09",st:2,kind:"measure",title:"앞 댐퍼 체결부 기준 전장",tip:"잰 점을 표시해 두세요.",cell:"C10",shots:1},
- {id:"2-10",st:2,kind:"measure",title:"앞 스프링 양끝 길이",tip:"상단 패드 ↔ 하단 패드. 잰 점을 표시해 두세요.",cell:"D10",shots:1},
- {id:"2-12a",st:2,kind:"hub",title:"뒤 타이어 (허브 센터 ↔ 휀더)",tip:"잰 점을 표시해 두세요.",cell:"F10",rimKey:"rimR",shots:1},
- {id:"2-12b",st:2,kind:"measure",title:"뒤 댐퍼 체결부 기준 전장",tip:"분리형이면 댐퍼만.",cell:"G10",shots:1},
- {id:"2-12c",st:2,kind:"measure",title:"뒤 스프링 양끝 길이",tip:"분리형이면 스프링만 따로.",cell:"H10",shots:1},
+ {id:"2-06a",st:2,kind:"measure",key:"gapF",title:"프론트 휀더 갭",tip:"타이어 윗면 ↔ 휀더 안쪽 끝. 줄자 눈금이 보이게 찍으세요.",cell:"B7",shots:1},
+ {id:"2-06b",st:2,kind:"measure",key:"rimF",title:"프론트 림 외경",tip:"줄자로 림 바깥 지름.",cell:"E7",shots:1},
+ {id:"2-06c",st:2,kind:"measure",key:"gapR",title:"리어 휀더 갭",tip:"타이어 윗면 ↔ 휀더 안쪽 끝. 줄자 눈금이 보이게 찍으세요.",cell:"F7",shots:1},
+ {id:"2-06d",st:2,kind:"measure",key:"rimR",title:"리어 림 외경",tip:"줄자로 림 바깥 지름.",cell:"I7",shots:1},
+ {id:"2-08",st:2,kind:"hub",title:"프론트 타이어 (허브 센터 ↔ 휀더)",tip:"잰 점을 표시해 두세요. 들었을 때 같은 점을 다시 잽니다.",cell:"B10",rimKey:"rimF",shots:1},
+ {id:"2-09",st:2,kind:"measure",title:"프론트 댐퍼 체결부 기준 전장",tip:"잰 점을 표시해 두세요.",cell:"C10",shots:1},
+ {id:"2-10",st:2,kind:"measure",title:"프론트 스프링 양끝 길이",tip:"상단 패드 ↔ 하단 패드. 잰 점을 표시해 두세요.",cell:"D10",shots:1},
+ {id:"2-12a",st:2,kind:"hub",title:"리어 타이어 (허브 센터 ↔ 휀더)",tip:"잰 점을 표시해 두세요.",cell:"F10",rimKey:"rimR",shots:1},
+ {id:"2-12b",st:2,kind:"measure",title:"리어 댐퍼 체결부 기준 전장",tip:"분리형이면 댐퍼만.",cell:"G10",shots:1},
+ {id:"2-12c",st:2,kind:"measure",title:"리어 스프링 양끝 길이",tip:"분리형이면 스프링만 따로.",cell:"H10",shots:1},
  {id:"0-F",st:0,kind:"shape",axle:"F",title:"앞 쇽업소버 형태 고르기",tip:"모양을 보고 고릅니다. 뒤 단계의 가지가 여기서 정해집니다."},
  {id:"0-R",st:0,kind:"shape",axle:"R",title:"뒤 쇽업소버 형태 고르기",tip:"앞과 같으면 「앞과 같음」."},
  {id:"1-01",st:1,kind:"photo",title:"외관 사진 4면",tip:"정면 · 우측면 · 후면 · 좌측면. 스크래치·도장 상태가 보이게.",shots:4},
@@ -115,8 +118,8 @@ const TASKS=[
  {id:"1-03",st:1,kind:"photo",title:"차대번호 · 제원표 사진",tip:"차대번호, 운전석 도어 안쪽 차대 식별판. 없으면 차량등록증.",shots:2},
  {id:"1-05",st:1,kind:"form",title:"타이어 사이즈 · 세팅상태",tip:"타이어 옆면 표기 그대로. 예: 235/35R20",fields:[["tireF","앞 타이어","B14"],["tireR","뒤 타이어","F14"],["setting","세팅상태 (OE · 다운스프링 · 튜닝품명)","A7"]]},
  {id:"2-05",st:2,kind:"photo",title:"순정 차고 측면 사진",tip:"작업 전, 차가 바닥에 있는 상태.",shots:1},
- {id:"2-11",st:2,kind:"measure",title:"앞 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼가 차대에 있을 때만.",cell:"E10",shots:1,optional:true},
- {id:"2-12d",st:2,kind:"measure",title:"뒤 범프스토퍼 끝 ↔ 차대",tip:"차대 범프스토퍼일 때만.",cell:"I10",shots:1,optional:true},
+ {id:"2-11",st:2,kind:"measure",title:"프론트 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼가 차대에 있을 때만.",cell:"E10",shots:1,optional:true},
+ {id:"2-12d",st:2,kind:"measure",title:"리어 범프스토퍼 끝 ↔ 차대",tip:"차대 범프스토퍼일 때만.",cell:"I10",shots:1,optional:true},
  {id:"2-13",st:2,kind:"photo",title:"상단마운트 사진 (위에서 수직)",tip:"앞뒤 상단마운트의 형태·위치·각도가 보이게.",shots:2},
  {id:"2-14",st:2,kind:"form",title:"상단마운트 위쪽 여유 공간",tip:"조절 다이얼·탑핀이 튀어나와도 닿지 않는지. 가장 가까운 부품까지 거리.",fields:[["topClrF","앞 여유 거리",null,"mm"],["topClrR","뒤 여유 거리",null,"mm"]],shots:2}
 ];
@@ -273,12 +276,12 @@ function formUI(t,c){
   collect=()=>ins.forEach(([key,label,cell,unit,inp])=>{const val=inp.value.trim();if(val==="")delete run.values[key];else run.values[key]={v:unit==="mm"?Number(val):val,cell,label,unit:unit==="mm"?"mm":undefined,task:t.id}});
 }
 function measureUI(t,c){
-  const key="m"+t.id;const prev=run.values[key];const [lab,inp]=fieldInput(key,"잰 값",t.cell,"mm");c.appendChild(lab);
+  const key=t.key||("m"+t.id);const prev=run.values[key];const [lab,inp]=fieldInput(key,"잰 값",t.cell,"mm");c.appendChild(lab);
   let fromRim=null;
   if(t.kind==="hub"){const ck=el("label","check");fromRim=el("input");fromRim.type="checkbox";fromRim.id="rim-"+t.id;fromRim.checked=!!(prev&&prev.fromRim);
     ck.appendChild(fromRim);ck.appendChild(document.createTextNode("림 하단부터 쟀음 (림 외경의 반을 뺀 값을 적습니다)"));c.appendChild(ck);
     const calc=el("div","calc");c.appendChild(calc);
-    const upd=()=>{const rim=run.values[t.rimKey]&&run.values[t.rimKey].v;const raw=Number(inp.value);calc.textContent=fromRim.checked?(rim?("시트에 적을 값: "+(raw-rim/2).toFixed(1)+" mm (림 외경 "+rim+" mm)"):"림 외경이 비어 있습니다. 앞 단계에서 먼저 적어 주세요."):""};
+    const upd=()=>{const rim=run.values[t.rimKey]&&run.values[t.rimKey].v;const raw=Number(inp.value);calc.textContent=fromRim.checked?(rim?("시트에 적을 값: "+(raw-rim/2).toFixed(1)+" mm (림 외경 "+rim+" mm)"):"림 외경이 비어 있습니다. 림 외경 화면에서 먼저 적어 주세요."):""};
     inp.oninput=upd;fromRim.onchange=upd;upd()}
   let na=null;
   if(t.optional){const ck=el("label","check");na=el("input");na.type="checkbox";na.id="na-"+t.id;na.checked=!!run.skipped[t.id];ck.appendChild(na);ck.appendChild(document.createTextNode("해당 없음"));c.appendChild(ck)}
@@ -292,7 +295,7 @@ function measureUI(t,c){
 }
 function missing(t){
   if(t.kind==="shape"){const s=run.shape[t.axle]||{};return !(s.type&&s.low)}
-  if(t.kind==="measure"||t.kind==="hub")return !run.values["m"+t.id]&&!run.skipped[t.id];
+  if(t.kind==="measure"||t.kind==="hub")return !run.values[t.key||("m"+t.id)]&&!run.skipped[t.id];
   if(t.kind==="photo")return !(run.photos[t.id]||[]).length;
   return false;
 }
