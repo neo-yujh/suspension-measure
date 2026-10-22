@@ -157,8 +157,8 @@ const TASKS=[
  {id:"3-09",st:3,car:"droop",kind:"measure",title:"리어 범프스토퍼 끝 ↔ 차대 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"I12",ref:"m2-12d",onlyIf:{key:"bumpPosR",not:"댐퍼 내부"},shots:1,photoReq:true},
  {id:"3-09i",st:3,car:"droop",kind:"info",title:"리어 범프스토퍼 · 드룹",tip:"범프스토퍼가 댐퍼 내부라 지금은 재지 않습니다. 확인했으면 「확인 · 다음」.",items:["추후 댐퍼 분해 후 범프스토퍼 자유장을 측정합니다"],onlyIf:{key:"bumpPosR",is:"댐퍼 내부"}},
  {id:"3-09p",st:3,car:"droop",kind:"form",title:"리어 차고파이프 장착부 · 드룹",tip:"분리형이라 스프링 시트에 차고조절 파이프(차고파이프)를 달 자리를 봅니다. 장착부가 어떻게 생겼는지 적고, 주변이 다 보이게 찍습니다.",fields:[["pipeR","리어 차고파이프 장착부 위치 (기타는 「직접 입력」)","F16","pick:상단,하단"]],onlyIf:{key:"springR",is:"분리형"},shots:1},
- {id:"2-13fo",st:3,car:"droop",kind:"photo",title:"프론트 상단 마운트 위쪽 여유 공간 (엔진룸)",tip:"⚠ 캠버 장공 방향 확인용 — 중요. 사진 2장: ① 위에서 수직(탑뷰) — 왜곡 없이, 상단 마운트 형태·위치·각도, 캠버 마운트 장공 방향, 마운트 볼트 패턴(PCD)이 보이게. ② 옆에서 — 볼트·로드가 튀어나온 정도와 보닛까지 남는 공간이 보이게, 줄자를 함께 대고. (측정시트 U27 4·6번 · 35행 · 41행)",shots:2},
- {id:"2-13r",st:3,car:"droop",kind:"photo",title:"리어 상단 마운트 위쪽 여유 공간 (트렁크·실내 쪽)",tip:"리어 마운트 너트가 트렁크·실내 쪽에 나와 있는 차만 내장재를 열고 찍습니다. 아니면 건너뛰세요 (휠하우스 쪽 사진은 차 밑에서 이미 찍었습니다). 사진 2장: ① 위에서 수직(탑뷰) — 왜곡 없이, 마운트 볼트 패턴(PCD)이 보이게. ② 옆에서 — 볼트·로드가 튀어나온 정도와 내장재까지 남는 공간이 보이게, 줄자를 함께 대고.",shots:2,photoOpt:true},
+ {id:"2-13fo",st:3,car:"droop",kind:"photo",title:"프론트 상단 마운트 위쪽 여유 공간 (엔진룸)",tip:"⚠ 캠버 장공 방향 확인용 — 중요. 사진 2장: ① 위에서 수직(탑뷰) — 왜곡 없이, 상단 마운트 형태·위치·각도, 캠버 마운트 장공 방향, 마운트 볼트 패턴(PCD)이 보이게. ② 옆에서 — 볼트·로드가 튀어나온 정도와 보닛까지 남는 공간이 보이게, 줄자를 함께 대고. (측정시트 U27 4·6번 · 35행 · 41행)",shots:2,slots:["① 위에서 수직 (탑뷰 · 볼트 패턴)","② 옆에서 (튀어나온 정도 · 여유 공간, 줄자)"]},
+ {id:"2-13r",st:3,car:"droop",kind:"photo",title:"리어 상단 마운트 위쪽 여유 공간 (트렁크·실내 쪽)",tip:"리어 마운트 너트가 트렁크·실내 쪽에 나와 있는 차만 내장재를 열고 찍습니다. 아니면 건너뛰세요 (휠하우스 쪽 사진은 차 밑에서 이미 찍었습니다). 사진 2장: ① 위에서 수직(탑뷰) — 왜곡 없이, 마운트 볼트 패턴(PCD)이 보이게. ② 옆에서 — 볼트·로드가 튀어나온 정도와 내장재까지 남는 공간이 보이게, 줄자를 함께 대고.",shots:2,photoOpt:true,slots:["① 위에서 수직 (탑뷰 · 볼트 패턴)","② 옆에서 (튀어나온 정도 · 여유 공간, 줄자)"]},
 ];
 // 아직 순서를 정하지 않아 흐름에서 빼 둔 화면. 형태 고르기(0-F·0-R)는 탈거 뒤 사진 찍으면서 하기로 함 (2026-10-22 유지호).
 const PARKED=[
@@ -311,7 +311,9 @@ function showTask(){
   if(t.kind==="shape")shapeUI(t,c);
   if(t.fields)formUI(t,c); // form 단계, 또는 안내(info) 단계에 붙인 입력 칸
   if(t.kind==="measure"||t.kind==="hub")measureUI(t,c);
-  if(t.shots)c.appendChild(photoBlock(t));
+  // slots: 이유가 다른 사진을 칸별로 따로 찍는다. 사진은 "<단계id>_s1", "_s2"… 로 저장
+  if(t.slots)slotTasks(t).forEach(st=>{c.appendChild(el("div","small",st.label));c.appendChild(photoBlock(st))});
+  else if(t.shots)c.appendChild(photoBlock(t));
   v.appendChild(c);
   v.appendChild(memoBlock(t));
   const back=el("button","btn","측정 목록으로");back.type="button";back.onclick=async()=>{if(collect)collect();await save();showList()};v.appendChild(back);
@@ -407,7 +409,10 @@ function measureUI(t,c){
 }
 function applies(t){if(t.skipIf&&t.skipIf.some(c=>{const v=run.values[c.key];return v&&v.v===c.is}))return false;
   if(!t.onlyIf)return true;const v=run.values[t.onlyIf.key];if(t.onlyIf.is)return !!(v&&v.v===t.onlyIf.is);return !(v&&v.v===t.onlyIf.not)}
+function slotTasks(t){return t.slots.map((lab,i)=>({id:t.id+"_s"+(i+1),title:t.title+" "+lab,label:lab,shots:1,photoOpt:t.photoOpt}))}
+const slotShort=t=>t.slots?slotTasks(t).filter(st=>!(run.photos[st.id]||[]).length).map(st=>st.label):[];
 function photoNeeded(t){
+  if(t.slots&&!t.photoOpt&&applies(t))return slotShort(t).length>0;
   // 사진 칸이 있는 단계는 모두 필수 장수 이상 (photoOpt:true인 권장 사진은 한 번 경고만) 찍어야 넘어간다 (photoReq.unlessKey 조건이면 면제)
   if(!t.shots||t.photoOpt||!applies(t))return false;
   if(t.photoReq&&t.photoReq.unlessKey){const v=run.values[t.photoReq.unlessKey];if(v&&v.v===t.photoReq.unless)return false}
@@ -417,6 +422,7 @@ function missing(t){
   if(!applies(t))return false;
   if(t.kind==="shape"){const s=run.shape[t.axle]||{};return !s.low}
   if(t.kind==="measure"||t.kind==="hub")return !run.values[t.key||("m"+t.id)]&&!run.skipped[t.id];
+  if(t.slots&&t.photoOpt)return slotShort(t).length>0;
   if(t.photoOpt)return (run.photos[t.id]||[]).length<t.shots;
   if(t.kind==="photo")return !(run.photos[t.id]||[]).length;
   if(t.kind==="choice")return !run.values[t.key];
@@ -440,7 +446,7 @@ async function go(d){
   // 개발 확인용: devSkip이면 사진·빈칸 검사를 건너뛴다 (실사용 전 버튼 제거)
   if(d>0&&devSkip){devSkip=false;run.skipped[t.id]="개발용 건너뛰기"}
   else{
-  if(d>0&&photoNeeded(t)){status("사진을 필수 "+t.shots+"장 이상 찍어야 넘어갈 수 있습니다.",true);return}
+  if(d>0&&photoNeeded(t)){status(t.slots?("필수 사진이 비어 있습니다: "+slotShort(t).join(", ")):("사진을 필수 "+t.shots+"장 이상 찍어야 넘어갈 수 있습니다."),true);return}
   if(d>0&&missing(t)&&!confirmSkip){confirmSkip=true;status(t.kind==="shape"?"하단 끝을 골라 주세요. 그대로 넘어가려면 한 번 더 누르세요.":"비어 있습니다. 비워 두고 넘어가려면 한 번 더 누르세요.",true);return}
   }
   if(d>0&&idx===TASKS.length-1){await save();showEnd();return}
@@ -535,7 +541,8 @@ const CHANGELOG=[
  [50,"2026-10-22 16:22","프론트 엔진룸 상단 체결부 사진 안내를 측정시트 원문(U27 4번 수직 뷰 · 35행 캠버 장공 방향·PCD · 41행)으로 교체"],
  [51,"2026-10-22 16:26","서스펜션 구조 상세 사진: 「줄자로 재서 수치가 보이게」 → 「줄자를 대거나 손가락 몇 개가 들어가는지 함께 찍어 여유 거리를 가늠할 수 있게」"],
  [52,"2026-10-22 16:28","화면 제목 앞 번호: 단계 id(예: 3-02t) → 지금 순서대로 자동 번호(1. 2. 3. …). 저장용 id는 그대로"],
- [53,"2026-10-22 16:32","상단 체결부 엔진룸·트렁크 사진 → 「상단 마운트 위쪽 여유 공간」으로 바꿈: 사진 2장(탑뷰 볼트 패턴 + 옆에서 튀어나온 정도·공간, 줄자). 프론트 필수 · 리어 권장"]
+ [53,"2026-10-22 16:32","상단 체결부 엔진룸·트렁크 사진 → 「상단 마운트 위쪽 여유 공간」으로 바꿈: 사진 2장(탑뷰 볼트 패턴 + 옆에서 튀어나온 정도·공간, 줄자). 프론트 필수 · 리어 권장"],
+ [54,"2026-10-22 16:34","상단 마운트 위쪽 여유 공간: 사진 칸을 ① 탑뷰 · ② 옆에서 로 나눠 각각 「사진 찍기 +」 (비면 어느 칸이 비었는지 알려 줌)"]
 ];
 (function(){const last=CHANGELOG[CHANGELOG.length-1],tag=document.getElementById("revtag"),box=document.getElementById("revlog");
 tag.textContent="rev "+last[0]+" · "+last[1];
