@@ -54,6 +54,10 @@ label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mu
 .runrow>.grow{flex-basis:100%} .runrow>.btn{flex:1 1 0;white-space:nowrap;padding-inline:8px}
 .check{display:flex;gap:8px;align-items:center;font-size:14px} .check input{width:22px;height:22px}
 .calc{font-size:13px;color:var(--muted)}
+.carstate{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.carstate .cs{font-size:13px;padding:3px 10px;border-radius:14px;border:1px solid var(--line);color:var(--muted);background:var(--card)}
+.carstate .cs.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+.carstate .arrow{color:var(--muted);font-size:12px}
 .hidden{display:none!important}
 /* 화면 안 카메라 */
 .cam{position:fixed;inset:0;background:#000;z-index:30;display:flex;flex-direction:column}
@@ -130,6 +134,8 @@ const TASKS=[
  {id:"2-14",st:2,kind:"form",title:"상단마운트 위쪽 여유 공간",tip:"조절 다이얼·탑핀이 튀어나와도 닿지 않는지. 가장 가까운 부품까지 거리.",fields:[["topClrF","앞 여유 거리",null,"mm"],["topClrR","뒤 여유 거리",null,"mm"]],shots:2}
 ];
 const STAGES=["형태 고르기","사진·기본정보","줄자 측정 (내렸을 때)"];
+// 지금 차 상태: 단계에 car:"droop"|"off"를 주면 그 상태로 표시한다. 없으면 정하중.
+const CARSTATES=[["static","정하중"],["droop","드룹"],["off","탈거"]];
 const SCOPES=[["all","전체"],["front","프론트"],["rear","리어"],["spring","스프링"],["damper","댐퍼"],["custom","커스텀 (단계 직접 고르기)",true]];
 const scopeName=v=>(SCOPES.find(s=>s[0]===v)||["","전체"])[1];
 
@@ -252,6 +258,9 @@ function showTask(){
   const top=el("div");const pr=el("div","progress");const bar=el("i");bar.style.width=(idx/TASKS.length*100)+"%";pr.appendChild(bar);top.appendChild(pr);
   const sb=el("div","stagebar");sb.appendChild(el("span",null,run.title));sb.appendChild(el("span",null,STAGES[t.st]+" · "+(idx+1)+"/"+TASKS.length));top.appendChild(sb);v.appendChild(top);
   // 단계 순서를 바꿔 가는 중이라 화면 번호(idx+1)와 단계 id가 다를 수 있다.
+  const cs=t.car||"static";const carRow=el("div","carstate");carRow.appendChild(el("span","small muted","차 상태"));
+  CARSTATES.forEach(([k,name],i)=>{if(i)carRow.appendChild(el("span","arrow","→"));carRow.appendChild(el("span","cs"+(k===cs?" on":""),name))});
+  v.appendChild(carRow);
   const c=el("div","card");const h=el("h2");h.appendChild(el("span","mono muted",t.id+" "));h.appendChild(document.createTextNode(t.title));c.appendChild(h);
   if(t.tip)c.appendChild(el("p","small muted",t.tip));
   if(t.kind==="info"&&t.items){const ul=el("ul","small");t.items.forEach(x=>ul.appendChild(el("li",null,x)));c.appendChild(ul)}
