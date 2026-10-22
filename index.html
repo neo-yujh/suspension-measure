@@ -485,22 +485,64 @@ function showEnd(){
   $("#footer").classList.add("hidden");const v=$("#view");v.textContent="";
   const c=el("div","card");c.appendChild(el("h2",null,"지금까지 만든 단계 끝"));
   const empty=TASKS.filter(missing);c.appendChild(el("p","small",empty.length?("빈 단계: "+empty.map(t=>t.id).join(", ")):"빈 단계 없음"));
-  c.appendChild(el("p","small muted","「ZIP 만들기」를 누르면 기록(record.json)과 사진이 한 파일로 묶입니다. 공유 창에서 「Drive」를 고르거나, 저장된 파일을 구글 드라이브 앱에서 올리세요."));
+  c.appendChild(el("p","small muted","「ZIP 만들기」를 누르면 측정기록(엑셀로 열림)·특이사항·사진이 한 파일로 묶입니다. 공유 창에서 「Drive」를 고르거나, 저장된 파일을 구글 드라이브 앱에서 올리세요."));
   const z=el("button","btn primary","ZIP 만들기");z.type="button";z.onclick=exportZip;c.appendChild(z);
   const back=el("button","btn","측정 목록으로");back.type="button";back.onclick=showList;c.appendChild(back);v.appendChild(c);
 }
 
 /* ===== ZIP 묶음 ===== */
 const safe=s=>String(s).replace(/[\\/:*?"<>|\s]+/g,"_").slice(0,40);
+// 사람이 읽는 이름 규칙 (유지호 2026-10-22):
+//  날짜_차량/측정기록.csv · 특이사항.txt · record.json(자동 채우기용)
+//  날짜_차량/사진/<화면번호>단계_<차량>_<화면 제목>_<순번>.jpg
+//  특이사항 사진: 사진/메모사항 <n>번_<화면번호>단계 <화면 제목>_<순번>.jpg — n은 특이사항.txt의 번호(메모가 생긴 순서)
+const fsafe=s=>String(s).replace(/[\\/:*?"<>|]+/g,"_").replace(/\s+/g," ").trim().slice(0,90);
+function stepOf(taskId){const base=String(taskId).replace(/_(memo|s\d+)$/,"");const i=TASKS.findIndex(t=>t.id===base);const t=i>=0?TASKS[i]:PARKED.find(x=>x.id===base);
+  let title=t?t.title:base;const m=String(taskId).match(/_s(\d+)$/);if(m&&t&&t.slots)title+=" "+t.slots[+m[1]-1];
+  return {no:i>=0?i+1:0,title,base}}
+const stepLabel=s=>(s.no?s.no+"단계":"보류")+" "+s.title;
+function memoOrder(photos){
+  // 메모가 처음 생긴 시각(수정 기록) 또는 특이사항 사진을 처음 찍은 시각 중 이른 것 순서로 번호를 매긴다
+  const first={};const mark=(base,at)=>{if(at&&(!first[base]||at<first[base]))first[base]=at};
+  (run.log||[]).forEach(e=>{if(e.what==="특이사항 메모"&&e.to)mark(String(e.task),e.at.replace(" ","T"))});
+  photos.filter(p=>p.taskId.endsWith("_memo")).forEach(p=>{if(!p.at)return;const d=new Date(p.at),z=n=>String(n).padStart(2,"0");/* 수정 기록은 휴대폰 시각, 사진 at은 UTC라 휴대폰 시각으로 맞춘다 */mark(p.taskId.slice(0,-5),d.getFullYear()+"-"+z(d.getMonth()+1)+"-"+z(d.getDate())+"T"+z(d.getHours())+":"+z(d.getMinutes())+":"+z(d.getSeconds()))});
+  const bases=new Set([...Object.keys(run.notes||{}),...photos.filter(p=>p.taskId.endsWith("_memo")).map(p=>p.taskId.slice(0,-5))]);
+  return [...bases].sort((a,b)=>(first[a]||"9").localeCompare(first[b]||"9")||stepOf(a).no-stepOf(b).no);
+}
+function csvCell(x){x=x==null?"":String(x);return /[",\n]/.test(x)?'"'+x.replace(/"/g,'""')+'"':x}
+function recordCsv(memoNo){
+  const rows=[["화면","항목","값","단위","측정시트 칸","상태","사진 장수","특이사항"]];
+  TASKS.forEach((t,i)=>{
+    const vals=Object.entries(run.values||{}).filter(([k,v])=>v&&v.task===t.id);
+    const nph=Object.keys(run.photos||{}).filter(k=>k===t.id||/^.+_s\d+$/.test(k)&&k.startsWith(t.id+"_s")).reduce((s,k)=>s+(run.photos[k]||[]).length,0);
+    const sk=run.skipped&&run.skipped[t.id];const st=sk?(sk===true?"해당 없음":String(sk)):"";
+    const mn=memoNo[t.id]?"메모사항 "+memoNo[t.id]+"번":"";
+    if(!vals.length)rows.push([(i+1)+"단계",t.title,"","",t.cell||"",st,nph||"",mn]);
+    vals.forEach(([k,v])=>rows.push([(i+1)+"단계",v.label||t.title,v.v+(v.fromRim?" (림 하단부터 "+v.raw+")":""),v.unit||"",v.cell||"",st,nph||"",mn]));
+  });
+  return "﻿"+rows.map(r=>r.map(csvCell).join(",")).join("\r\n");
+}
 async function exportZip(){
   if(!window.JSZip){status("ZIP 도구를 불러오지 못했습니다. 인터넷 연결 후 다시 여세요.",true);return}
   status("ZIP 만드는 중…");
-  const zip=new JSZip();const photos=await photosOf(run.id);const list={};
-  photos.sort((a,b)=>a.taskId.localeCompare(b.taskId)||a.n-b.n).forEach(p=>{const name="photos/"+p.taskId+"_"+String(p.n).padStart(2,"0")+".jpg";zip.file(name,p.blob);(list[p.taskId]=list[p.taskId]||[]).push(name)});
+  const root=new JSZip();const car=fsafe(run.title);const zip=root.folder((run.createdAt||"").slice(0,10)+"_"+car);
+  const photos=await photosOf(run.id);const list={};
+  const order=memoOrder(photos);const memoNo={};order.forEach((b,i)=>memoNo[b]=i+1);
+  photos.sort((a,b)=>stepOf(a.taskId).no-stepOf(b.taskId).no||a.taskId.localeCompare(b.taskId)||a.n-b.n).forEach(p=>{
+    const s=stepOf(p.taskId);const nn=String(p.n).padStart(2,"0");
+    const name="사진/"+(p.taskId.endsWith("_memo")?fsafe("메모사항 "+memoNo[s.base]+"번_"+stepLabel(s))+"_"+nn:fsafe((s.no?s.no+"단계":"보류")+"_"+car+"_"+s.title)+"_"+nn)+".jpg";
+    zip.file(name,p.blob);(list[p.taskId]=list[p.taskId]||[]).push(name)});
+  zip.file("측정기록.csv",recordCsv(memoNo));
+  if(order.length){
+    const txt=[run.title+" — 특이사항","측정 시작 "+(run.createdAt||"").slice(0,10)+" · 메모가 생긴 순서",""];
+    order.forEach(b=>{const s=stepOf(b);txt.push("[메모사항 "+memoNo[b]+"번] "+stepLabel(s));txt.push((run.notes||{})[b]||"(메모 없음 — 사진만)");
+      const ph=list[b+"_memo"]||[];if(ph.length)txt.push("사진: "+ph.map(x=>x.slice(3)).join(", "));txt.push("")});
+    zip.file("특이사항.txt","﻿"+txt.join("\r\n"));
+  }
   const record={format:"neotech-suspension-measure/1",sheet:"서스펜션 측정시트_양식_261008.xlsx / 측정시트",title:run.title,scope:run.scope||"all",createdAt:run.createdAt,updatedAt:run.updatedAt,shape:run.shape,values:run.values,skipped:run.skipped,log:run.log||[],notes:run.notes||{},photos:list,
     note:"values[*].cell = 측정시트 첫 탭 칸 위치(제목 줄 바로 아래 줄을 값 칸으로 봄 — 확인 필요). fromRim=true면 v는 raw−림외경/2."};
   zip.file("record.json",JSON.stringify(record,null,1));
-  const blob=await zip.generateAsync({type:"blob"});
+  const blob=await root.generateAsync({type:"blob"});
   const fname=(run.createdAt||"").slice(0,10)+"_"+safe(run.title)+"_측정.zip";
   const file=new File([blob],fname,{type:"application/zip"});
   run.exportedAt=new Date().toISOString();await save();
@@ -570,7 +612,8 @@ const CHANGELOG=[
  [53,"2026-10-22 16:32","상단 체결부 엔진룸·트렁크 사진 → 「상단 마운트 위쪽 여유 공간」으로 바꿈: 사진 2장(탑뷰 볼트 패턴 + 옆에서 튀어나온 정도·공간, 줄자). 프론트 필수 · 리어 권장"],
  [54,"2026-10-22 16:34","상단 마운트 위쪽 여유 공간: 사진 칸을 ① 탑뷰 · ② 옆에서 로 나눠 각각 「사진 찍기 +」 (비면 어느 칸이 비었는지 알려 줌)"],
  [55,"2026-10-22 16:35","측정마다 수정 기록(언제 · 어느 항목 · 무엇에서 무엇으로) 남김: 값·메모·건너뛰기·사진 추가/삭제. 각 화면 아래 「이 항목 수정 기록」, ZIP의 record.json에 log로 들어감"],
- [56,"2026-10-22 16:38","측정 목록에 시작 시각 · 마지막 수정 시각 · 작업한 시간(10분 넘게 비운 시간 제외) · 지금 몇 번째 화면 · 건너뛴 항목 수 표시"]
+ [56,"2026-10-22 16:38","측정 목록에 시작 시각 · 마지막 수정 시각 · 작업한 시간(10분 넘게 비운 시간 제외) · 지금 몇 번째 화면 · 건너뛴 항목 수 표시"],
+ [57,"2026-10-22 17:10","ZIP 정리 규칙: 날짜_차량 폴더 안에 측정기록.csv(엑셀) · 특이사항.txt(메모 생긴 순서로 번호) · 사진/ 폴더. 사진 이름 「N단계_차량_화면제목_순번」, 특이사항 사진은 「메모사항 n번_N단계 화면제목_순번」으로 txt 번호와 맞춤"]
 ];
 (function(){const last=CHANGELOG[CHANGELOG.length-1],tag=document.getElementById("revtag"),box=document.getElementById("revlog");
 tag.textContent="rev "+last[0]+" · "+last[1];
