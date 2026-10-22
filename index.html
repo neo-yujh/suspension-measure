@@ -304,7 +304,7 @@ function showTask(){
   const cs=t.car||"static";const carRow=el("div","carstate");carRow.appendChild(el("span","small muted","차 상태"));
   CARSTATES.forEach(([k,name],i)=>{if(i)carRow.appendChild(el("span","arrow","→"));carRow.appendChild(el("span","cs"+(k===cs?" on":""),name))});
   v.appendChild(carRow);
-  const c=el("div","card");const h=el("h2");h.appendChild(el("span","mono muted",(TASKS.indexOf(t)+1)+". ")); // 화면 번호는 지금 순서대로 자동으로 매긴다. 단계 id(t.id)는 저장 기록용이라 바꾸지 않는다h.appendChild(document.createTextNode(t.title));c.appendChild(h);
+  const c=el("div","card");const h=el("h2");h.appendChild(el("span","mono muted",(TASKS.indexOf(t)+1)+". ")); /* 화면 번호는 지금 순서대로 자동으로 매긴다. 단계 id(t.id)는 저장 기록용이라 바꾸지 않는다 */h.appendChild(document.createTextNode(t.title));c.appendChild(h);
   if(t.tip)c.appendChild(el("p","small muted",t.tip));
   if(t.kind==="info"&&t.items){const ul=el("ul","small");t.items.forEach(x=>ul.appendChild(el("li",null,x)));c.appendChild(ul)}
   if(t.kind==="choice")choiceUI(t,c);
