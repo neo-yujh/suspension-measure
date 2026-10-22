@@ -141,7 +141,7 @@ const TASKS=[
  {id:"3-00",st:3,car:"droop",kind:"info",title:"차 띄우기 (드룹 상태로)",tip:"소형 리프트를 잭포인트나 멤버에 고무를 받치고 들어 올려, 바퀴가 완전히 늘어지게 합니다. 다 됐으면 「확인 · 다음」.",items:["소형 리프트를 잭포인트 또는 멤버에 대고, 사이에 고무를 받쳤는지","바퀴가 바닥이나 발판에서 떨어져 완전히 늘어졌는지","정하중 때 표시해 둔 측정점이 그대로 보이는지"]},
  {id:"3-01",st:3,car:"droop",kind:"hub",title:"프론트 타이어 (허브 센터 ↔ 휀더) · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"B12",rimKey:"rimF",ref:"m2-08",shots:1},
  {id:"3-02",st:3,car:"droop",kind:"hub",title:"리어 타이어 (허브 센터 ↔ 휀더) · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"F12",rimKey:"rimR",ref:"m2-12a",shots:1},
- {id:"3-02t",st:3,car:"droop",kind:"info",title:"타이어 탈착",tip:"차 밑 측정이 잘 되도록 측정하는 쪽 바퀴 2개(프론트 1개 · 리어 1개)만 뗍니다. 다 됐으면 「확인 · 다음」.",items:["프론트 바퀴 1개를 뗐는지 (측정하는 쪽)","리어 바퀴 1개를 뗐는지 (측정하는 쪽)","뗀 휠 너트를 한곳에 모아 두었는지"]},
+ {id:"3-02t",st:3,car:"droop",kind:"info",title:"타이어 탈착",tip:"차 밑 측정이 잘 되도록 측정하는 쪽 바퀴 2개(프론트 1개 · 리어 1개)만 뗍니다. 다 됐으면 「확인 · 다음」.",items:["프론트 바퀴 1개를 뗐는지 (측정하는 쪽)","리어 바퀴 1개를 뗐는지 (측정하는 쪽)","뗀 휠 너트를 한곳에 모아 두었는지"],fields:[["wheelCap","휠볼트 캡 유무",null,"pick:있음,없음"],["wheelBolt","휠볼트 규격 (예: M14×1.5)",null]]},
  {id:"3-03",st:3,car:"droop",kind:"info",title:"차 하부로 이동",tip:"여기부터는 차 밑으로 들어가서 잽니다. 차는 든 채로 둡니다. 준비됐으면 「확인 · 다음」.",items:["다음 순서: 프론트 댐퍼 → 프론트 스프링 → 프론트 범프스토퍼 → 리어 댐퍼 → 리어 스프링 → 리어 범프스토퍼"]},
  {id:"3-04",st:3,car:"droop",kind:"measure",title:"프론트 댐퍼 체결부 기준 전장 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"C12",ref:"m2-09",shots:1},
  {id:"3-05",st:3,car:"droop",kind:"measure",title:"프론트 스프링 양끝 길이 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"D12",ref:"m2-10",coilSkip:"springF",shots:1},
@@ -300,7 +300,7 @@ function showTask(){
   if(t.kind==="info"&&t.items){const ul=el("ul","small");t.items.forEach(x=>ul.appendChild(el("li",null,x)));c.appendChild(ul)}
   if(t.kind==="choice")choiceUI(t,c);
   if(t.kind==="shape")shapeUI(t,c);
-  if(t.kind==="form")formUI(t,c);
+  if(t.fields)formUI(t,c); // form 단계, 또는 안내(info) 단계에 붙인 입력 칸
   if(t.kind==="measure"||t.kind==="hub")measureUI(t,c);
   if(t.shots)c.appendChild(photoBlock(t));
   c.appendChild(memoBlock(t));
@@ -492,7 +492,8 @@ const CHANGELOG=[
  [30,"2026-10-22 15:34","서스펜션 구조 상세 사진 안내에 「간섭 우려 부분은 거리를 재서 수치가 보이게 찍기」 추가"],
  [31,"2026-10-22 15:35","범프스토퍼 위치: 「댐퍼 내부」를 누르면 사진 칸 자체가 사라짐 (전에는 사진 칸이 보이고 안 찍어도 넘어갈 수만 있었음)"],
  [32,"2026-10-22 15:38","모든 단계 아래에 특이사항 메모 + 특이사항 사진 칸 추가 (선택, 비어도 넘어감)"],
- [33,"2026-10-22 15:39","차 띄우기(드룹): 「소형 리프트를 잭포인트나 멤버에 고무를 받치고 들어 올리기」 안내 추가"]
+ [33,"2026-10-22 15:39","차 띄우기(드룹): 「소형 리프트를 잭포인트나 멤버에 고무를 받치고 들어 올리기」 안내 추가"],
+ [34,"2026-10-22 15:40","타이어 탈착 화면에 휠볼트 캡 유무 · 휠볼트 규격 입력 칸 추가"]
 ];
 (function(){const last=CHANGELOG[CHANGELOG.length-1],tag=document.getElementById("revtag"),box=document.getElementById("revlog");
 tag.textContent="rev "+last[0]+" · "+last[1];
