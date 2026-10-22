@@ -132,12 +132,12 @@ const TASKS=[
  {id:"2-10",st:2,kind:"measure",title:"프론트 스프링 양끝 길이",tip:"상단 패드 ↔ 하단 패드. 잰 점을 표시해 두세요.",cell:"D10",coilSkip:"springF",shots:1},
  {id:"2-10b",st:2,kind:"choice",key:"bumpPosF",title:"프론트 범프스토퍼 위치",tip:"범프스토퍼가 보이게 사진을 찍으세요. 댐퍼 내부면 사진과 다음 측정을 건너뜁니다 (나중에 자동 계산 예정).",cell:"E16",options:["댐퍼 내부","차대","로어암"],other:"기타 (직접 입력)",shots:1,photoReq:{unlessKey:"bumpPosF",unless:"댐퍼 내부"}},
  {id:"2-11",st:2,kind:"measure",title:"프론트 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼 끝에서 맞닿는 면까지.",onlyIf:{key:"bumpPosF",not:"댐퍼 내부"},cell:"E10",shots:1,photoReq:true},
- {id:"2-11s",st:2,kind:"photo",title:"프론트 서스펜션 구조 상세 사진",tip:"서스펜션 구조를 부품 하나하나 가까이 찍습니다 (예: 스테빌라이저 바 마운트·링크, 암 체결부, 너클). 권장 장수·찍을 부품 목록은 남정우 수석 피드백 받아 확정 예정 — 지금은 임시 1장.",shots:1},
+ {id:"2-11s",st:2,kind:"photo",title:"프론트 서스펜션 구조 상세 사진",tip:"서스펜션 구조를 부품 하나하나 가까이 찍습니다 (예: 스테빌라이저 바 마운트·링크, 암 체결부, 너클). 권장 장수·찍을 부품 목록은 남정우 수석 피드백 받아 확정 예정 — 지금은 임시 1장.",shots:1,photoOpt:true},
  {id:"2-12b",st:2,kind:"measure",title:"리어 댐퍼 체결부 기준 전장",tip:"분리형이면 댐퍼만.",cell:"G10",shots:1},
  {id:"2-12c",st:2,kind:"measure",title:"리어 스프링 양끝 길이",tip:"분리형이면 스프링만 따로.",cell:"H10",coilSkip:"springR",shots:1},
  {id:"2-12c2",st:2,kind:"choice",key:"bumpPosR",title:"리어 범프스토퍼 위치",tip:"범프스토퍼가 보이게 사진을 찍으세요. 댐퍼 내부면 사진과 다음 측정을 건너뜁니다 (나중에 자동 계산 예정).",cell:"I16",options:["댐퍼 내부","차대","로어암"],other:"기타 (직접 입력)",shots:1,photoReq:{unlessKey:"bumpPosR",unless:"댐퍼 내부"}},
  {id:"2-12d",st:2,kind:"measure",title:"리어 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼 끝에서 맞닿는 면까지.",onlyIf:{key:"bumpPosR",not:"댐퍼 내부"},cell:"I10",shots:1,photoReq:true},
- {id:"2-12s",st:2,kind:"photo",title:"리어 서스펜션 구조 상세 사진",tip:"서스펜션 구조를 부품 하나하나 가까이 찍습니다 (예: 스테빌라이저 바 마운트·링크, 암 체결부, 너클). 권장 장수·찍을 부품 목록은 남정우 수석 피드백 받아 확정 예정 — 지금은 임시 1장.",shots:1},
+ {id:"2-12s",st:2,kind:"photo",title:"리어 서스펜션 구조 상세 사진",tip:"서스펜션 구조를 부품 하나하나 가까이 찍습니다 (예: 스테빌라이저 바 마운트·링크, 암 체결부, 너클). 권장 장수·찍을 부품 목록은 남정우 수석 피드백 받아 확정 예정 — 지금은 임시 1장.",shots:1,photoOpt:true},
  {id:"3-00",st:3,car:"droop",kind:"info",title:"차 띄우기 (드룹 상태로)",tip:"리프트로 차체를 들어 바퀴가 완전히 늘어지게 합니다. 다 됐으면 「확인 · 다음」.",items:["바퀴가 바닥이나 발판에서 떨어져 완전히 늘어졌는지","정하중 때 표시해 둔 측정점이 그대로 보이는지"]},
  {id:"3-01",st:3,car:"droop",kind:"hub",title:"프론트 타이어 (허브 센터 ↔ 휀더) · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"B12",rimKey:"rimF",ref:"m2-08",shots:1},
  {id:"3-02",st:3,car:"droop",kind:"hub",title:"리어 타이어 (허브 센터 ↔ 휀더) · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"F12",rimKey:"rimR",ref:"m2-12a",shots:1},
@@ -224,7 +224,7 @@ async function refreshPhotos(task){
     im.onclick=async()=>{if(confirmDel===p.id){await del("photos",p.id);run.photos[task.id]=(run.photos[task.id]||[]).filter(x=>x!==p.id);await save();confirmDel=null;refreshPhotos(task);status("사진을 지웠습니다.")}else{confirmDel=p.id;status("이 사진을 지우려면 한 번 더 누르세요.",true)}};
     wrap.appendChild(im)});
   const b=el("button","phbtn","사진 찍기 +");b.type="button";b.onclick=()=>takePhoto(task);wrap.appendChild(b);
-  const cap=document.getElementById("pc-"+task.id);if(cap)cap.textContent="사진 "+mine.length+" / 권장 "+task.shots+"장 · 사진을 두 번 누르면 지움";
+  const cap=document.getElementById("pc-"+task.id);if(cap)cap.textContent="사진 "+mine.length+" / "+(task.photoOpt?"권장 ":"필수 ")+task.shots+"장 · 사진을 두 번 누르면 지움";
 }
 let confirmDel=null;
 function photoBlock(t){const box=el("div");const cap=el("div","small muted");cap.id="pc-"+t.id;const w=el("div","photos");w.id="pw-"+t.id;box.appendChild(cap);box.appendChild(w);setTimeout(()=>refreshPhotos(t));return box}
@@ -390,8 +390,8 @@ function measureUI(t,c){
 }
 function applies(t){if(!t.onlyIf)return true;const v=run.values[t.onlyIf.key];if(t.onlyIf.is)return !!(v&&v.v===t.onlyIf.is);return !(v&&v.v===t.onlyIf.not)}
 function photoNeeded(t){
-  // 사진 칸이 있는 단계는 모두 권장 장수 이상 찍어야 넘어간다 (photoReq.unlessKey 조건이면 면제)
-  if(!t.shots||!applies(t))return false;
+  // 사진 칸이 있는 단계는 모두 필수 장수 이상 (photoOpt:true인 권장 사진은 한 번 경고만) 찍어야 넘어간다 (photoReq.unlessKey 조건이면 면제)
+  if(!t.shots||t.photoOpt||!applies(t))return false;
   if(t.photoReq&&t.photoReq.unlessKey){const v=run.values[t.photoReq.unlessKey];if(v&&v.v===t.photoReq.unless)return false}
   return (run.photos[t.id]||[]).length<t.shots;
 }
@@ -399,6 +399,7 @@ function missing(t){
   if(!applies(t))return false;
   if(t.kind==="shape"){const s=run.shape[t.axle]||{};return !s.low}
   if(t.kind==="measure"||t.kind==="hub")return !run.values[t.key||("m"+t.id)]&&!run.skipped[t.id];
+  if(t.photoOpt)return (run.photos[t.id]||[]).length<t.shots;
   if(t.kind==="photo")return !(run.photos[t.id]||[]).length;
   if(t.kind==="choice")return !run.values[t.key];
   return false;
@@ -408,7 +409,7 @@ async function go(d){
   // 개발 확인용: devSkip이면 사진·빈칸 검사를 건너뛴다 (실사용 전 버튼 제거)
   if(d>0&&devSkip){devSkip=false;run.skipped[t.id]="개발용 건너뛰기"}
   else{
-  if(d>0&&photoNeeded(t)){status("사진을 권장 "+t.shots+"장 이상 찍어야 넘어갈 수 있습니다.",true);return}
+  if(d>0&&photoNeeded(t)){status("사진을 필수 "+t.shots+"장 이상 찍어야 넘어갈 수 있습니다.",true);return}
   if(d>0&&missing(t)&&!confirmSkip){confirmSkip=true;status(t.kind==="shape"?"하단 끝을 골라 주세요. 그대로 넘어가려면 한 번 더 누르세요.":"비어 있습니다. 비워 두고 넘어가려면 한 번 더 누르세요.",true);return}
   }
   if(d>0&&idx===TASKS.length-1){await save();showEnd();return}
