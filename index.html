@@ -221,7 +221,8 @@ async function takePhoto(task){
 function pickFile(task){const fp=$("#filepick");fp.onchange=async()=>{const f=fp.files[0];fp.value="";if(!f)return;const blob=await shrink(f);await storePhoto(task,blob)};fp.click()}
 async function shrink(file){const bmp=await createImageBitmap(file);const k=Math.min(1,2400/Math.max(bmp.width,bmp.height));const c=document.createElement("canvas");c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);c.getContext("2d").drawImage(bmp,0,0,c.width,c.height);return new Promise(r=>c.toBlob(r,"image/jpeg",0.88))}
 async function storePhoto(task,blob){
-  const id=uid();const n=(run.photos[task.id]||[]).length+1;
+  // 순번은 남은 사진 수가 아니라 그 화면에서 지금까지 가장 큰 순번 +1 (사진을 지우고 다시 찍어도 순번이 겹치지 않게)
+  const id=uid();const n=(await photosOf(run.id)).filter(p=>p.taskId===task.id).reduce((m,p)=>Math.max(m,p.n||0),0)+1;
   await put("photos",{id,runId:run.id,taskId:task.id,n,blob,at:new Date().toISOString()});
   (run.photos[task.id]=run.photos[task.id]||[]).push(id);logEdit(task.id,"사진 추가",(run.photos[task.id].length-1)+"장",run.photos[task.id].length+"장");await save();refreshPhotos(task);
 }
@@ -532,10 +533,16 @@ async function exportZip(){
   const root=new JSZip();const car=fsafe(run.title);const zip=root.folder((run.createdAt||"").slice(0,10)+"_"+car);
   const photos=await photosOf(run.id);const list={};
   const order=memoOrder(photos);const memoNo={};order.forEach((b,i)=>memoNo[b]=i+1);
-  photos.sort((a,b)=>stepOf(a.taskId).no-stepOf(b.taskId).no||a.taskId.localeCompare(b.taskId)||a.n-b.n).forEach(p=>{
-    const s=stepOf(p.taskId);const nn=String(p.n).padStart(2,"0");
-    const name="사진/"+(p.taskId.endsWith("_memo")?fsafe("메모사항 "+memoNo[s.base]+"번_"+stepLabel(s))+"_"+nn:fsafe((s.no?s.no+"단계":"보류")+"_"+car+"_"+s.title)+"_"+nn)+".jpg";
-    zip.file(name,p.blob);(list[p.taskId]=list[p.taskId]||[]).push(name)});
+  // 파일 이름의 순번은 화면마다 찍은 순서대로 01부터 다시 매긴다 (옛 기록에 순번이 겹쳐 있어도 ZIP에서 덮이지 않게)
+  // 사진대조표.csv: 사진 아이디(휴대폰 저장소의 고유 열쇠) ↔ 파일 이름 · 화면 아이디 · 화면 번호 · 몇 번째 사진
+  const seq={};const loc=x=>{if(!x)return"";const d=new Date(x),z=n=>String(n).padStart(2,"0");return d.getFullYear()+"-"+z(d.getMonth()+1)+"-"+z(d.getDate())+" "+z(d.getHours())+":"+z(d.getMinutes())+":"+z(d.getSeconds())};
+  const map=[["사진 아이디","파일 이름","화면 아이디","화면 번호","화면 제목","구분","몇 번째 사진","찍은 시각"]];
+  photos.sort((a,b)=>stepOf(a.taskId).no-stepOf(b.taskId).no||a.taskId.localeCompare(b.taskId)||(a.n-b.n)||String(a.at).localeCompare(String(b.at))).forEach(p=>{
+    const s=stepOf(p.taskId);const k=(seq[p.taskId]=(seq[p.taskId]||0)+1);const nn=String(k).padStart(2,"0");const memo=p.taskId.endsWith("_memo");
+    const name="사진/"+(memo?fsafe("메모사항 "+memoNo[s.base]+"번_"+stepLabel(s))+"_"+nn:fsafe((s.no?s.no+"단계":"보류")+"_"+car+"_"+s.title)+"_"+nn)+".jpg";
+    zip.file(name,p.blob);(list[p.taskId]=list[p.taskId]||[]).push(name);
+    map.push([p.id,name.slice(3),s.base,s.no?s.no+"단계":"보류",s.title,memo?"특이사항 메모사항 "+memoNo[s.base]+"번":(/_s\d+$/.test(p.taskId)?"칸 "+p.taskId.split("_s")[1]:"측정"),k,loc(p.at)])});
+  zip.file("사진대조표.csv","﻿"+map.map(r=>r.map(csvCell).join(",")).join("\r\n"));
   zip.file("측정기록.csv",recordCsv(memoNo));
   if(order.length){
     const txt=[run.title+" — 특이사항","측정 시작 "+(run.createdAt||"").slice(0,10)+" · 메모가 생긴 순서",""];
@@ -619,7 +626,8 @@ const CHANGELOG=[
  [56,"2026-10-22 16:38","측정 목록에 시작 시각 · 마지막 수정 시각 · 작업한 시간(10분 넘게 비운 시간 제외) · 지금 몇 번째 화면 · 건너뛴 항목 수 표시"],
  [57,"2026-10-22 17:10","ZIP 정리 규칙: 날짜_차량 폴더 안에 측정기록.csv(엑셀) · 특이사항.txt(메모 생긴 순서로 번호) · 사진/ 폴더. 사진 이름 「N단계_차량_화면제목_순번」, 특이사항 사진은 「메모사항 n번_N단계 화면제목_순번」으로 txt 번호와 맞춤"],
  [58,"2026-10-22 17:20","리비전 표시를 「베타 rev N」으로 바꿈 — 정식 v1부터 rev 1로 새로 셈"],
- [59,"2026-10-22 17:30","「이어서」가 화면 순서 번호 대신 화면 아이디로 찾아감 — 화면 순서를 바꿔도 하던 화면에서 이어짐. 화면 아이디가 겹치면 시작할 때 경고"]
+ [59,"2026-10-22 17:30","「이어서」가 화면 순서 번호 대신 화면 아이디로 찾아감 — 화면 순서를 바꿔도 하던 화면에서 이어짐. 화면 아이디가 겹치면 시작할 때 경고"],
+ [60,"2026-10-22 17:45","사진을 지우고 다시 찍으면 순번이 겹쳐 ZIP에서 사진이 덮이던 것 고침. ZIP에 사진대조표.csv 추가 — 사진 아이디 ↔ 파일 이름 · 화면 아이디 · 화면 번호 · 몇 번째 사진 · 찍은 시각"]
 ];
 // 지금은 베타: 숫자 번호는 「베타 rev N」으로 보인다. 정식 v1이 되면 그때부터 번호를 문자열("1","2"…)로 적어 「rev 1」부터 센다 (유지호 2026-10-22).
 const revName=n=>typeof n==="string"?"rev "+n:"베타 rev "+n;
