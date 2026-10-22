@@ -116,8 +116,10 @@ const TASKS=[
  {id:"2-00",st:2,kind:"info",title:"리프트 올리기",tip:"차가 바퀴로 선 상태 그대로 리프트를 측정하기 좋은 높이로 올립니다. 다 올렸으면 「확인 · 다음」.",items:["바퀴가 리프트 발판 위에 그대로 있는지 (정하중 상태 유지)","줄자로 휀더·허브를 재기 편한 높이인지"]},
  {id:"2-06a",st:2,kind:"measure",key:"gapF",title:"프론트 휀더 갭",tip:"타이어 윗면 ↔ 휀더 안쪽 끝. 줄자 눈금이 보이게 찍으세요.",cell:"B7",shots:1},
  {id:"2-06b",st:2,kind:"measure",key:"rimF",title:"프론트 림 외경",tip:"줄자로 림 바깥 지름.",cell:"E7",shots:1},
+ {id:"2-06b2",st:2,kind:"form",title:"프론트 타이어 스펙",tip:"타이어 옆면 표기 그대로. 예: 235/35R20. 옆면 글자가 읽히게 찍으세요.",fields:[["tireF","프론트 타이어","B14"]],shots:1},
  {id:"2-06c",st:2,kind:"measure",key:"gapR",title:"리어 휀더 갭",tip:"타이어 윗면 ↔ 휀더 안쪽 끝. 줄자 눈금이 보이게 찍으세요.",cell:"F7",shots:1},
  {id:"2-06d",st:2,kind:"measure",key:"rimR",title:"리어 림 외경",tip:"줄자로 림 바깥 지름.",cell:"I7",shots:1},
+ {id:"2-06d2",st:2,kind:"form",title:"리어 타이어 스펙",tip:"타이어 옆면 표기 그대로. 예: 235/35R20. 옆면 글자가 읽히게 찍으세요.",fields:[["tireR","리어 타이어","F14"]],shots:1},
  {id:"2-08",st:2,kind:"hub",title:"프론트 타이어 (허브 센터 ↔ 휀더)",tip:"잰 점을 표시해 두세요. 들었을 때 같은 점을 다시 잽니다.",cell:"B10",rimKey:"rimF",shots:1},
  {id:"2-12a",st:2,kind:"hub",title:"리어 타이어 (허브 센터 ↔ 휀더)",tip:"잰 점을 표시해 두세요.",cell:"F10",rimKey:"rimR",shots:1},
  {id:"2-08u",st:2,kind:"info",title:"차 하부로 이동",tip:"여기부터는 차 밑으로 들어가서 잽니다. 차는 바퀴로 선 채 그대로 둡니다. 준비됐으면 「확인 · 다음」.",items:["줄자 · 손전등 챙기기","다음 순서: 프론트 댐퍼 → 프론트 스프링 → 리어 댐퍼 → 리어 스프링"]},
@@ -152,7 +154,6 @@ const TASKS=[
 const PARKED=[
  {id:"0-F",st:0,kind:"shape",axle:"F",title:"앞 쇽업소버 형태 고르기",tip:"모양을 보고 고릅니다. 뒤 단계의 가지가 여기서 정해집니다."},
  {id:"0-R",st:0,kind:"shape",axle:"R",title:"뒤 쇽업소버 형태 고르기",tip:"앞과 같으면 「앞과 같음」."},
- {id:"1-05",st:1,kind:"form",title:"타이어 사이즈",tip:"타이어 옆면 표기 그대로. 예: 235/35R20",fields:[["tireF","앞 타이어","B14"],["tireR","뒤 타이어","F14"]]},
  {id:"2-05",st:2,kind:"photo",title:"순정 차고 측면 사진",tip:"작업 전, 차가 바닥에 있는 상태.",shots:1},
  {id:"2-13",st:2,kind:"photo",title:"상단마운트 사진 (위에서 수직)",tip:"앞뒤 상단마운트의 형태·위치·각도가 보이게.",shots:2},
  {id:"2-14",st:2,kind:"form",title:"상단마운트 위쪽 여유 공간",tip:"조절 다이얼·탑핀이 튀어나와도 닿지 않는지. 가장 가까운 부품까지 거리.",fields:[["topClrF","앞 여유 거리",null,"mm"],["topClrR","뒤 여유 거리",null,"mm"]],shots:2}
