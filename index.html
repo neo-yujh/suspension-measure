@@ -50,7 +50,8 @@ label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mu
 .footer{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
 .footer .in{max-width:640px;margin:0 auto;display:flex;gap:8px} .footer .btn{flex:1}
 .status{font-size:12px;color:var(--muted);min-height:1.5em;margin:0} .status.err{color:var(--warn)}
-.runrow{display:flex;justify-content:space-between;gap:8px;align-items:center} .grow{flex:1 1 auto;min-width:0}
+.runrow{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;padding-bottom:8px;border-bottom:1px solid var(--line)} .grow{flex:1 1 auto;min-width:0}
+.runrow>.grow{flex-basis:100%} .runrow>.btn{flex:1 1 0;white-space:nowrap;padding-inline:8px}
 .check{display:flex;gap:8px;align-items:center;font-size:14px} .check input{width:22px;height:22px}
 .calc{font-size:13px;color:var(--muted)}
 .hidden{display:none!important}
@@ -216,8 +217,29 @@ async function showList(){
     left.appendChild(el("div","small muted",(r.updatedAt||"").slice(0,16).replace("T"," ")+" · "+scopeName(r.scope)+" · "+Math.min((r.pos||0)+1,TASKS.length)+"/"+TASKS.length+(r.exportedAt?" · ZIP 만듦":"")));
     const go=el("button","btn","이어서");go.type="button";go.onclick=()=>{run=r;idx=Math.min(r.pos||0,TASKS.length-1);showTask()};
     const zip=el("button","btn","ZIP");zip.type="button";zip.onclick=()=>{run=r;exportZip()};
-    row.appendChild(left);row.appendChild(zip);row.appendChild(go);lc.appendChild(row)});
+    const rm=el("button","btn","지우기");rm.type="button";rm.onclick=()=>askDelete(r,lc,row);
+    row.appendChild(left);row.appendChild(rm);row.appendChild(zip);row.appendChild(go);lc.appendChild(row)});
   if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().catch(()=>{})}
+}
+
+/* ===== 측정 지우기: 바로 지우지 않고, 확인 칸을 띄운 뒤 3초가 지나야 「지우기」가 눌린다 ===== */
+async function askDelete(r,list,row){
+  list.querySelectorAll(".delbox").forEach(x=>x.remove());
+  const n=(await photosOf(r.id)).length;
+  const box=el("div","card delbox");box.style.borderColor="var(--warn)";
+  box.appendChild(el("div",null,"「"+r.title+"」을(를) 지울까요?"));
+  box.appendChild(el("div","small muted","기록과 사진 "+n+"장이 이 휴대폰에서 지워지며 되살릴 수 없습니다."+(r.exportedAt?"":" 아직 ZIP을 만들지 않은 측정입니다.")));
+  const btns=el("div","runrow");const cancel=el("button","btn","취소");cancel.type="button";
+  const ok=el("button","btn","지우기 (3)");ok.type="button";ok.disabled=true;ok.style.color="var(--warn)";ok.style.borderColor="var(--warn)";
+  btns.appendChild(cancel);btns.appendChild(ok);box.appendChild(btns);row.after(box);
+  let left=3;const tm=setInterval(()=>{left--;if(left>0){ok.textContent="지우기 ("+left+")"}else{clearInterval(tm);ok.textContent="지우기";ok.disabled=false}},1000);
+  cancel.onclick=()=>{clearInterval(tm);box.remove()};
+  ok.onclick=async()=>{
+    ok.disabled=true;
+    const ps=await photosOf(r.id);
+    for(const p of ps){await del("photos",p.id);if(urls.has(p.id)){URL.revokeObjectURL(urls.get(p.id));urls.delete(p.id)}}
+    await del("runs",r.id);status("「"+r.title+"」을(를) 지웠습니다.");showList();
+  };
 }
 
 /* ===== 할 일 화면 ===== */
