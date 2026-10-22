@@ -101,13 +101,14 @@ const SHAPES={
 /* ===== 측정 순서 (마인드맵 0~2단계). cell = 측정시트 v.261008 첫 탭 칸 위치 (제목 줄 바로 아래 줄을 값 칸으로 봄 — 확인 필요) ===== */
 const TASKS=[
  {id:"1-04",st:1,kind:"form",title:"기본정보",tip:"측정시트 2행 제목 아래 3행에 들어갑니다.",fields:[["date","측정일","A3","date"],["worker","작업자","B3","pick:유지호,지민우,남정우"],["maker","차량 메이커","C3"],["model","모델명 (예: 쏘나타)","D3"],["code","코드명 (예: DN8)","E3"],["trim","세부모델 (예: 2.5T 2WD EDC)","F3"],["year","연식","H3"],["owner","고객/차주명","I3"]]},
+ {id:"2-00",st:2,kind:"info",title:"리프트 올리기",tip:"차가 바퀴로 선 상태 그대로 리프트를 측정하기 좋은 높이로 올립니다. 다 올렸으면 「확인 · 다음」.",items:["바퀴가 리프트 발판 위에 그대로 있는지 (정하중 상태 유지)","줄자로 휀더·허브를 재기 편한 높이인지"]},
  {id:"2-06a",st:2,kind:"measure",key:"gapF",title:"프론트 휀더 갭",tip:"타이어 윗면 ↔ 휀더 안쪽 끝. 줄자 눈금이 보이게 찍으세요.",cell:"B7",shots:1},
  {id:"2-06b",st:2,kind:"measure",key:"rimF",title:"프론트 림 외경",tip:"줄자로 림 바깥 지름.",cell:"E7",shots:1},
  {id:"2-06c",st:2,kind:"measure",key:"gapR",title:"리어 휀더 갭",tip:"타이어 윗면 ↔ 휀더 안쪽 끝. 줄자 눈금이 보이게 찍으세요.",cell:"F7",shots:1},
  {id:"2-06d",st:2,kind:"measure",key:"rimR",title:"리어 림 외경",tip:"줄자로 림 바깥 지름.",cell:"I7",shots:1},
  {id:"2-08",st:2,kind:"hub",title:"프론트 타이어 (허브 센터 ↔ 휀더)",tip:"잰 점을 표시해 두세요. 들었을 때 같은 점을 다시 잽니다.",cell:"B10",rimKey:"rimF",shots:1},
  {id:"2-12a",st:2,kind:"hub",title:"리어 타이어 (허브 센터 ↔ 휀더)",tip:"잰 점을 표시해 두세요.",cell:"F10",rimKey:"rimR",shots:1},
- {id:"2-09",st:2,kind:"measure",title:"프론트 댐퍼 체결부 기준 전장",tip:"차 밑으로 들어가서 잽니다 (차는 바닥에 둔 채). 잰 점을 표시해 두세요.",cell:"C10",shots:1},
+ {id:"2-09",st:2,kind:"measure",title:"프론트 댐퍼 체결부 기준 전장",tip:"차 밑으로 들어가서 잽니다 (차는 바퀴로 선 채). 잰 점을 표시해 두세요.",cell:"C10",shots:1},
  {id:"2-10",st:2,kind:"measure",title:"프론트 스프링 양끝 길이",tip:"상단 패드 ↔ 하단 패드. 잰 점을 표시해 두세요.",cell:"D10",shots:1},
  {id:"2-12b",st:2,kind:"measure",title:"리어 댐퍼 체결부 기준 전장",tip:"분리형이면 댐퍼만.",cell:"G10",shots:1},
  {id:"2-12c",st:2,kind:"measure",title:"리어 스프링 양끝 길이",tip:"분리형이면 스프링만 따로.",cell:"H10",shots:1},
@@ -227,6 +228,7 @@ function showTask(){
   // 단계 순서를 바꿔 가는 중이라 화면 번호(idx+1)와 단계 id가 다를 수 있다.
   const c=el("div","card");const h=el("h2");h.appendChild(el("span","mono muted",t.id+" "));h.appendChild(document.createTextNode(t.title));c.appendChild(h);
   if(t.tip)c.appendChild(el("p","small muted",t.tip));
+  if(t.kind==="info"&&t.items){const ul=el("ul","small");t.items.forEach(x=>ul.appendChild(el("li",null,x)));c.appendChild(ul)}
   if(t.kind==="shape")shapeUI(t,c);
   if(t.kind==="form")formUI(t,c);
   if(t.kind==="measure"||t.kind==="hub")measureUI(t,c);
