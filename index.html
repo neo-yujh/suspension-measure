@@ -127,8 +127,12 @@ const TASKS=[
  {id:"2-04c2",st:2,kind:"choice",key:"springR",title:"리어 스프링 형태",tip:"스프링이 쇽업소버에 끼워져 있으면 코일오버, 스프링이 따로 달려 있으면 분리형입니다.",cell:null,options:["코일오버","분리형"],noOther:true},
  {id:"2-09",st:2,kind:"measure",title:"프론트 댐퍼 체결부 기준 전장",tip:"잰 점을 표시해 두세요.",cell:"C10",shots:1},
  {id:"2-10",st:2,kind:"measure",title:"프론트 스프링 양끝 길이",tip:"상단 패드 ↔ 하단 패드. 잰 점을 표시해 두세요.",cell:"D10",shots:1},
+ {id:"2-10b",st:2,kind:"choice",key:"bumpPosF",title:"프론트 범프스토퍼 위치",tip:"댐퍼 내부면 다음 측정은 건너뜁니다 (나중에 자동 계산 예정).",cell:"E16",options:["댐퍼 내부","차대","로어암"],other:"기타 (직접 입력)"},
+ {id:"2-11",st:2,kind:"measure",title:"프론트 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼 끝에서 맞닿는 면까지.",onlyIf:{key:"bumpPosF",not:"댐퍼 내부"},cell:"E10",shots:1},
  {id:"2-12b",st:2,kind:"measure",title:"리어 댐퍼 체결부 기준 전장",tip:"분리형이면 댐퍼만.",cell:"G10",shots:1},
  {id:"2-12c",st:2,kind:"measure",title:"리어 스프링 양끝 길이",tip:"분리형이면 스프링만 따로.",cell:"H10",shots:1},
+ {id:"2-12c2",st:2,kind:"choice",key:"bumpPosR",title:"리어 범프스토퍼 위치",tip:"댐퍼 내부면 다음 측정은 건너뜁니다 (나중에 자동 계산 예정).",cell:"I16",options:["댐퍼 내부","차대","로어암"],other:"기타 (직접 입력)"},
+ {id:"2-12d",st:2,kind:"measure",title:"리어 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼 끝에서 맞닿는 면까지.",onlyIf:{key:"bumpPosR",not:"댐퍼 내부"},cell:"I10",shots:1},
  {id:"3-00",st:3,car:"droop",kind:"info",title:"차 띄우기 (드룹 상태로)",tip:"리프트로 차체를 들어 바퀴가 완전히 늘어지게 합니다. 다 됐으면 「확인 · 다음」.",items:["바퀴가 바닥이나 발판에서 떨어져 완전히 늘어졌는지","정하중 때 표시해 둔 측정점이 그대로 보이는지"]},
 ];
 // 아직 순서를 정하지 않아 흐름에서 빼 둔 화면. 형태 고르기(0-F·0-R)는 탈거 뒤 사진 찍으면서 하기로 함 (2026-10-22 유지호).
@@ -137,8 +141,6 @@ const PARKED=[
  {id:"0-R",st:0,kind:"shape",axle:"R",title:"뒤 쇽업소버 형태 고르기",tip:"앞과 같으면 「앞과 같음」."},
  {id:"1-05",st:1,kind:"form",title:"타이어 사이즈",tip:"타이어 옆면 표기 그대로. 예: 235/35R20",fields:[["tireF","앞 타이어","B14"],["tireR","뒤 타이어","F14"]]},
  {id:"2-05",st:2,kind:"photo",title:"순정 차고 측면 사진",tip:"작업 전, 차가 바닥에 있는 상태.",shots:1},
- {id:"2-11",st:2,kind:"measure",title:"프론트 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼가 차대에 있을 때만.",cell:"E10",shots:1,optional:true},
- {id:"2-12d",st:2,kind:"measure",title:"리어 범프스토퍼 끝 ↔ 차대",tip:"차대 범프스토퍼일 때만.",cell:"I10",shots:1,optional:true},
  {id:"2-13",st:2,kind:"photo",title:"상단마운트 사진 (위에서 수직)",tip:"앞뒤 상단마운트의 형태·위치·각도가 보이게.",shots:2},
  {id:"2-14",st:2,kind:"form",title:"상단마운트 위쪽 여유 공간",tip:"조절 다이얼·탑핀이 튀어나와도 닿지 않는지. 가장 가까운 부품까지 거리.",fields:[["topClrF","앞 여유 거리",null,"mm"],["topClrR","뒤 여유 거리",null,"mm"]],shots:2}
 ];
@@ -351,7 +353,9 @@ function measureUI(t,c){
     run.values[key]={v:val,raw:r,fromRim:!!(fromRim&&fromRim.checked),rim,cell:t.cell,label:t.title,unit:"mm",task:t.id};
   };
 }
+function applies(t){if(!t.onlyIf)return true;const v=run.values[t.onlyIf.key];return !(v&&v.v===t.onlyIf.not)}
 function missing(t){
+  if(!applies(t))return false;
   if(t.kind==="shape"){const s=run.shape[t.axle]||{};return !s.low}
   if(t.kind==="measure"||t.kind==="hub")return !run.values[t.key||("m"+t.id)]&&!run.skipped[t.id];
   if(t.kind==="photo")return !(run.photos[t.id]||[]).length;
@@ -362,7 +366,10 @@ async function go(d){
   if(collect)collect();const t=TASKS[idx];
   if(d>0&&missing(t)&&!confirmSkip){confirmSkip=true;status(t.kind==="shape"?"하단 끝을 골라 주세요. 그대로 넘어가려면 한 번 더 누르세요.":"비어 있습니다. 비워 두고 넘어가려면 한 번 더 누르세요.",true);return}
   if(d>0&&idx===TASKS.length-1){await save();showEnd();return}
-  idx=Math.max(0,Math.min(TASKS.length-1,idx+d));await save();showTask();
+  let n=idx+d;
+  while(n>=0&&n<TASKS.length&&!applies(TASKS[n])){run.skipped[TASKS[n].id]="조건 안 맞음 ("+TASKS[n].onlyIf.not+")";n+=d}
+  if(d>0&&n>=TASKS.length){await save();showEnd();return}
+  idx=Math.max(0,Math.min(TASKS.length-1,n));await save();showTask();
 }
 function showEnd(){
   $("#footer").classList.add("hidden");const v=$("#view");v.textContent="";
