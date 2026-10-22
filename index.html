@@ -130,12 +130,12 @@ const TASKS=[
  {id:"2-04c2",st:2,kind:"choice",key:"springR",title:"리어 스프링 형태",tip:"스프링이 쇽업소버에 끼워져 있으면 코일오버, 스프링이 따로 달려 있으면 분리형입니다.",cell:null,options:["코일오버","분리형"],noOther:true},
  {id:"2-09",st:2,kind:"measure",title:"프론트 댐퍼 체결부 기준 전장",tip:"잰 점을 표시해 두세요.",cell:"C10",shots:1},
  {id:"2-10",st:2,kind:"measure",title:"프론트 스프링 양끝 길이",tip:"상단 패드 ↔ 하단 패드. 잰 점을 표시해 두세요.",cell:"D10",coilSkip:"springF",shots:1},
- {id:"2-10b",st:2,kind:"choice",key:"bumpPosF",title:"프론트 범프스토퍼 위치",tip:"범프스토퍼가 보이게 사진을 찍으세요. 댐퍼 내부면 사진과 다음 측정을 건너뜁니다 (나중에 자동 계산 예정).",cell:"E16",options:["댐퍼 내부","차대","로어암"],other:"기타 (직접 입력)",shots:1,photoReq:{unlessKey:"bumpPosF",unless:"댐퍼 내부"}},
+ {id:"2-10b",st:2,kind:"choice",key:"bumpPosF",title:"프론트 범프스토퍼 위치",tip:"범프스토퍼가 보이게 사진을 찍으세요. 댐퍼 내부를 고르면 사진 칸이 사라지고 다음 측정도 건너뜁니다 (나중에 분해 후 자유장 측정).",cell:"E16",options:["댐퍼 내부","차대","로어암"],other:"기타 (직접 입력)",shots:1,photoReq:{unlessKey:"bumpPosF",unless:"댐퍼 내부"}},
  {id:"2-11",st:2,kind:"measure",title:"프론트 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼 끝에서 맞닿는 면까지.",onlyIf:{key:"bumpPosF",not:"댐퍼 내부"},cell:"E10",shots:1,photoReq:true},
  {id:"2-11s",st:2,kind:"photo",title:"프론트 서스펜션 구조 상세 사진",tip:"서스펜션 구조를 부품 하나하나 가까이 찍습니다 (예: 스테빌라이저 바 마운트·링크, 암 체결부, 너클). 간섭이 우려되는 부분은 줄자로 거리를 재서 수치가 보이게 찍습니다. 권장 장수·찍을 부품 목록은 남정우 수석 피드백 받아 확정 예정 — 지금은 임시 1장.",shots:1,photoOpt:true},
  {id:"2-12b",st:2,kind:"measure",title:"리어 댐퍼 체결부 기준 전장",tip:"분리형이면 댐퍼만.",cell:"G10",shots:1},
  {id:"2-12c",st:2,kind:"measure",title:"리어 스프링 양끝 길이",tip:"분리형이면 스프링만 따로.",cell:"H10",coilSkip:"springR",shots:1},
- {id:"2-12c2",st:2,kind:"choice",key:"bumpPosR",title:"리어 범프스토퍼 위치",tip:"범프스토퍼가 보이게 사진을 찍으세요. 댐퍼 내부면 사진과 다음 측정을 건너뜁니다 (나중에 자동 계산 예정).",cell:"I16",options:["댐퍼 내부","차대","로어암"],other:"기타 (직접 입력)",shots:1,photoReq:{unlessKey:"bumpPosR",unless:"댐퍼 내부"}},
+ {id:"2-12c2",st:2,kind:"choice",key:"bumpPosR",title:"리어 범프스토퍼 위치",tip:"범프스토퍼가 보이게 사진을 찍으세요. 댐퍼 내부를 고르면 사진 칸이 사라지고 다음 측정도 건너뜁니다 (나중에 분해 후 자유장 측정).",cell:"I16",options:["댐퍼 내부","차대","로어암"],other:"기타 (직접 입력)",shots:1,photoReq:{unlessKey:"bumpPosR",unless:"댐퍼 내부"}},
  {id:"2-12d",st:2,kind:"measure",title:"리어 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼 끝에서 맞닿는 면까지.",onlyIf:{key:"bumpPosR",not:"댐퍼 내부"},cell:"I10",shots:1,photoReq:true},
  {id:"2-12s",st:2,kind:"photo",title:"리어 서스펜션 구조 상세 사진",tip:"서스펜션 구조를 부품 하나하나 가까이 찍습니다 (예: 스테빌라이저 바 마운트·링크, 암 체결부, 너클). 간섭이 우려되는 부분은 줄자로 거리를 재서 수치가 보이게 찍습니다. 권장 장수·찍을 부품 목록은 남정우 수석 피드백 받아 확정 예정 — 지금은 임시 1장.",shots:1,photoOpt:true},
  {id:"3-00",st:3,car:"droop",kind:"info",title:"차 띄우기 (드룹 상태로)",tip:"리프트로 차체를 들어 바퀴가 완전히 늘어지게 합니다. 다 됐으면 「확인 · 다음」.",items:["바퀴가 바닥이나 발판에서 떨어져 완전히 늘어졌는지","정하중 때 표시해 둔 측정점이 그대로 보이는지"]},
@@ -227,7 +227,9 @@ async function refreshPhotos(task){
   const cap=document.getElementById("pc-"+task.id);if(cap)cap.textContent="사진 "+mine.length+" / "+(task.photoOpt?"권장 ":"필수 ")+task.shots+"장 · 사진을 두 번 누르면 지움";
 }
 let confirmDel=null;
-function photoBlock(t){const box=el("div");const cap=el("div","small muted");cap.id="pc-"+t.id;const w=el("div","photos");w.id="pw-"+t.id;box.appendChild(cap);box.appendChild(w);setTimeout(()=>refreshPhotos(t));return box}
+function photoBlock(t){const box=el("div");box.id="pb-"+t.id;
+  // 범프스토퍼 위치처럼 photoReq.unless 값을 고르면 사진 칸을 숨긴다
+  if(t.photoReq&&t.photoReq.unlessKey){const pv=run.values[t.photoReq.unlessKey];if(pv&&pv.v===t.photoReq.unless)box.classList.add("hidden")}const cap=el("div","small muted");cap.id="pc-"+t.id;const w=el("div","photos");w.id="pw-"+t.id;box.appendChild(cap);box.appendChild(w);setTimeout(()=>refreshPhotos(t));return box}
 
 /* ===== 목록 화면 ===== */
 async function showList(){
@@ -308,7 +310,7 @@ function choiceUI(t,c){
   const free=el("input");free.type="text";free.id="o-"+t.key;free.placeholder="직접 입력";free.value=pick==="__other"?cur:"";
   const all=t.options.map(o=>[o,o]).concat(t.noOther?[]:[["__other",t.other||"직접 입력"]]);
   all.forEach(([v,label])=>{const b=el("button","opt",label);b.type="button";b.setAttribute("aria-pressed",pick===v?"true":"false");
-    b.onclick=()=>{pick=v;g.querySelectorAll(".opt").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");free.classList.toggle("hidden",v!=="__other");if(v==="__other")free.focus()};g.appendChild(b)});
+    b.onclick=()=>{pick=v;g.querySelectorAll(".opt").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");free.classList.toggle("hidden",v!=="__other");if(v==="__other")free.focus();const pb=document.getElementById("pb-"+t.id);if(pb&&t.photoReq&&t.photoReq.unless)pb.classList.toggle("hidden",v===t.photoReq.unless)};g.appendChild(b)});
   c.appendChild(g);free.classList.toggle("hidden",pick!=="__other");c.appendChild(free);
   collect=()=>{const val=pick==="__other"?free.value.trim():pick;if(!val){delete run.values[t.key];return}run.values[t.key]={v:val,cell:t.cell,label:t.title,task:t.id}};
 }
@@ -481,7 +483,8 @@ const CHANGELOG=[
  [27,"2026-10-22 15:25","정하중 범프스토퍼 다음에 서스펜션 구조 상세 사진 (프론트·리어, 임시 1장)"],
  [28,"2026-10-22 15:26","사진 필수/권장 구분: 구조 상세 사진은 권장(한 번 경고), 나머지는 필수"],
  [29,"2026-10-22 15:27","화면 맨 위에 리비전 번호 표시 + 누르면 변경 로그(시간·바뀐 내용)"],
- [30,"2026-10-22 15:34","서스펜션 구조 상세 사진 안내에 「간섭 우려 부분은 거리를 재서 수치가 보이게 찍기」 추가"]
+ [30,"2026-10-22 15:34","서스펜션 구조 상세 사진 안내에 「간섭 우려 부분은 거리를 재서 수치가 보이게 찍기」 추가"],
+ [31,"2026-10-22 15:35","범프스토퍼 위치: 「댐퍼 내부」를 누르면 사진 칸 자체가 사라짐 (전에는 사진 칸이 보이고 안 찍어도 넘어갈 수만 있었음)"]
 ];
 (function(){const last=CHANGELOG[CHANGELOG.length-1],tag=document.getElementById("revtag"),box=document.getElementById("revlog");
 tag.textContent="rev "+last[0]+" · "+last[1];
