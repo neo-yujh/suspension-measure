@@ -126,11 +126,11 @@ const TASKS=[
  {id:"2-04c",st:2,kind:"choice",key:"suspR",title:"리어 서스펜션 유형",tip:"차 밑에서 리어 서스펜션 구조를 보고 고릅니다.",cell:"G7",options:["맥퍼슨","더블위시본","멀티링크","토션빔","판스프링","5링크"],other:"그 밖 (직접 입력)"},
  {id:"2-04c2",st:2,kind:"choice",key:"springR",title:"리어 스프링 형태",tip:"스프링이 쇽업소버에 끼워져 있으면 코일오버, 스프링이 따로 달려 있으면 분리형입니다.",cell:null,options:["코일오버","분리형"],noOther:true},
  {id:"2-09",st:2,kind:"measure",title:"프론트 댐퍼 체결부 기준 전장",tip:"잰 점을 표시해 두세요.",cell:"C10",shots:1},
- {id:"2-10",st:2,kind:"measure",title:"프론트 스프링 양끝 길이",tip:"상단 패드 ↔ 하단 패드. 잰 점을 표시해 두세요.",cell:"D10",shots:1},
+ {id:"2-10",st:2,kind:"measure",title:"프론트 스프링 양끝 길이",tip:"상단 패드 ↔ 하단 패드. 잰 점을 표시해 두세요.",cell:"D10",coilSkip:"springF",shots:1},
  {id:"2-10b",st:2,kind:"choice",key:"bumpPosF",title:"프론트 범프스토퍼 위치",tip:"범프스토퍼가 보이게 사진을 찍으세요. 댐퍼 내부면 사진과 다음 측정을 건너뜁니다 (나중에 자동 계산 예정).",cell:"E16",options:["댐퍼 내부","차대","로어암"],other:"기타 (직접 입력)",shots:1,photoReq:{unlessKey:"bumpPosF",unless:"댐퍼 내부"}},
  {id:"2-11",st:2,kind:"measure",title:"프론트 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼 끝에서 맞닿는 면까지.",onlyIf:{key:"bumpPosF",not:"댐퍼 내부"},cell:"E10",shots:1,photoReq:true},
  {id:"2-12b",st:2,kind:"measure",title:"리어 댐퍼 체결부 기준 전장",tip:"분리형이면 댐퍼만.",cell:"G10",shots:1},
- {id:"2-12c",st:2,kind:"measure",title:"리어 스프링 양끝 길이",tip:"분리형이면 스프링만 따로.",cell:"H10",shots:1},
+ {id:"2-12c",st:2,kind:"measure",title:"리어 스프링 양끝 길이",tip:"분리형이면 스프링만 따로.",cell:"H10",coilSkip:"springR",shots:1},
  {id:"2-12c2",st:2,kind:"choice",key:"bumpPosR",title:"리어 범프스토퍼 위치",tip:"범프스토퍼가 보이게 사진을 찍으세요. 댐퍼 내부면 사진과 다음 측정을 건너뜁니다 (나중에 자동 계산 예정).",cell:"I16",options:["댐퍼 내부","차대","로어암"],other:"기타 (직접 입력)",shots:1,photoReq:{unlessKey:"bumpPosR",unless:"댐퍼 내부"}},
  {id:"2-12d",st:2,kind:"measure",title:"리어 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼 끝에서 맞닿는 면까지.",onlyIf:{key:"bumpPosR",not:"댐퍼 내부"},cell:"I10",shots:1,photoReq:true},
  {id:"3-00",st:3,car:"droop",kind:"info",title:"차 띄우기 (드룹 상태로)",tip:"리프트로 차체를 들어 바퀴가 완전히 늘어지게 합니다. 다 됐으면 「확인 · 다음」.",items:["바퀴가 바닥이나 발판에서 떨어져 완전히 늘어졌는지","정하중 때 표시해 둔 측정점이 그대로 보이는지"]},
@@ -138,10 +138,10 @@ const TASKS=[
  {id:"3-02",st:3,car:"droop",kind:"hub",title:"리어 타이어 (허브 센터 ↔ 휀더) · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"F12",rimKey:"rimR",ref:"m2-12a",shots:1},
  {id:"3-03",st:3,car:"droop",kind:"info",title:"차 하부로 이동",tip:"여기부터는 차 밑으로 들어가서 잽니다. 차는 든 채로 둡니다. 준비됐으면 「확인 · 다음」.",items:["다음 순서: 프론트 댐퍼 → 프론트 스프링 → 프론트 범프스토퍼 → 리어 댐퍼 → 리어 스프링 → 리어 범프스토퍼"]},
  {id:"3-04",st:3,car:"droop",kind:"measure",title:"프론트 댐퍼 체결부 기준 전장 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"C12",ref:"m2-09",shots:1},
- {id:"3-05",st:3,car:"droop",kind:"measure",title:"프론트 스프링 양끝 길이 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"D12",ref:"m2-10",shots:1},
+ {id:"3-05",st:3,car:"droop",kind:"measure",title:"프론트 스프링 양끝 길이 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"D12",ref:"m2-10",coilSkip:"springF",shots:1},
  {id:"3-06",st:3,car:"droop",kind:"measure",title:"프론트 범프스토퍼 끝 ↔ 차대 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"E12",ref:"m2-11",onlyIf:{key:"bumpPosF",not:"댐퍼 내부"},shots:1,photoReq:true},
  {id:"3-07",st:3,car:"droop",kind:"measure",title:"리어 댐퍼 체결부 기준 전장 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"G12",ref:"m2-12b",shots:1},
- {id:"3-08",st:3,car:"droop",kind:"measure",title:"리어 스프링 양끝 길이 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"H12",ref:"m2-12c",shots:1},
+ {id:"3-08",st:3,car:"droop",kind:"measure",title:"리어 스프링 양끝 길이 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"H12",ref:"m2-12c",coilSkip:"springR",shots:1},
  {id:"3-09",st:3,car:"droop",kind:"measure",title:"리어 범프스토퍼 끝 ↔ 차대 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"I12",ref:"m2-12d",onlyIf:{key:"bumpPosR",not:"댐퍼 내부"},shots:1,photoReq:true},
 ];
 // 아직 순서를 정하지 않아 흐름에서 빼 둔 화면. 형태 고르기(0-F·0-R)는 탈거 뒤 사진 찍으면서 하기로 함 (2026-10-22 유지호).
@@ -362,9 +362,18 @@ function measureUI(t,c){
       else{chk.textContent="정하중 때 값 "+refv.v+" mm → 변위 +"+dlt+" mm";chk.style.color=""}};
     inp.addEventListener("input",cmp);if(fromRim)fromRim.addEventListener("change",cmp);cmp();
   }
+  let skipNow=false;
+  if(t.coilSkip){const sv=run.values[t.coilSkip];
+    if(sv&&sv.v==="코일오버"){
+      const box=el("div","card");box.style.background="var(--bg)";
+      box.appendChild(el("div","small","코일오버라서 이 값은 건너뛸 수 있습니다."));
+      box.appendChild(el("div","small muted","코일오버는 스프링과 댐퍼가 같이 움직여서, 나중에 분해한 뒤 잰 자유장에서 빼서 구할 수 있습니다. 줄자로 재기 어려울 때만 건너뛰세요. 재서 적으면 적은 값이 그대로 저장됩니다."));
+      const sk=el("button","btn","건너뛰기 (나중에 자유장에서 계산)");sk.type="button";
+      sk.onclick=()=>{skipNow=true;inp.value="";go(1)};box.appendChild(sk);c.appendChild(box)}}
   let na=null;
   if(t.optional){const ck=el("label","check");na=el("input");na.type="checkbox";na.id="na-"+t.id;na.checked=!!run.skipped[t.id];ck.appendChild(na);ck.appendChild(document.createTextNode("해당 없음"));c.appendChild(ck)}
   collect=()=>{
+    if(skipNow){run.skipped[t.id]="코일오버 — 나중에 자유장에서 계산";delete run.values[key];skipNow=false;return}
     if(na&&na.checked){run.skipped[t.id]=true;delete run.values[key];return}delete run.skipped[t.id];
     const raw=inp.value.trim();if(raw===""){delete run.values[key];return}
     const r=Number(raw);let val=r,rim=null;
