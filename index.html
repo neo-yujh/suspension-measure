@@ -100,12 +100,12 @@ const SHAPES={
 };
 /* ===== 측정 순서 (마인드맵 0~2단계). cell = 측정시트 v.261008 첫 탭 칸 위치 (제목 줄 바로 아래 줄을 값 칸으로 봄 — 확인 필요) ===== */
 const TASKS=[
+ {id:"1-04",st:1,kind:"form",title:"기본정보",tip:"측정시트 2행 제목 아래 3행에 들어갑니다.",fields:[["date","측정일","A3","date"],["worker","작업자","B3"],["maker","차량 메이커","C3"],["model","모델명 (예: 쏘나타)","D3"],["code","코드명 (예: DN8)","E3"],["trim","세부모델 (예: 2.5T 2WD EDC)","F3"],["year","연식","H3"],["owner","고객/차주명","I3"]]},
  {id:"0-F",st:0,kind:"shape",axle:"F",title:"앞 쇽업소버 형태 고르기",tip:"모양을 보고 고릅니다. 뒤 단계의 가지가 여기서 정해집니다."},
  {id:"0-R",st:0,kind:"shape",axle:"R",title:"뒤 쇽업소버 형태 고르기",tip:"앞과 같으면 「앞과 같음」."},
  {id:"1-01",st:1,kind:"photo",title:"외관 사진 4면",tip:"정면 · 우측면 · 후면 · 좌측면. 스크래치·도장 상태가 보이게.",shots:4},
  {id:"1-02",st:1,kind:"photo",title:"대각선 사진 2면",tip:"대각선 전-측면, 후-측면.",shots:2},
  {id:"1-03",st:1,kind:"photo",title:"차대번호 · 제원표 사진",tip:"차대번호, 운전석 도어 안쪽 차대 식별판. 없으면 차량등록증.",shots:2},
- {id:"1-04",st:1,kind:"form",title:"기본정보",tip:"측정시트 3행.",fields:[["date","측정일","A3","date"],["worker","작업자","B3"],["maker","차량 메이커","C3"],["model","모델명 (예: 쏘나타)","D3"],["code","코드명 (예: DN8)","E3"],["trim","세부모델 (예: 2.5T 2WD EDC)","F3"],["year","연식","H3"],["owner","고객/차주명","I3"]]},
  {id:"1-05",st:1,kind:"form",title:"타이어 사이즈 · 세팅상태",tip:"타이어 옆면 표기 그대로. 예: 235/35R20",fields:[["tireF","앞 타이어","B14"],["tireR","뒤 타이어","F14"],["setting","세팅상태 (OE · 다운스프링 · 튜닝품명)","A7"]]},
  {id:"2-05",st:2,kind:"photo",title:"순정 차고 측면 사진",tip:"작업 전, 차가 바닥에 있는 상태.",shots:1},
  {id:"2-06",st:2,kind:"form",title:"앞 휀더 갭 · 림 외경",tip:"휀더 갭: 타이어 윗면 ↔ 휀더 안쪽 끝. 줄자 눈금이 보이게 찍으세요.",fields:[["gapF","휀더 갭","B7","mm"],["rimF","림 외경","E7","mm"]],shots:1},
@@ -222,6 +222,7 @@ function showTask(){
   $("#footer").classList.remove("hidden");const t=TASKS[idx];const v=$("#view");v.textContent="";collect=null;confirmSkip=false;
   const top=el("div");const pr=el("div","progress");const bar=el("i");bar.style.width=(idx/TASKS.length*100)+"%";pr.appendChild(bar);top.appendChild(pr);
   const sb=el("div","stagebar");sb.appendChild(el("span",null,run.title));sb.appendChild(el("span",null,STAGES[t.st]+" · "+(idx+1)+"/"+TASKS.length));top.appendChild(sb);v.appendChild(top);
+  // 단계 순서를 바꿔 가는 중이라 화면 번호(idx+1)와 단계 id가 다를 수 있다.
   const c=el("div","card");const h=el("h2");h.appendChild(el("span","mono muted",t.id+" "));h.appendChild(document.createTextNode(t.title));c.appendChild(h);
   if(t.tip)c.appendChild(el("p","small muted",t.tip));
   if(t.kind==="shape")shapeUI(t,c);
