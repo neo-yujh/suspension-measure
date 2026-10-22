@@ -123,6 +123,10 @@ const TASKS=[
  {id:"2-10",st:2,kind:"measure",title:"프론트 스프링 양끝 길이",tip:"상단 패드 ↔ 하단 패드. 잰 점을 표시해 두세요.",cell:"D10",shots:1},
  {id:"2-12b",st:2,kind:"measure",title:"리어 댐퍼 체결부 기준 전장",tip:"분리형이면 댐퍼만.",cell:"G10",shots:1},
  {id:"2-12c",st:2,kind:"measure",title:"리어 스프링 양끝 길이",tip:"분리형이면 스프링만 따로.",cell:"H10",shots:1},
+ {id:"3-00",st:3,car:"droop",kind:"info",title:"차 띄우기 (드룹 상태로)",tip:"리프트로 차체를 들어 바퀴가 완전히 늘어지게 합니다. 다 됐으면 「확인 · 다음」.",items:["바퀴가 바닥이나 발판에서 떨어져 완전히 늘어졌는지","정하중 때 표시해 둔 측정점이 그대로 보이는지"]},
+];
+// 아직 순서를 정하지 않아 흐름에서 빼 둔 화면. 형태 고르기(0-F·0-R)는 탈거 뒤 사진 찍으면서 하기로 함 (2026-10-22 유지호).
+const PARKED=[
  {id:"0-F",st:0,kind:"shape",axle:"F",title:"앞 쇽업소버 형태 고르기",tip:"모양을 보고 고릅니다. 뒤 단계의 가지가 여기서 정해집니다."},
  {id:"0-R",st:0,kind:"shape",axle:"R",title:"뒤 쇽업소버 형태 고르기",tip:"앞과 같으면 「앞과 같음」."},
  {id:"1-01",st:1,kind:"photo",title:"외관 사진 4면",tip:"정면 · 우측면 · 후면 · 좌측면. 스크래치·도장 상태가 보이게.",shots:4},
@@ -135,7 +139,7 @@ const TASKS=[
  {id:"2-13",st:2,kind:"photo",title:"상단마운트 사진 (위에서 수직)",tip:"앞뒤 상단마운트의 형태·위치·각도가 보이게.",shots:2},
  {id:"2-14",st:2,kind:"form",title:"상단마운트 위쪽 여유 공간",tip:"조절 다이얼·탑핀이 튀어나와도 닿지 않는지. 가장 가까운 부품까지 거리.",fields:[["topClrF","앞 여유 거리",null,"mm"],["topClrR","뒤 여유 거리",null,"mm"]],shots:2}
 ];
-const STAGES=["형태 고르기","사진·기본정보","줄자 측정 (내렸을 때)"];
+const STAGES=["형태 고르기","사진·기본정보","줄자 측정 (내렸을 때)","드룹 (들었을 때)"];
 // 지금 차 상태: 단계에 car:"droop"|"off"를 주면 그 상태로 표시한다. 없으면 정하중.
 const CARSTATES=[["static","정하중"],["droop","드룹"],["off","탈거"]];
 const SCOPES=[["all","전체"],["front","프론트"],["rear","리어"],["spring","스프링"],["damper","댐퍼"],["custom","커스텀 (단계 직접 고르기)",true]];
@@ -359,7 +363,7 @@ async function go(d){
 }
 function showEnd(){
   $("#footer").classList.add("hidden");const v=$("#view");v.textContent="";
-  const c=el("div","card");c.appendChild(el("h2",null,"0~2단계 끝"));
+  const c=el("div","card");c.appendChild(el("h2",null,"지금까지 만든 단계 끝"));
   const empty=TASKS.filter(missing);c.appendChild(el("p","small",empty.length?("빈 단계: "+empty.map(t=>t.id).join(", ")):"빈 단계 없음"));
   c.appendChild(el("p","small muted","「ZIP 만들기」를 누르면 기록(record.json)과 사진이 한 파일로 묶입니다. 공유 창에서 「Drive」를 고르거나, 저장된 파일을 구글 드라이브 앱에서 올리세요."));
   const z=el("button","btn primary","ZIP 만들기");z.type="button";z.onclick=exportZip;c.appendChild(z);
