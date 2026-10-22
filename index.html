@@ -566,7 +566,14 @@ async function go(d){
 function showEnd(){
   $("#footer").classList.add("hidden");const v=$("#view");v.textContent="";
   const c=el("div","card");c.appendChild(el("h2",null,"지금까지 만든 단계 끝"));
-  const empty=TASKS.filter(missing);c.appendChild(el("p","small",empty.length?("빈 단계: "+empty.map(t=>t.id).join(", ")):"빈 단계 없음"));
+  // 빈 단계: 화면 번호 · 제목을 한 줄씩. 5개를 넘으면 접어 두고 「… 더 보기」로 펼친다
+  const empty=TASKS.filter(missing);
+  if(!empty.length)c.appendChild(el("p","small","빈 단계 없음"));
+  else{c.appendChild(el("div","small","빈 단계 "+empty.length+"개"));const ul=el("ul","small");ul.style.margin="0";
+    const lis=empty.map(t=>{const li=el("li",null,(TASKS.indexOf(t)+1)+". "+t.title);ul.appendChild(li);return li});c.appendChild(ul);
+    if(empty.length>5){let open=false;const more=el("button","btn");more.type="button";
+      const set=()=>{lis.forEach((li,i)=>li.classList.toggle("hidden",!open&&i>=5));more.textContent=open?"접기":"… 더 보기 ("+(empty.length-5)+"개)"};
+      more.onclick=()=>{open=!open;set()};set();c.appendChild(more)}}
   c.appendChild(el("p","small muted","「ZIP 만들기」를 누르면 측정기록(엑셀로 열림)·특이사항·사진이 한 파일로 묶입니다. 공유 창에서 「Drive」를 고르거나, 저장된 파일을 구글 드라이브 앱에서 올리세요."));
   const z=el("button","btn primary","ZIP 만들기");z.type="button";z.onclick=exportZip;c.appendChild(z);
   const back=el("button","btn","측정 목록으로");back.type="button";back.onclick=showList;c.appendChild(back);v.appendChild(c);
@@ -731,7 +738,8 @@ const CHANGELOG=[
  [60,"2026-10-22 17:45","사진을 지우고 다시 찍으면 순번이 겹쳐 ZIP에서 사진이 덮이던 것 고침. ZIP에 사진대조표.csv 추가 — 사진 아이디 ↔ 파일 이름 · 화면 아이디 · 화면 번호 · 몇 번째 사진 · 찍은 시각"],
  [61,"2026-10-22 18:00","화면 아이디를 마인드맵 번호(2-06c 등)에서 뜻 없는 일련번호 S001~S058로 바꿈. 코드에 화면 아이디 대장(SCREEN_IDS, 다음 번호 S059) — 번호는 다시 쓰지 않고, 없앤 화면은 「폐기」로 남김. 이 휴대폰에 저장된 이전 측정은 열 때 한 번 새 아이디로 자동 변환. 시작 화면 아래에 「화면 아이디 대장」 보기"],
  [62,"2026-10-22 18:10","「이전 기록 N건의 화면 아이디를 새 아이디로 바꿨습니다」 안내를 화면에서 뺌 (측정하는 사람에게 필요 없음 — 개발자 도구에만 남김)"],
- [63,"2026-10-22 18:20","시작 화면 위에 「측정 / 개발용」 탭. 개발용 탭에 개발 기록(아이디 변환 등 측정하는 사람에게 필요 없는 안내, 이 브라우저에 최근 100줄)과 화면 아이디 대장을 모음"]
+ [63,"2026-10-22 18:20","시작 화면 위에 「측정 / 개발용」 탭. 개발용 탭에 개발 기록(아이디 변환 등 측정하는 사람에게 필요 없는 안내, 이 브라우저에 최근 100줄)과 화면 아이디 대장을 모음"],
+ [64,"2026-10-22 18:30","끝 화면의 빈 단계를 화면 아이디 대신 「화면 번호. 제목」으로 한 줄씩 나열. 5개 넘으면 접어 두고 「… 더 보기 / 접기」"]
 ];
 // 지금은 베타: 숫자 번호는 「베타 rev N」으로 보인다. 정식 v1이 되면 그때부터 번호를 문자열("1","2"…)로 적어 「rev 1」부터 센다 (유지호 2026-10-22).
 const revName=n=>typeof n==="string"?"rev "+n:"베타 rev "+n;
