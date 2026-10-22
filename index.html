@@ -222,14 +222,14 @@ async function shrink(file){const bmp=await createImageBitmap(file);const k=Math
 async function storePhoto(task,blob){
   const id=uid();const n=(run.photos[task.id]||[]).length+1;
   await put("photos",{id,runId:run.id,taskId:task.id,n,blob,at:new Date().toISOString()});
-  (run.photos[task.id]=run.photos[task.id]||[]).push(id);await save();refreshPhotos(task);
+  (run.photos[task.id]=run.photos[task.id]||[]).push(id);logEdit(task.id,"사진 추가",(run.photos[task.id].length-1)+"장",run.photos[task.id].length+"장");await save();refreshPhotos(task);
 }
 const urls=new Map();
 async function refreshPhotos(task){
   const wrap=document.getElementById("pw-"+task.id);if(!wrap)return;wrap.textContent="";
   const all=await photosOf(run.id);const mine=all.filter(p=>p.taskId===task.id).sort((a,b)=>a.n-b.n);
   mine.forEach(p=>{if(!urls.has(p.id))urls.set(p.id,URL.createObjectURL(p.blob));const im=el("img","ph");im.src=urls.get(p.id);im.alt=task.title+" 사진 "+p.n;
-    im.onclick=async()=>{if(confirmDel===p.id){await del("photos",p.id);run.photos[task.id]=(run.photos[task.id]||[]).filter(x=>x!==p.id);await save();confirmDel=null;refreshPhotos(task);status("사진을 지웠습니다.")}else{confirmDel=p.id;status("이 사진을 지우려면 한 번 더 누르세요.",true)}};
+    im.onclick=async()=>{if(confirmDel===p.id){await del("photos",p.id);run.photos[task.id]=(run.photos[task.id]||[]).filter(x=>x!==p.id);logEdit(task.id,"사진 삭제 ("+p.n+"번)",(run.photos[task.id].length+1)+"장",run.photos[task.id].length+"장");await save();confirmDel=null;refreshPhotos(task);status("사진을 지웠습니다.")}else{confirmDel=p.id;status("이 사진을 지우려면 한 번 더 누르세요.",true)}};
     wrap.appendChild(im)});
   const b=el("button","phbtn","사진 찍기 +");b.type="button";b.onclick=()=>takePhoto(task);wrap.appendChild(b);
   const cap=document.getElementById("pc-"+task.id);if(cap)cap.textContent=task.memo?("특이사항 사진 "+mine.length+"장 (선택) · 두 번 누르면 지움"):("사진 "+mine.length+" / "+(task.photoOpt?"권장 ":"필수 ")+task.shots+"장 · 사진을 두 번 누르면 지움");
@@ -238,7 +238,7 @@ let confirmDel=null;
 // 모든 단계 아래: 특이사항 메모 + 특이사항 사진 (선택, 넘어가는 데 영향 없음). 사진은 taskId "<단계id>_memo"로 저장
 function memoBlock(t){const box=el("div","card");box.style.marginTop="12px";box.style.borderStyle="dashed";box.appendChild(el("h3",null,"특이사항 (선택)"));
   const lab=el("label","f","메모");const ta=document.createElement("textarea");ta.rows=2;ta.style.width="100%";ta.placeholder="이상한 점, 측정 조건, 나중에 확인할 것";
-  run.notes=run.notes||{};ta.value=run.notes[t.id]||"";ta.oninput=()=>{const x=ta.value.trim();if(x)run.notes[t.id]=x;else delete run.notes[t.id]};ta.onblur=()=>save();
+  run.notes=run.notes||{};ta.value=run.notes[t.id]||"";ta.oninput=()=>{const x=ta.value.trim();if(x)run.notes[t.id]=x;else delete run.notes[t.id]};ta.onblur=()=>{commitEdits();save()};
   lab.appendChild(ta);box.appendChild(lab);box.appendChild(photoBlock({id:t.id+"_memo",title:t.title+" 특이사항",memo:true}));return box}
 function photoBlock(t){const box=el("div");box.id="pb-"+t.id;
   // 범프스토퍼 위치처럼 photoReq.unless 값을 고르면 사진 칸을 숨긴다
@@ -296,8 +296,25 @@ async function askDelete(r,list,row){
 }
 
 /* ===== 할 일 화면 ===== */
+// ===== 수정 기록: 측정 하나(run) 안에서 항목마다 언제 무엇을 무엇으로 바꿨는지 남긴다 (run.log, ZIP의 record.json에도 들어감) =====
+let snap=null;
+const nowStr=()=>{const d=new Date(),z=n=>String(n).padStart(2,"0");return d.getFullYear()+"-"+z(d.getMonth()+1)+"-"+z(d.getDate())+" "+z(d.getHours())+":"+z(d.getMinutes())+":"+z(d.getSeconds())};
+function logEdit(task,what,from,to){(run.log=run.log||[]).push({at:nowStr(),task,what,from:from==null?"":String(from),to:to==null?"":String(to)})}
+function takeSnap(){snap=JSON.parse(JSON.stringify({values:run.values||{},notes:run.notes||{},skipped:run.skipped||{}}))}
+function commitEdits(){
+  if(!snap||!run)return;const t=TASKS[idx];
+  const vs=x=>x==null?"":(typeof x==="object"?(x.v!=null?String(x.v)+(x.fromRim?" (림 하단부터)":""):JSON.stringify(x)):String(x));
+  const cur={values:run.values||{},notes:run.notes||{},skipped:run.skipped||{}};
+  [["values","값"],["notes","특이사항 메모"],["skipped","건너뛰기"]].forEach(([part,name])=>{
+    const keys=new Set([...Object.keys(snap[part]),...Object.keys(cur[part])]);
+    keys.forEach(k=>{const a=vs(snap[part][k]),b=vs(cur[part][k]);if(a===b)return;
+      const owner=part==="values"?((cur[part][k]||snap[part][k]||{}).task||t.id):k;
+      const label=part==="values"?((cur[part][k]||snap[part][k]||{}).label||k):name;
+      logEdit(owner,label,a,b)})});
+  takeSnap();
+}
 function showTask(){
-  $("#footer").classList.remove("hidden");const t=TASKS[idx];const v=$("#view");v.textContent="";collect=null;confirmSkip=false;
+  $("#footer").classList.remove("hidden");const t=TASKS[idx];takeSnap();const v=$("#view");v.textContent="";collect=null;confirmSkip=false;
   const top=el("div");const pr=el("div","progress");const bar=el("i");bar.style.width=(idx/TASKS.length*100)+"%";pr.appendChild(bar);top.appendChild(pr);
   const sb=el("div","stagebar");sb.appendChild(el("span",null,run.title));sb.appendChild(el("span",null,STAGES[t.st]+" · "+(idx+1)+"/"+TASKS.length));top.appendChild(sb);v.appendChild(top);
   // 단계 순서를 바꿔 가는 중이라 화면 번호(idx+1)와 단계 id가 다를 수 있다.
@@ -316,7 +333,11 @@ function showTask(){
   else if(t.shots)c.appendChild(photoBlock(t));
   v.appendChild(c);
   v.appendChild(memoBlock(t));
-  const back=el("button","btn","측정 목록으로");back.type="button";back.onclick=async()=>{if(collect)collect();await save();showList()};v.appendChild(back);
+  {const mine=(run.log||[]).filter(e=>e.task===t.id||String(e.task).startsWith(t.id+"_"));
+   if(mine.length){const d=document.createElement("details");d.className="card small";d.style.marginTop="12px";
+     const sm=document.createElement("summary");sm.textContent="이 항목 수정 기록 ("+mine.length+")";d.appendChild(sm);
+     mine.slice().reverse().forEach(e=>d.appendChild(el("div",null,e.at.slice(5)+" · "+e.what+": "+(e.from||"(빈칸)")+" → "+(e.to||"(빈칸)"))));v.appendChild(d)}}
+  const back=el("button","btn","측정 목록으로");back.type="button";back.onclick=async()=>{if(collect)collect();commitEdits();await save();showList()};v.appendChild(back);
   $("#prev").disabled=idx===0;$("#next").textContent=idx===TASKS.length-1?"확인 · 끝":"확인 · 다음";window.scrollTo(0,0);
 }
 function choiceUI(t,c){
@@ -442,7 +463,7 @@ function pruneInapplicable(){
 }
 async function go(d){
   if(collect)collect();
-  {const gone=pruneInapplicable();pruneMsg=gone.length?"앞에서 고른 보기가 바뀌어 맞지 않게 된 값 "+gone.length+"개를 지웠습니다: "+gone.join(", "):null}const t=TASKS[idx];
+  {const gone=pruneInapplicable();commitEdits();pruneMsg=gone.length?"앞에서 고른 보기가 바뀌어 맞지 않게 된 값 "+gone.length+"개를 지웠습니다: "+gone.join(", "):null}const t=TASKS[idx];
   // 개발 확인용: devSkip이면 사진·빈칸 검사를 건너뛴다 (실사용 전 버튼 제거)
   if(d>0&&devSkip){devSkip=false;run.skipped[t.id]="개발용 건너뛰기"}
   else{
@@ -471,7 +492,7 @@ async function exportZip(){
   status("ZIP 만드는 중…");
   const zip=new JSZip();const photos=await photosOf(run.id);const list={};
   photos.sort((a,b)=>a.taskId.localeCompare(b.taskId)||a.n-b.n).forEach(p=>{const name="photos/"+p.taskId+"_"+String(p.n).padStart(2,"0")+".jpg";zip.file(name,p.blob);(list[p.taskId]=list[p.taskId]||[]).push(name)});
-  const record={format:"neotech-suspension-measure/1",sheet:"서스펜션 측정시트_양식_261008.xlsx / 측정시트",title:run.title,scope:run.scope||"all",createdAt:run.createdAt,updatedAt:run.updatedAt,shape:run.shape,values:run.values,skipped:run.skipped,photos:list,
+  const record={format:"neotech-suspension-measure/1",sheet:"서스펜션 측정시트_양식_261008.xlsx / 측정시트",title:run.title,scope:run.scope||"all",createdAt:run.createdAt,updatedAt:run.updatedAt,shape:run.shape,values:run.values,skipped:run.skipped,log:run.log||[],notes:run.notes||{},photos:list,
     note:"values[*].cell = 측정시트 첫 탭 칸 위치(제목 줄 바로 아래 줄을 값 칸으로 봄 — 확인 필요). fromRim=true면 v는 raw−림외경/2."};
   zip.file("record.json",JSON.stringify(record,null,1));
   const blob=await zip.generateAsync({type:"blob"});
@@ -542,7 +563,8 @@ const CHANGELOG=[
  [51,"2026-10-22 16:26","서스펜션 구조 상세 사진: 「줄자로 재서 수치가 보이게」 → 「줄자를 대거나 손가락 몇 개가 들어가는지 함께 찍어 여유 거리를 가늠할 수 있게」"],
  [52,"2026-10-22 16:28","화면 제목 앞 번호: 단계 id(예: 3-02t) → 지금 순서대로 자동 번호(1. 2. 3. …). 저장용 id는 그대로"],
  [53,"2026-10-22 16:32","상단 체결부 엔진룸·트렁크 사진 → 「상단 마운트 위쪽 여유 공간」으로 바꿈: 사진 2장(탑뷰 볼트 패턴 + 옆에서 튀어나온 정도·공간, 줄자). 프론트 필수 · 리어 권장"],
- [54,"2026-10-22 16:34","상단 마운트 위쪽 여유 공간: 사진 칸을 ① 탑뷰 · ② 옆에서 로 나눠 각각 「사진 찍기 +」 (비면 어느 칸이 비었는지 알려 줌)"]
+ [54,"2026-10-22 16:34","상단 마운트 위쪽 여유 공간: 사진 칸을 ① 탑뷰 · ② 옆에서 로 나눠 각각 「사진 찍기 +」 (비면 어느 칸이 비었는지 알려 줌)"],
+ [55,"2026-10-22 16:35","측정마다 수정 기록(언제 · 어느 항목 · 무엇에서 무엇으로) 남김: 값·메모·건너뛰기·사진 추가/삭제. 각 화면 아래 「이 항목 수정 기록」, ZIP의 record.json에 log로 들어감"]
 ];
 (function(){const last=CHANGELOG[CHANGELOG.length-1],tag=document.getElementById("revtag"),box=document.getElementById("revlog");
 tag.textContent="rev "+last[0]+" · "+last[1];
