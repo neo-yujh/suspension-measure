@@ -116,7 +116,9 @@ const TASKS=[
  {id:"2-08u",st:2,kind:"info",title:"차 하부로 이동",tip:"여기부터는 차 밑으로 들어가서 잽니다. 차는 바퀴로 선 채 그대로 둡니다. 준비됐으면 「확인 · 다음」.",items:["줄자 · 손전등 챙기기","다음 순서: 프론트 댐퍼 → 프론트 스프링 → 리어 댐퍼 → 리어 스프링"]},
  {id:"2-04a",st:2,kind:"choice",key:"setting",title:"세팅상태",tip:"지금 달려 있는 서스펜션이 순정인지 튜닝품인지.",cell:"A7",options:["OE (순정)","다운스프링"],other:"튜닝품 (제품명 직접 입력)"},
  {id:"2-04b",st:2,kind:"choice",key:"suspF",title:"프론트 서스펜션 유형",tip:"차 밑에서 프론트 서스펜션 구조를 보고 고릅니다.",cell:"C7",options:["맥퍼슨","더블위시본","멀티링크","토션빔","판스프링","5링크"],other:"그 밖 (직접 입력)"},
+ {id:"2-04b2",st:2,kind:"choice",key:"springF",title:"프론트 스프링 형태",tip:"스프링이 쇽업소버에 끼워져 있으면 코일오버, 스프링이 따로 달려 있으면 분리형입니다.",cell:null,options:["코일오버","분리형"],noOther:true},
  {id:"2-04c",st:2,kind:"choice",key:"suspR",title:"리어 서스펜션 유형",tip:"차 밑에서 리어 서스펜션 구조를 보고 고릅니다.",cell:"G7",options:["맥퍼슨","더블위시본","멀티링크","토션빔","판스프링","5링크"],other:"그 밖 (직접 입력)"},
+ {id:"2-04c2",st:2,kind:"choice",key:"springR",title:"리어 스프링 형태",tip:"스프링이 쇽업소버에 끼워져 있으면 코일오버, 스프링이 따로 달려 있으면 분리형입니다.",cell:null,options:["코일오버","분리형"],noOther:true},
  {id:"2-09",st:2,kind:"measure",title:"프론트 댐퍼 체결부 기준 전장",tip:"잰 점을 표시해 두세요.",cell:"C10",shots:1},
  {id:"2-10",st:2,kind:"measure",title:"프론트 스프링 양끝 길이",tip:"상단 패드 ↔ 하단 패드. 잰 점을 표시해 두세요.",cell:"D10",shots:1},
  {id:"2-12b",st:2,kind:"measure",title:"리어 댐퍼 체결부 기준 전장",tip:"분리형이면 댐퍼만.",cell:"G10",shots:1},
@@ -276,10 +278,10 @@ function showTask(){
 function choiceUI(t,c){
   // 보기 중 하나를 누르거나 「직접 입력」을 골라 적는다. 값은 하나만.
   const pv=run.values[t.key];const cur=pv?String(pv.v):"";
-  c.appendChild(el("div","cell","→ "+t.cell));
+  c.appendChild(el("div","cell",t.cell?("→ "+t.cell):"측정시트 칸 없음 (뒤 단계 가지를 정하는 데 씀)"));
   const g=el("div","opts");let pick=t.options.includes(cur)?cur:(cur?"__other":"");
   const free=el("input");free.type="text";free.id="o-"+t.key;free.placeholder="직접 입력";free.value=pick==="__other"?cur:"";
-  const all=t.options.map(o=>[o,o]).concat([["__other",t.other||"직접 입력"]]);
+  const all=t.options.map(o=>[o,o]).concat(t.noOther?[]:[["__other",t.other||"직접 입력"]]);
   all.forEach(([v,label])=>{const b=el("button","opt",label);b.type="button";b.setAttribute("aria-pressed",pick===v?"true":"false");
     b.onclick=()=>{pick=v;g.querySelectorAll(".opt").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");free.classList.toggle("hidden",v!=="__other");if(v==="__other")free.focus()};g.appendChild(b)});
   c.appendChild(g);free.classList.toggle("hidden",pick!=="__other");c.appendChild(free);
@@ -288,7 +290,7 @@ function choiceUI(t,c){
 function shapeUI(t,c){
   const cur=run.shape[t.axle]=run.shape[t.axle]||{};
   if(t.axle==="R"){const same=el("button","btn","앞과 같음");same.type="button";same.onclick=()=>{run.shape.R=JSON.parse(JSON.stringify(run.shape.F));showTask()};c.appendChild(same)}
-  [["type","스프링"],["top","상단 끝"],["low","하단 끝"]].forEach(([k,label])=>{
+  [["top","상단 끝"],["low","하단 끝"]].forEach(([k,label])=>{
     c.appendChild(el("div","small",label));const g=el("div","opts");
     SHAPES[k].forEach(([val,name])=>{const b=el("button","opt");b.type="button";b.setAttribute("aria-pressed",cur[k]===val?"true":"false");
       if(ICON[val]&&k!=="susp"){const s=document.createElement("span");s.innerHTML=svg(val);b.appendChild(s)}
@@ -343,7 +345,7 @@ function measureUI(t,c){
   };
 }
 function missing(t){
-  if(t.kind==="shape"){const s=run.shape[t.axle]||{};return !(s.type&&s.low)}
+  if(t.kind==="shape"){const s=run.shape[t.axle]||{};return !s.low}
   if(t.kind==="measure"||t.kind==="hub")return !run.values[t.key||("m"+t.id)]&&!run.skipped[t.id];
   if(t.kind==="photo")return !(run.photos[t.id]||[]).length;
   if(t.kind==="choice")return !run.values[t.key];
@@ -351,7 +353,7 @@ function missing(t){
 }
 async function go(d){
   if(collect)collect();const t=TASKS[idx];
-  if(d>0&&missing(t)&&!confirmSkip){confirmSkip=true;status(t.kind==="shape"?"스프링과 하단 끝을 골라 주세요. 그대로 넘어가려면 한 번 더 누르세요.":"비어 있습니다. 비워 두고 넘어가려면 한 번 더 누르세요.",true);return}
+  if(d>0&&missing(t)&&!confirmSkip){confirmSkip=true;status(t.kind==="shape"?"하단 끝을 골라 주세요. 그대로 넘어가려면 한 번 더 누르세요.":"비어 있습니다. 비워 두고 넘어가려면 한 번 더 누르세요.",true);return}
   if(d>0&&idx===TASKS.length-1){await save();showEnd();return}
   idx=Math.max(0,Math.min(TASKS.length-1,idx+d));await save();showTask();
 }
