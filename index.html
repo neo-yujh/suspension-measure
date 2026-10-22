@@ -613,11 +613,14 @@ const CHANGELOG=[
  [54,"2026-10-22 16:34","상단 마운트 위쪽 여유 공간: 사진 칸을 ① 탑뷰 · ② 옆에서 로 나눠 각각 「사진 찍기 +」 (비면 어느 칸이 비었는지 알려 줌)"],
  [55,"2026-10-22 16:35","측정마다 수정 기록(언제 · 어느 항목 · 무엇에서 무엇으로) 남김: 값·메모·건너뛰기·사진 추가/삭제. 각 화면 아래 「이 항목 수정 기록」, ZIP의 record.json에 log로 들어감"],
  [56,"2026-10-22 16:38","측정 목록에 시작 시각 · 마지막 수정 시각 · 작업한 시간(10분 넘게 비운 시간 제외) · 지금 몇 번째 화면 · 건너뛴 항목 수 표시"],
- [57,"2026-10-22 17:10","ZIP 정리 규칙: 날짜_차량 폴더 안에 측정기록.csv(엑셀) · 특이사항.txt(메모 생긴 순서로 번호) · 사진/ 폴더. 사진 이름 「N단계_차량_화면제목_순번」, 특이사항 사진은 「메모사항 n번_N단계 화면제목_순번」으로 txt 번호와 맞춤"]
+ [57,"2026-10-22 17:10","ZIP 정리 규칙: 날짜_차량 폴더 안에 측정기록.csv(엑셀) · 특이사항.txt(메모 생긴 순서로 번호) · 사진/ 폴더. 사진 이름 「N단계_차량_화면제목_순번」, 특이사항 사진은 「메모사항 n번_N단계 화면제목_순번」으로 txt 번호와 맞춤"],
+ [58,"2026-10-22 17:20","리비전 표시를 「베타 rev N」으로 바꿈 — 정식 v1부터 rev 1로 새로 셈"]
 ];
+// 지금은 베타: 숫자 번호는 「베타 rev N」으로 보인다. 정식 v1이 되면 그때부터 번호를 문자열("1","2"…)로 적어 「rev 1」부터 센다 (유지호 2026-10-22).
+const revName=n=>typeof n==="string"?"rev "+n:"베타 rev "+n;
 (function(){const last=CHANGELOG[CHANGELOG.length-1],tag=document.getElementById("revtag"),box=document.getElementById("revlog");
-tag.textContent="rev "+last[0]+" · "+last[1];
-box.innerHTML=CHANGELOG.slice().reverse().map(r=>"<div style=\"padding:3px 0;border-bottom:1px solid var(--line)\"><b>rev "+r[0]+"</b> <span class=\"muted\">"+r[1]+"</span><br>"+r[2].replace(/</g,"&lt;")+"</div>").join("");
+tag.textContent=revName(last[0])+" · "+last[1];
+box.innerHTML=CHANGELOG.slice().reverse().map(r=>"<div style=\"padding:3px 0;border-bottom:1px solid var(--line)\"><b>"+revName(r[0])+"</b> <span class=\"muted\">"+r[1]+"</span><br>"+r[2].replace(/</g,"&lt;")+"</div>").join("");
 tag.onclick=()=>box.classList.toggle("hidden")})();
 </script>
 </body>
