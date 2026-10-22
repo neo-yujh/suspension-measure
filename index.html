@@ -149,10 +149,12 @@ const TASKS=[
  {id:"3-05",st:3,car:"droop",kind:"measure",title:"프론트 스프링 양끝 길이 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"D12",ref:"m2-10",coilSkip:"springF",shots:1},
  {id:"3-06",st:3,car:"droop",kind:"measure",title:"프론트 범프스토퍼 끝 ↔ 차대 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"E12",ref:"m2-11",onlyIf:{key:"bumpPosF",not:"댐퍼 내부"},shots:1,photoReq:true},
  {id:"3-06i",st:3,car:"droop",kind:"info",title:"프론트 범프스토퍼 · 드룹",tip:"범프스토퍼가 댐퍼 내부라 지금은 재지 않습니다. 확인했으면 「확인 · 다음」.",items:["추후 댐퍼 분해 후 범프스토퍼 자유장을 측정합니다"],onlyIf:{key:"bumpPosF",is:"댐퍼 내부"}},
+ {id:"3-06p",st:3,car:"droop",kind:"form",title:"프론트 차고파이프 장착부 · 드룹",tip:"분리형이라 스프링 시트에 차고조절 파이프(차고파이프)를 달 자리를 봅니다. 장착부가 어떻게 생겼는지 적고, 주변이 다 보이게 찍습니다.",fields:[["pipeF","장착부 상태","B16"]],onlyIf:{key:"springF",is:"분리형"},shots:1},
  {id:"3-07",st:3,car:"droop",kind:"measure",title:"리어 댐퍼 체결부 기준 전장 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"G12",ref:"m2-12b",shots:1},
  {id:"3-08",st:3,car:"droop",kind:"measure",title:"리어 스프링 양끝 길이 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"H12",ref:"m2-12c",coilSkip:"springR",shots:1},
  {id:"3-09",st:3,car:"droop",kind:"measure",title:"리어 범프스토퍼 끝 ↔ 차대 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"I12",ref:"m2-12d",onlyIf:{key:"bumpPosR",not:"댐퍼 내부"},shots:1,photoReq:true},
  {id:"3-09i",st:3,car:"droop",kind:"info",title:"리어 범프스토퍼 · 드룹",tip:"범프스토퍼가 댐퍼 내부라 지금은 재지 않습니다. 확인했으면 「확인 · 다음」.",items:["추후 댐퍼 분해 후 범프스토퍼 자유장을 측정합니다"],onlyIf:{key:"bumpPosR",is:"댐퍼 내부"}},
+ {id:"3-09p",st:3,car:"droop",kind:"form",title:"리어 차고파이프 장착부 · 드룹",tip:"분리형이라 스프링 시트에 차고조절 파이프(차고파이프)를 달 자리를 봅니다. 장착부가 어떻게 생겼는지 적고, 주변이 다 보이게 찍습니다.",fields:[["pipeR","장착부 상태","F16"]],onlyIf:{key:"springR",is:"분리형"},shots:1},
 ];
 // 아직 순서를 정하지 않아 흐름에서 빼 둔 화면. 형태 고르기(0-F·0-R)는 탈거 뒤 사진 찍으면서 하기로 함 (2026-10-22 유지호).
 const PARKED=[
@@ -498,7 +500,8 @@ const CHANGELOG=[
  [34,"2026-10-22 15:40","타이어 탈착 화면에 휠볼트 캡 유무 · 휠볼트 규격 입력 칸 추가"],
  [35,"2026-10-22 15:41","타이어 탈착: 휠볼트 규격(M14×1.5 예시) → 소켓(복스) 크기 드롭다운 17·19·21 mm + 직접 입력 (공구 찾는 시간 줄이기용)"],
  [36,"2026-10-22 15:42","타이어 탈착 다음에 프론트 · 리어 휠 탈거 외부 사진 화면 추가 (각 1장 필수)"],
- [37,"2026-10-22 15:43","특이사항(메모·사진)을 측정 박스에서 떼어 아래 별도 점선 박스로 분리"]
+ [37,"2026-10-22 15:43","특이사항(메모·사진)을 측정 박스에서 떼어 아래 별도 점선 박스로 분리"],
+ [38,"2026-10-22 15:48","드룹 범프스토퍼 다음에 차고파이프 장착부 화면 (분리형일 때만, 프론트 B16 · 리어 F16, 직접 입력 + 사진 1장 필수)"]
 ];
 (function(){const last=CHANGELOG[CHANGELOG.length-1],tag=document.getElementById("revtag"),box=document.getElementById("revlog");
 tag.textContent="rev "+last[0]+" · "+last[1];
