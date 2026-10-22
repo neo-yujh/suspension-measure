@@ -230,8 +230,8 @@ async function refreshPhotos(task){
 }
 let confirmDel=null;
 // 모든 단계 아래: 특이사항 메모 + 특이사항 사진 (선택, 넘어가는 데 영향 없음). 사진은 taskId "<단계id>_memo"로 저장
-function memoBlock(t){const box=el("div");box.style.marginTop="14px";box.style.borderTop="1px dashed var(--line)";box.style.paddingTop="10px";
-  const lab=el("label","f","특이사항 메모 (선택)");const ta=document.createElement("textarea");ta.rows=2;ta.style.width="100%";ta.placeholder="이상한 점, 측정 조건, 나중에 확인할 것";
+function memoBlock(t){const box=el("div","card");box.style.marginTop="12px";box.style.borderStyle="dashed";box.appendChild(el("h3",null,"특이사항 (선택)"));
+  const lab=el("label","f","메모");const ta=document.createElement("textarea");ta.rows=2;ta.style.width="100%";ta.placeholder="이상한 점, 측정 조건, 나중에 확인할 것";
   run.notes=run.notes||{};ta.value=run.notes[t.id]||"";ta.oninput=()=>{const x=ta.value.trim();if(x)run.notes[t.id]=x;else delete run.notes[t.id]};ta.onblur=()=>save();
   lab.appendChild(ta);box.appendChild(lab);box.appendChild(photoBlock({id:t.id+"_memo",title:t.title+" 특이사항",memo:true}));return box}
 function photoBlock(t){const box=el("div");box.id="pb-"+t.id;
@@ -305,8 +305,8 @@ function showTask(){
   if(t.fields)formUI(t,c); // form 단계, 또는 안내(info) 단계에 붙인 입력 칸
   if(t.kind==="measure"||t.kind==="hub")measureUI(t,c);
   if(t.shots)c.appendChild(photoBlock(t));
-  c.appendChild(memoBlock(t));
   v.appendChild(c);
+  v.appendChild(memoBlock(t));
   const back=el("button","btn","측정 목록으로");back.type="button";back.onclick=async()=>{if(collect)collect();await save();showList()};v.appendChild(back);
   $("#prev").disabled=idx===0;$("#next").textContent=idx===TASKS.length-1?"확인 · 끝":"확인 · 다음";window.scrollTo(0,0);
 }
@@ -497,7 +497,8 @@ const CHANGELOG=[
  [33,"2026-10-22 15:39","차 띄우기(드룹): 「소형 리프트를 잭포인트나 멤버에 고무를 받치고 들어 올리기」 안내 추가"],
  [34,"2026-10-22 15:40","타이어 탈착 화면에 휠볼트 캡 유무 · 휠볼트 규격 입력 칸 추가"],
  [35,"2026-10-22 15:41","타이어 탈착: 휠볼트 규격(M14×1.5 예시) → 소켓(복스) 크기 드롭다운 17·19·21 mm + 직접 입력 (공구 찾는 시간 줄이기용)"],
- [36,"2026-10-22 15:42","타이어 탈착 다음에 프론트 · 리어 휠 탈거 외부 사진 화면 추가 (각 1장 필수)"]
+ [36,"2026-10-22 15:42","타이어 탈착 다음에 프론트 · 리어 휠 탈거 외부 사진 화면 추가 (각 1장 필수)"],
+ [37,"2026-10-22 15:43","특이사항(메모·사진)을 측정 박스에서 떼어 아래 별도 점선 박스로 분리"]
 ];
 (function(){const last=CHANGELOG[CHANGELOG.length-1],tag=document.getElementById("revtag"),box=document.getElementById("revlog");
 tag.textContent="rev "+last[0]+" · "+last[1];
