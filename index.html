@@ -106,68 +106,133 @@ const SHAPES={
 };
 /* ===== 측정 순서 (마인드맵 0~2단계). cell = 측정시트 v.261008 첫 탭 칸 위치 (제목 줄 바로 아래 줄을 값 칸으로 봄 — 확인 필요) ===== */
 const TASKS=[
- {id:"1-04",st:1,kind:"form",title:"기본정보",tip:"측정시트 2행 제목 아래 3행에 들어갑니다.",fields:[["date","측정일","A3","date"],["worker","작업자","B3","pick:유지호,지민우,남정우"],["maker","차량 메이커","C3"],["model","모델명 (예: 쏘나타)","D3"],["code","코드명 (예: DN8)","E3"],["trim","세부모델 (예: 2.5T 2WD EDC)","F3"],["year","연식","H3"],["owner","고객/차주명","I3"]]},
- {id:"p-01",st:1,kind:"photo",title:"차량 정면 사진",tip:"차 앞쪽 정면. 스크래치·도장 상태가 보이게.",shots:1},
- {id:"p-02",st:1,kind:"photo",title:"차량 우측면 사진",tip:"오른쪽 옆면 전체. 작업 전 순정 차고가 보이게.",shots:1},
- {id:"p-03",st:1,kind:"photo",title:"차량 후면 사진",tip:"차 뒤쪽 정면. 스크래치·도장 상태가 보이게.",shots:1},
- {id:"p-04",st:1,kind:"photo",title:"차량 좌측면 사진",tip:"왼쪽 옆면 전체. 스크래치·도장 상태가 보이게.",shots:1},
- {id:"p-07",st:1,kind:"photo",title:"차대번호 사진",tip:"차대번호 글자가 읽히게 가까이.",shots:1},
- {id:"p-08",st:1,kind:"photo",title:"차량 제원표 사진",tip:"운전석 도어 안쪽 제원표(공차중량·연식·모델). 없으면 차량등록증.",shots:1},
- {id:"2-00",st:2,kind:"info",title:"리프트 올리기",tip:"차가 바퀴로 선 상태 그대로 리프트를 측정하기 좋은 높이로 올립니다. 다 올렸으면 「확인 · 다음」.",items:["바퀴가 리프트 발판 위에 그대로 있는지 (정하중 상태 유지)","줄자로 휀더·허브를 재기 편한 높이인지"]},
- {id:"2-06a",st:2,kind:"measure",key:"gapF",title:"프론트 휀더 갭",tip:"타이어 윗면 ↔ 휀더 안쪽 끝. 줄자 눈금이 보이게 찍으세요.",cell:"B7",shots:1},
- {id:"2-06b",st:2,kind:"measure",key:"rimF",title:"프론트 림 외경",tip:"줄자로 림 바깥 지름.",cell:"E7",shots:1},
- {id:"2-06b2",st:2,kind:"form",title:"프론트 타이어 스펙",tip:"타이어 옆면 표기 그대로. 예: 235/35R20. 옆면 글자가 읽히게 찍으세요.",fields:[["tireF","프론트 타이어","B14"]],shots:1},
- {id:"2-06c",st:2,kind:"measure",key:"gapR",title:"리어 휀더 갭",tip:"타이어 윗면 ↔ 휀더 안쪽 끝. 줄자 눈금이 보이게 찍으세요.",cell:"F7",shots:1},
- {id:"2-06d",st:2,kind:"measure",key:"rimR",title:"리어 림 외경",tip:"줄자로 림 바깥 지름.",cell:"I7",shots:1},
- {id:"2-06d2",st:2,kind:"form",title:"리어 타이어 스펙",tip:"타이어 옆면 표기 그대로. 예: 235/35R20. 옆면 글자가 읽히게 찍으세요.",fields:[["tireR","리어 타이어","F14"]],shots:1},
- {id:"2-08",st:2,kind:"hub",title:"프론트 타이어 (허브 센터 ↔ 휀더)",tip:"잰 점을 표시해 두세요. 들었을 때 같은 점을 다시 잽니다.",cell:"B10",rimKey:"rimF",shots:1},
- {id:"2-12a",st:2,kind:"hub",title:"리어 타이어 (허브 센터 ↔ 휀더)",tip:"잰 점을 표시해 두세요.",cell:"F10",rimKey:"rimR",shots:1},
- {id:"2-08u",st:2,kind:"info",title:"차 하부로 이동",tip:"여기부터는 차 밑으로 들어가서 잽니다. 차는 바퀴로 선 채 그대로 둡니다. 준비됐으면 「확인 · 다음」.",items:["줄자 · 손전등 챙기기","다음 순서: 프론트 댐퍼 → 프론트 스프링 → 리어 댐퍼 → 리어 스프링"]},
- {id:"2-04a",st:2,kind:"choice",key:"setting",title:"세팅상태",tip:"지금 달려 있는 서스펜션이 순정인지 튜닝품인지.",cell:"A7",options:["OE (순정)","다운스프링"],other:"튜닝품 (제품명 직접 입력)"},
- {id:"2-04b",st:2,kind:"choice",key:"suspF",title:"프론트 서스펜션 유형",tip:"차 밑에서 프론트 서스펜션 구조를 보고 고릅니다. 구조가 보이게 사진을 찍으세요.",cell:"C7",options:["맥퍼슨","더블위시본","멀티링크","토션빔","판스프링","5링크"],other:"그 밖 (직접 입력)",shots:1},
- {id:"2-04b2",skipIf:[{key:"suspF",is:"판스프링"}],st:2,kind:"choice",key:"springF",title:"프론트 스프링 형태",tip:"스프링이 쇽업소버에 끼워져 있으면 코일오버, 스프링이 따로 달려 있으면 분리형입니다.",cell:null,options:["코일오버","분리형"],noOther:true},
- {id:"2-04c",st:2,kind:"choice",key:"suspR",title:"리어 서스펜션 유형",tip:"차 밑에서 리어 서스펜션 구조를 보고 고릅니다. 구조가 보이게 사진을 찍으세요.",cell:"G7",options:["맥퍼슨","더블위시본","멀티링크","토션빔","판스프링","5링크"],other:"그 밖 (직접 입력)",shots:1},
- {id:"2-04c2",skipIf:[{key:"suspR",is:"판스프링"}],st:2,kind:"choice",key:"springR",title:"리어 스프링 형태",tip:"스프링이 쇽업소버에 끼워져 있으면 코일오버, 스프링이 따로 달려 있으면 분리형입니다.",cell:null,options:["코일오버","분리형"],noOther:true},
- {id:"2-09",st:2,kind:"measure",title:"프론트 댐퍼 체결부 기준 전장",tip:"잰 점을 표시해 두세요.",cell:"C10",shots:1},
- {id:"2-10",skipIf:[{key:"suspF",is:"판스프링"}],st:2,kind:"measure",title:"프론트 스프링 양끝 길이",tip:"상단 패드 ↔ 하단 패드. 잰 점을 표시해 두세요.",cell:"D10",coilSkip:"springF",shots:1},
- {id:"2-10b",st:2,kind:"choice",key:"bumpPosF",title:"프론트 범프스토퍼 위치",tip:"범프스토퍼가 보이게 사진을 찍으세요. 댐퍼 내부를 고르면 사진 칸이 사라지고 다음 측정도 건너뜁니다 (나중에 분해 후 자유장 측정).",cell:"E16",options:["댐퍼 내부","차대","로어암"],other:"기타 (직접 입력)",shots:1,photoReq:{unlessKey:"bumpPosF",unless:"댐퍼 내부"}},
- {id:"2-11",st:2,kind:"measure",title:"프론트 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼 끝에서 맞닿는 면까지.",onlyIf:{key:"bumpPosF",not:"댐퍼 내부"},cell:"E10",shots:1,photoReq:true},
- {id:"2-11s",st:2,kind:"photo",title:"프론트 서스펜션 구조 상세 사진",tip:"서스펜션 구조를 부품 하나하나 가까이 찍습니다 (예: 스테빌라이저 바 마운트·링크, 암 체결부, 너클). 간섭이 우려되는 부분은 줄자를 대거나 손가락 몇 개가 들어가는지 함께 찍어, 여유 거리를 가늠할 수 있게 합니다. 권장 장수·찍을 부품 목록은 남정우 수석 피드백 받아 확정 예정 — 지금은 임시 1장.",shots:1,photoOpt:true},
- {id:"2-12b",st:2,kind:"measure",title:"리어 댐퍼 체결부 기준 전장",tip:"분리형이면 댐퍼만.",cell:"G10",shots:1},
- {id:"2-12c",skipIf:[{key:"suspR",is:"판스프링"}],st:2,kind:"measure",title:"리어 스프링 양끝 길이",tip:"분리형이면 스프링만 따로.",cell:"H10",coilSkip:"springR",shots:1},
- {id:"2-12c2",st:2,kind:"choice",key:"bumpPosR",title:"리어 범프스토퍼 위치",tip:"범프스토퍼가 보이게 사진을 찍으세요. 댐퍼 내부를 고르면 사진 칸이 사라지고 다음 측정도 건너뜁니다 (나중에 분해 후 자유장 측정).",cell:"I16",options:["댐퍼 내부","차대","로어암"],other:"기타 (직접 입력)",shots:1,photoReq:{unlessKey:"bumpPosR",unless:"댐퍼 내부"}},
- {id:"2-12d",st:2,kind:"measure",title:"리어 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼 끝에서 맞닿는 면까지.",onlyIf:{key:"bumpPosR",not:"댐퍼 내부"},cell:"I10",shots:1,photoReq:true},
- {id:"2-12s",st:2,kind:"photo",title:"리어 서스펜션 구조 상세 사진",tip:"서스펜션 구조를 부품 하나하나 가까이 찍습니다 (예: 스테빌라이저 바 마운트·링크, 암 체결부, 너클). 간섭이 우려되는 부분은 줄자를 대거나 손가락 몇 개가 들어가는지 함께 찍어, 여유 거리를 가늠할 수 있게 합니다. 권장 장수·찍을 부품 목록은 남정우 수석 피드백 받아 확정 예정 — 지금은 임시 1장.",shots:1,photoOpt:true},
- {id:"3-00",st:3,car:"droop",kind:"info",title:"차 띄우기 (드룹 상태로)",tip:"소형 리프트를 잭포인트나 멤버에 고무를 받치고 들어 올려, 바퀴가 완전히 늘어지게 합니다. 다 됐으면 「확인 · 다음」.",items:["소형 리프트를 잭포인트 또는 멤버에 대고, 사이에 고무를 받쳤는지","바퀴가 바닥이나 발판에서 떨어져 완전히 늘어졌는지","정하중 때 표시해 둔 측정점이 그대로 보이는지"]},
- {id:"3-01",st:3,car:"droop",kind:"hub",title:"프론트 타이어 (허브 센터 ↔ 휀더) · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"B12",rimKey:"rimF",ref:"m2-08",shots:1},
- {id:"3-02",st:3,car:"droop",kind:"hub",title:"리어 타이어 (허브 센터 ↔ 휀더) · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"F12",rimKey:"rimR",ref:"m2-12a",shots:1},
- {id:"3-02t",st:3,car:"droop",kind:"info",title:"타이어 탈착",tip:"차 밑 측정이 잘 되도록 측정하는 쪽 바퀴 2개(프론트 1개 · 리어 1개)만 뗍니다. 다 됐으면 「확인 · 다음」.",items:["프론트 바퀴 1개를 뗐는지 (측정하는 쪽)","리어 바퀴 1개를 뗐는지 (측정하는 쪽)","뗀 휠 너트를 한곳에 모아 두었는지"],fields:[["wheelCap","휠볼트 캡 유무",null,"pick:있음,없음"],["wheelBolt","휠볼트 소켓(복스) 크기 — 다음에 공구 바로 찾게",null,"pick:17 mm,19 mm,21 mm"]]},
- {id:"3-02pf",st:3,car:"droop",kind:"photo",title:"프론트 휠 탈거 사진 (외부)",tip:"휠을 뗀 프론트 쪽을 차 바깥에서 찍습니다. 서스펜션·브레이크 주변이 다 보이게.",shots:1},
- {id:"3-02pr",st:3,car:"droop",kind:"photo",title:"리어 휠 탈거 사진 (외부)",tip:"휠을 뗀 리어 쪽을 차 바깥에서 찍습니다. 서스펜션·브레이크 주변이 다 보이게.",shots:1},
- {id:"3-03",st:3,car:"droop",kind:"info",title:"차 하부로 이동",tip:"여기부터는 차 밑으로 들어가서 잽니다. 차는 든 채로 둡니다. 준비됐으면 「확인 · 다음」.",items:["다음 순서: 프론트 댐퍼 → 프론트 스프링 → 프론트 범프스토퍼 → 리어 댐퍼 → 리어 스프링 → 리어 범프스토퍼"]},
- {id:"3-04",st:3,car:"droop",kind:"measure",title:"프론트 댐퍼 체결부 기준 전장 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"C12",ref:"m2-09",shots:1},
- {id:"3-05",skipIf:[{key:"suspF",is:"판스프링"}],st:3,car:"droop",kind:"measure",title:"프론트 스프링 양끝 길이 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"D12",ref:"m2-10",coilSkip:"springF",shots:1},
- {id:"2-13f",st:3,car:"droop",kind:"photo",title:"프론트 상단 체결부 형상 사진 (차 밑 · 휠하우스)",tip:"바퀴를 뗀 프론트 휠하우스 안쪽에서 위로 쇽업소버 상단 체결부를 찍습니다. 형태·볼트 위치·각도가 보이게.",shots:1},
- {id:"3-06",st:3,car:"droop",kind:"measure",title:"프론트 범프스토퍼 끝 ↔ 차대 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"E12",ref:"m2-11",onlyIf:{key:"bumpPosF",not:"댐퍼 내부"},shots:1,photoReq:true},
- {id:"3-06i",st:3,car:"droop",kind:"info",title:"프론트 범프스토퍼 · 드룹",tip:"범프스토퍼가 댐퍼 내부라 지금은 재지 않습니다. 확인했으면 「확인 · 다음」.",items:["추후 댐퍼 분해 후 범프스토퍼 자유장을 측정합니다"],onlyIf:{key:"bumpPosF",is:"댐퍼 내부"}},
- {id:"3-06p",st:3,car:"droop",kind:"form",title:"프론트 차고파이프 장착부 · 드룹",tip:"분리형이라 스프링 시트에 차고조절 파이프(차고파이프)를 달 자리를 봅니다. 장착부가 어떻게 생겼는지 적고, 주변이 다 보이게 찍습니다.",fields:[["pipeF","프론트 차고파이프 장착부 위치 (기타는 「직접 입력」)","B16","pick:상단,하단"]],onlyIf:{key:"springF",is:"분리형"},shots:1},
- {id:"3-07",st:3,car:"droop",kind:"measure",title:"리어 댐퍼 체결부 기준 전장 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"G12",ref:"m2-12b",shots:1},
- {id:"3-08",skipIf:[{key:"suspR",is:"판스프링"}],st:3,car:"droop",kind:"measure",title:"리어 스프링 양끝 길이 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"H12",ref:"m2-12c",coilSkip:"springR",shots:1},
- {id:"3-07u",st:3,car:"droop",kind:"photo",title:"리어 상단 체결부 형상 사진 (차 밑 · 휠하우스)",tip:"바퀴를 뗀 리어 휠하우스 안쪽에서 위로 쇽업소버 상단 체결부를 찍습니다. 형태·볼트 위치·각도가 보이게.",shots:1},
- {id:"3-09",st:3,car:"droop",kind:"measure",title:"리어 범프스토퍼 끝 ↔ 차대 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"I12",ref:"m2-12d",onlyIf:{key:"bumpPosR",not:"댐퍼 내부"},shots:1,photoReq:true},
- {id:"3-09i",st:3,car:"droop",kind:"info",title:"리어 범프스토퍼 · 드룹",tip:"범프스토퍼가 댐퍼 내부라 지금은 재지 않습니다. 확인했으면 「확인 · 다음」.",items:["추후 댐퍼 분해 후 범프스토퍼 자유장을 측정합니다"],onlyIf:{key:"bumpPosR",is:"댐퍼 내부"}},
- {id:"3-09p",st:3,car:"droop",kind:"form",title:"리어 차고파이프 장착부 · 드룹",tip:"분리형이라 스프링 시트에 차고조절 파이프(차고파이프)를 달 자리를 봅니다. 장착부가 어떻게 생겼는지 적고, 주변이 다 보이게 찍습니다.",fields:[["pipeR","리어 차고파이프 장착부 위치 (기타는 「직접 입력」)","F16","pick:상단,하단"]],onlyIf:{key:"springR",is:"분리형"},shots:1},
- {id:"2-13fo",st:3,car:"droop",kind:"photo",title:"프론트 상단 마운트 위쪽 여유 공간 (엔진룸)",tip:"⚠ 캠버 장공 방향 확인용 — 중요. 사진 2장: ① 위에서 수직(탑뷰) — 왜곡 없이, 상단 마운트 형태·위치·각도, 캠버 마운트 장공 방향, 마운트 볼트 패턴(PCD)이 보이게. ② 옆에서 — 볼트·로드가 튀어나온 정도와 보닛까지 남는 공간이 보이게, 줄자를 함께 대고. (측정시트 U27 4·6번 · 35행 · 41행)",shots:2,slots:["① 위에서 수직 (탑뷰 · 볼트 패턴)","② 옆에서 (튀어나온 정도 · 여유 공간, 줄자)"]},
- {id:"2-13r",st:3,car:"droop",kind:"photo",title:"리어 상단 마운트 위쪽 여유 공간 (트렁크·실내 쪽)",tip:"리어 마운트 너트가 트렁크·실내 쪽에 나와 있는 차만 내장재를 열고 찍습니다. 아니면 건너뛰세요 (휠하우스 쪽 사진은 차 밑에서 이미 찍었습니다). 사진 2장: ① 위에서 수직(탑뷰) — 왜곡 없이, 마운트 볼트 패턴(PCD)이 보이게. ② 옆에서 — 볼트·로드가 튀어나온 정도와 내장재까지 남는 공간이 보이게, 줄자를 함께 대고.",shots:2,photoOpt:true,slots:["① 위에서 수직 (탑뷰 · 볼트 패턴)","② 옆에서 (튀어나온 정도 · 여유 공간, 줄자)"]},
+ {id:"S001",st:1,kind:"form",title:"기본정보",tip:"측정시트 2행 제목 아래 3행에 들어갑니다.",fields:[["date","측정일","A3","date"],["worker","작업자","B3","pick:유지호,지민우,남정우"],["maker","차량 메이커","C3"],["model","모델명 (예: 쏘나타)","D3"],["code","코드명 (예: DN8)","E3"],["trim","세부모델 (예: 2.5T 2WD EDC)","F3"],["year","연식","H3"],["owner","고객/차주명","I3"]]},
+ {id:"S002",st:1,kind:"photo",title:"차량 정면 사진",tip:"차 앞쪽 정면. 스크래치·도장 상태가 보이게.",shots:1},
+ {id:"S003",st:1,kind:"photo",title:"차량 우측면 사진",tip:"오른쪽 옆면 전체. 작업 전 순정 차고가 보이게.",shots:1},
+ {id:"S004",st:1,kind:"photo",title:"차량 후면 사진",tip:"차 뒤쪽 정면. 스크래치·도장 상태가 보이게.",shots:1},
+ {id:"S005",st:1,kind:"photo",title:"차량 좌측면 사진",tip:"왼쪽 옆면 전체. 스크래치·도장 상태가 보이게.",shots:1},
+ {id:"S006",st:1,kind:"photo",title:"차대번호 사진",tip:"차대번호 글자가 읽히게 가까이.",shots:1},
+ {id:"S007",st:1,kind:"photo",title:"차량 제원표 사진",tip:"운전석 도어 안쪽 제원표(공차중량·연식·모델). 없으면 차량등록증.",shots:1},
+ {id:"S008",st:2,kind:"info",title:"리프트 올리기",tip:"차가 바퀴로 선 상태 그대로 리프트를 측정하기 좋은 높이로 올립니다. 다 올렸으면 「확인 · 다음」.",items:["바퀴가 리프트 발판 위에 그대로 있는지 (정하중 상태 유지)","줄자로 휀더·허브를 재기 편한 높이인지"]},
+ {id:"S009",st:2,kind:"measure",key:"gapF",title:"프론트 휀더 갭",tip:"타이어 윗면 ↔ 휀더 안쪽 끝. 줄자 눈금이 보이게 찍으세요.",cell:"B7",shots:1},
+ {id:"S010",st:2,kind:"measure",key:"rimF",title:"프론트 림 외경",tip:"줄자로 림 바깥 지름.",cell:"E7",shots:1},
+ {id:"S011",st:2,kind:"form",title:"프론트 타이어 스펙",tip:"타이어 옆면 표기 그대로. 예: 235/35R20. 옆면 글자가 읽히게 찍으세요.",fields:[["tireF","프론트 타이어","B14"]],shots:1},
+ {id:"S012",st:2,kind:"measure",key:"gapR",title:"리어 휀더 갭",tip:"타이어 윗면 ↔ 휀더 안쪽 끝. 줄자 눈금이 보이게 찍으세요.",cell:"F7",shots:1},
+ {id:"S013",st:2,kind:"measure",key:"rimR",title:"리어 림 외경",tip:"줄자로 림 바깥 지름.",cell:"I7",shots:1},
+ {id:"S014",st:2,kind:"form",title:"리어 타이어 스펙",tip:"타이어 옆면 표기 그대로. 예: 235/35R20. 옆면 글자가 읽히게 찍으세요.",fields:[["tireR","리어 타이어","F14"]],shots:1},
+ {id:"S015",st:2,kind:"hub",title:"프론트 타이어 (허브 센터 ↔ 휀더)",tip:"잰 점을 표시해 두세요. 들었을 때 같은 점을 다시 잽니다.",cell:"B10",rimKey:"rimF",shots:1},
+ {id:"S016",st:2,kind:"hub",title:"리어 타이어 (허브 센터 ↔ 휀더)",tip:"잰 점을 표시해 두세요.",cell:"F10",rimKey:"rimR",shots:1},
+ {id:"S017",st:2,kind:"info",title:"차 하부로 이동",tip:"여기부터는 차 밑으로 들어가서 잽니다. 차는 바퀴로 선 채 그대로 둡니다. 준비됐으면 「확인 · 다음」.",items:["줄자 · 손전등 챙기기","다음 순서: 프론트 댐퍼 → 프론트 스프링 → 리어 댐퍼 → 리어 스프링"]},
+ {id:"S018",st:2,kind:"choice",key:"setting",title:"세팅상태",tip:"지금 달려 있는 서스펜션이 순정인지 튜닝품인지.",cell:"A7",options:["OE (순정)","다운스프링"],other:"튜닝품 (제품명 직접 입력)"},
+ {id:"S019",st:2,kind:"choice",key:"suspF",title:"프론트 서스펜션 유형",tip:"차 밑에서 프론트 서스펜션 구조를 보고 고릅니다. 구조가 보이게 사진을 찍으세요.",cell:"C7",options:["맥퍼슨","더블위시본","멀티링크","토션빔","판스프링","5링크"],other:"그 밖 (직접 입력)",shots:1},
+ {id:"S020",skipIf:[{key:"suspF",is:"판스프링"}],st:2,kind:"choice",key:"springF",title:"프론트 스프링 형태",tip:"스프링이 쇽업소버에 끼워져 있으면 코일오버, 스프링이 따로 달려 있으면 분리형입니다.",cell:null,options:["코일오버","분리형"],noOther:true},
+ {id:"S021",st:2,kind:"choice",key:"suspR",title:"리어 서스펜션 유형",tip:"차 밑에서 리어 서스펜션 구조를 보고 고릅니다. 구조가 보이게 사진을 찍으세요.",cell:"G7",options:["맥퍼슨","더블위시본","멀티링크","토션빔","판스프링","5링크"],other:"그 밖 (직접 입력)",shots:1},
+ {id:"S022",skipIf:[{key:"suspR",is:"판스프링"}],st:2,kind:"choice",key:"springR",title:"리어 스프링 형태",tip:"스프링이 쇽업소버에 끼워져 있으면 코일오버, 스프링이 따로 달려 있으면 분리형입니다.",cell:null,options:["코일오버","분리형"],noOther:true},
+ {id:"S023",st:2,kind:"measure",title:"프론트 댐퍼 체결부 기준 전장",tip:"잰 점을 표시해 두세요.",cell:"C10",shots:1},
+ {id:"S024",skipIf:[{key:"suspF",is:"판스프링"}],st:2,kind:"measure",title:"프론트 스프링 양끝 길이",tip:"상단 패드 ↔ 하단 패드. 잰 점을 표시해 두세요.",cell:"D10",coilSkip:"springF",shots:1},
+ {id:"S025",st:2,kind:"choice",key:"bumpPosF",title:"프론트 범프스토퍼 위치",tip:"범프스토퍼가 보이게 사진을 찍으세요. 댐퍼 내부를 고르면 사진 칸이 사라지고 다음 측정도 건너뜁니다 (나중에 분해 후 자유장 측정).",cell:"E16",options:["댐퍼 내부","차대","로어암"],other:"기타 (직접 입력)",shots:1,photoReq:{unlessKey:"bumpPosF",unless:"댐퍼 내부"}},
+ {id:"S026",st:2,kind:"measure",title:"프론트 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼 끝에서 맞닿는 면까지.",onlyIf:{key:"bumpPosF",not:"댐퍼 내부"},cell:"E10",shots:1,photoReq:true},
+ {id:"S027",st:2,kind:"photo",title:"프론트 서스펜션 구조 상세 사진",tip:"서스펜션 구조를 부품 하나하나 가까이 찍습니다 (예: 스테빌라이저 바 마운트·링크, 암 체결부, 너클). 간섭이 우려되는 부분은 줄자를 대거나 손가락 몇 개가 들어가는지 함께 찍어, 여유 거리를 가늠할 수 있게 합니다. 권장 장수·찍을 부품 목록은 남정우 수석 피드백 받아 확정 예정 — 지금은 임시 1장.",shots:1,photoOpt:true},
+ {id:"S028",st:2,kind:"measure",title:"리어 댐퍼 체결부 기준 전장",tip:"분리형이면 댐퍼만.",cell:"G10",shots:1},
+ {id:"S029",skipIf:[{key:"suspR",is:"판스프링"}],st:2,kind:"measure",title:"리어 스프링 양끝 길이",tip:"분리형이면 스프링만 따로.",cell:"H10",coilSkip:"springR",shots:1},
+ {id:"S030",st:2,kind:"choice",key:"bumpPosR",title:"리어 범프스토퍼 위치",tip:"범프스토퍼가 보이게 사진을 찍으세요. 댐퍼 내부를 고르면 사진 칸이 사라지고 다음 측정도 건너뜁니다 (나중에 분해 후 자유장 측정).",cell:"I16",options:["댐퍼 내부","차대","로어암"],other:"기타 (직접 입력)",shots:1,photoReq:{unlessKey:"bumpPosR",unless:"댐퍼 내부"}},
+ {id:"S031",st:2,kind:"measure",title:"리어 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼 끝에서 맞닿는 면까지.",onlyIf:{key:"bumpPosR",not:"댐퍼 내부"},cell:"I10",shots:1,photoReq:true},
+ {id:"S032",st:2,kind:"photo",title:"리어 서스펜션 구조 상세 사진",tip:"서스펜션 구조를 부품 하나하나 가까이 찍습니다 (예: 스테빌라이저 바 마운트·링크, 암 체결부, 너클). 간섭이 우려되는 부분은 줄자를 대거나 손가락 몇 개가 들어가는지 함께 찍어, 여유 거리를 가늠할 수 있게 합니다. 권장 장수·찍을 부품 목록은 남정우 수석 피드백 받아 확정 예정 — 지금은 임시 1장.",shots:1,photoOpt:true},
+ {id:"S033",st:3,car:"droop",kind:"info",title:"차 띄우기 (드룹 상태로)",tip:"소형 리프트를 잭포인트나 멤버에 고무를 받치고 들어 올려, 바퀴가 완전히 늘어지게 합니다. 다 됐으면 「확인 · 다음」.",items:["소형 리프트를 잭포인트 또는 멤버에 대고, 사이에 고무를 받쳤는지","바퀴가 바닥이나 발판에서 떨어져 완전히 늘어졌는지","정하중 때 표시해 둔 측정점이 그대로 보이는지"]},
+ {id:"S034",st:3,car:"droop",kind:"hub",title:"프론트 타이어 (허브 센터 ↔ 휀더) · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"B12",rimKey:"rimF",ref:"mS015",shots:1},
+ {id:"S035",st:3,car:"droop",kind:"hub",title:"리어 타이어 (허브 센터 ↔ 휀더) · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"F12",rimKey:"rimR",ref:"mS016",shots:1},
+ {id:"S036",st:3,car:"droop",kind:"info",title:"타이어 탈착",tip:"차 밑 측정이 잘 되도록 측정하는 쪽 바퀴 2개(프론트 1개 · 리어 1개)만 뗍니다. 다 됐으면 「확인 · 다음」.",items:["프론트 바퀴 1개를 뗐는지 (측정하는 쪽)","리어 바퀴 1개를 뗐는지 (측정하는 쪽)","뗀 휠 너트를 한곳에 모아 두었는지"],fields:[["wheelCap","휠볼트 캡 유무",null,"pick:있음,없음"],["wheelBolt","휠볼트 소켓(복스) 크기 — 다음에 공구 바로 찾게",null,"pick:17 mm,19 mm,21 mm"]]},
+ {id:"S037",st:3,car:"droop",kind:"photo",title:"프론트 휠 탈거 사진 (외부)",tip:"휠을 뗀 프론트 쪽을 차 바깥에서 찍습니다. 서스펜션·브레이크 주변이 다 보이게.",shots:1},
+ {id:"S038",st:3,car:"droop",kind:"photo",title:"리어 휠 탈거 사진 (외부)",tip:"휠을 뗀 리어 쪽을 차 바깥에서 찍습니다. 서스펜션·브레이크 주변이 다 보이게.",shots:1},
+ {id:"S039",st:3,car:"droop",kind:"info",title:"차 하부로 이동",tip:"여기부터는 차 밑으로 들어가서 잽니다. 차는 든 채로 둡니다. 준비됐으면 「확인 · 다음」.",items:["다음 순서: 프론트 댐퍼 → 프론트 스프링 → 프론트 범프스토퍼 → 리어 댐퍼 → 리어 스프링 → 리어 범프스토퍼"]},
+ {id:"S040",st:3,car:"droop",kind:"measure",title:"프론트 댐퍼 체결부 기준 전장 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"C12",ref:"mS023",shots:1},
+ {id:"S041",skipIf:[{key:"suspF",is:"판스프링"}],st:3,car:"droop",kind:"measure",title:"프론트 스프링 양끝 길이 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"D12",ref:"mS024",coilSkip:"springF",shots:1},
+ {id:"S042",st:3,car:"droop",kind:"photo",title:"프론트 상단 체결부 형상 사진 (차 밑 · 휠하우스)",tip:"바퀴를 뗀 프론트 휠하우스 안쪽에서 위로 쇽업소버 상단 체결부를 찍습니다. 형태·볼트 위치·각도가 보이게.",shots:1},
+ {id:"S043",st:3,car:"droop",kind:"measure",title:"프론트 범프스토퍼 끝 ↔ 차대 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"E12",ref:"mS026",onlyIf:{key:"bumpPosF",not:"댐퍼 내부"},shots:1,photoReq:true},
+ {id:"S044",st:3,car:"droop",kind:"info",title:"프론트 범프스토퍼 · 드룹",tip:"범프스토퍼가 댐퍼 내부라 지금은 재지 않습니다. 확인했으면 「확인 · 다음」.",items:["추후 댐퍼 분해 후 범프스토퍼 자유장을 측정합니다"],onlyIf:{key:"bumpPosF",is:"댐퍼 내부"}},
+ {id:"S045",st:3,car:"droop",kind:"form",title:"프론트 차고파이프 장착부 · 드룹",tip:"분리형이라 스프링 시트에 차고조절 파이프(차고파이프)를 달 자리를 봅니다. 장착부가 어떻게 생겼는지 적고, 주변이 다 보이게 찍습니다.",fields:[["pipeF","프론트 차고파이프 장착부 위치 (기타는 「직접 입력」)","B16","pick:상단,하단"]],onlyIf:{key:"springF",is:"분리형"},shots:1},
+ {id:"S046",st:3,car:"droop",kind:"measure",title:"리어 댐퍼 체결부 기준 전장 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"G12",ref:"mS028",shots:1},
+ {id:"S047",skipIf:[{key:"suspR",is:"판스프링"}],st:3,car:"droop",kind:"measure",title:"리어 스프링 양끝 길이 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"H12",ref:"mS029",coilSkip:"springR",shots:1},
+ {id:"S048",st:3,car:"droop",kind:"photo",title:"리어 상단 체결부 형상 사진 (차 밑 · 휠하우스)",tip:"바퀴를 뗀 리어 휠하우스 안쪽에서 위로 쇽업소버 상단 체결부를 찍습니다. 형태·볼트 위치·각도가 보이게.",shots:1},
+ {id:"S049",st:3,car:"droop",kind:"measure",title:"리어 범프스토퍼 끝 ↔ 차대 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"I12",ref:"mS031",onlyIf:{key:"bumpPosR",not:"댐퍼 내부"},shots:1,photoReq:true},
+ {id:"S050",st:3,car:"droop",kind:"info",title:"리어 범프스토퍼 · 드룹",tip:"범프스토퍼가 댐퍼 내부라 지금은 재지 않습니다. 확인했으면 「확인 · 다음」.",items:["추후 댐퍼 분해 후 범프스토퍼 자유장을 측정합니다"],onlyIf:{key:"bumpPosR",is:"댐퍼 내부"}},
+ {id:"S051",st:3,car:"droop",kind:"form",title:"리어 차고파이프 장착부 · 드룹",tip:"분리형이라 스프링 시트에 차고조절 파이프(차고파이프)를 달 자리를 봅니다. 장착부가 어떻게 생겼는지 적고, 주변이 다 보이게 찍습니다.",fields:[["pipeR","리어 차고파이프 장착부 위치 (기타는 「직접 입력」)","F16","pick:상단,하단"]],onlyIf:{key:"springR",is:"분리형"},shots:1},
+ {id:"S052",st:3,car:"droop",kind:"photo",title:"프론트 상단 마운트 위쪽 여유 공간 (엔진룸)",tip:"⚠ 캠버 장공 방향 확인용 — 중요. 사진 2장: ① 위에서 수직(탑뷰) — 왜곡 없이, 상단 마운트 형태·위치·각도, 캠버 마운트 장공 방향, 마운트 볼트 패턴(PCD)이 보이게. ② 옆에서 — 볼트·로드가 튀어나온 정도와 보닛까지 남는 공간이 보이게, 줄자를 함께 대고. (측정시트 U27 4·6번 · 35행 · 41행)",shots:2,slots:["① 위에서 수직 (탑뷰 · 볼트 패턴)","② 옆에서 (튀어나온 정도 · 여유 공간, 줄자)"]},
+ {id:"S053",st:3,car:"droop",kind:"photo",title:"리어 상단 마운트 위쪽 여유 공간 (트렁크·실내 쪽)",tip:"리어 마운트 너트가 트렁크·실내 쪽에 나와 있는 차만 내장재를 열고 찍습니다. 아니면 건너뛰세요 (휠하우스 쪽 사진은 차 밑에서 이미 찍었습니다). 사진 2장: ① 위에서 수직(탑뷰) — 왜곡 없이, 마운트 볼트 패턴(PCD)이 보이게. ② 옆에서 — 볼트·로드가 튀어나온 정도와 내장재까지 남는 공간이 보이게, 줄자를 함께 대고.",shots:2,photoOpt:true,slots:["① 위에서 수직 (탑뷰 · 볼트 패턴)","② 옆에서 (튀어나온 정도 · 여유 공간, 줄자)"]},
 ];
 // 아직 순서를 정하지 않아 흐름에서 빼 둔 화면. 형태 고르기(0-F·0-R)는 탈거 뒤 사진 찍으면서 하기로 함 (2026-10-22 유지호).
 const PARKED=[
- {id:"0-F",st:0,kind:"shape",axle:"F",title:"앞 쇽업소버 형태 고르기",tip:"모양을 보고 고릅니다. 뒤 단계의 가지가 여기서 정해집니다."},
- {id:"0-R",st:0,kind:"shape",axle:"R",title:"뒤 쇽업소버 형태 고르기",tip:"앞과 같으면 「앞과 같음」."},
- {id:"2-05",st:2,kind:"photo",title:"순정 차고 측면 사진",tip:"작업 전, 차가 바닥에 있는 상태.",shots:1},
- {id:"2-13",st:2,kind:"photo",title:"상단마운트 사진 (위에서 수직)",tip:"앞뒤 상단마운트의 형태·위치·각도가 보이게.",shots:2},
- {id:"2-14",st:2,kind:"form",title:"상단마운트 위쪽 여유 공간",tip:"조절 다이얼·탑핀이 튀어나와도 닿지 않는지. 가장 가까운 부품까지 거리.",fields:[["topClrF","앞 여유 거리",null,"mm"],["topClrR","뒤 여유 거리",null,"mm"]],shots:2}
+ {id:"S054",st:0,kind:"shape",axle:"F",title:"앞 쇽업소버 형태 고르기",tip:"모양을 보고 고릅니다. 뒤 단계의 가지가 여기서 정해집니다."},
+ {id:"S055",st:0,kind:"shape",axle:"R",title:"뒤 쇽업소버 형태 고르기",tip:"앞과 같으면 「앞과 같음」."},
+ {id:"S056",st:2,kind:"photo",title:"순정 차고 측면 사진",tip:"작업 전, 차가 바닥에 있는 상태.",shots:1},
+ {id:"S057",st:2,kind:"photo",title:"상단마운트 사진 (위에서 수직)",tip:"앞뒤 상단마운트의 형태·위치·각도가 보이게.",shots:2},
+ {id:"S058",st:2,kind:"form",title:"상단마운트 위쪽 여유 공간",tip:"조절 다이얼·탑핀이 튀어나와도 닿지 않는지. 가장 가까운 부품까지 거리.",fields:[["topClrF","앞 여유 거리",null,"mm"],["topClrR","뒤 여유 거리",null,"mm"]],shots:2}
 ];
+// ===== 화면 아이디 대장 =====
+// 화면 아이디(S001…)는 저장 기록의 열쇠라 뜻이 없는 일련번호로 둔다. 화면 순서를 바꾸거나 이름을 고쳐도 아이디는 그대로다.
+// 새 화면: SCREEN_NEXT 번호를 쓰고 대장 끝에 한 줄 더한 뒤 SCREEN_NEXT를 하나 올린다. 화면을 없애면 줄을 지우지 말고 상태를 「폐기」로 — 번호를 다시 쓰지 않는다.
+// [아이디, 옛 아이디(마인드맵 번호 — 2026-10-22 이전 기록 변환용, 새 화면은 ""), 만든 날, 상태(사용·보류·폐기), 만들 때 이름]
+const SCREEN_IDS=[
+ ["S001","1-04","2026-10-22","사용","기본정보"],
+ ["S002","p-01","2026-10-22","사용","차량 정면 사진"],
+ ["S003","p-02","2026-10-22","사용","차량 우측면 사진"],
+ ["S004","p-03","2026-10-22","사용","차량 후면 사진"],
+ ["S005","p-04","2026-10-22","사용","차량 좌측면 사진"],
+ ["S006","p-07","2026-10-22","사용","차대번호 사진"],
+ ["S007","p-08","2026-10-22","사용","차량 제원표 사진"],
+ ["S008","2-00","2026-10-22","사용","리프트 올리기"],
+ ["S009","2-06a","2026-10-22","사용","프론트 휀더 갭"],
+ ["S010","2-06b","2026-10-22","사용","프론트 림 외경"],
+ ["S011","2-06b2","2026-10-22","사용","프론트 타이어 스펙"],
+ ["S012","2-06c","2026-10-22","사용","리어 휀더 갭"],
+ ["S013","2-06d","2026-10-22","사용","리어 림 외경"],
+ ["S014","2-06d2","2026-10-22","사용","리어 타이어 스펙"],
+ ["S015","2-08","2026-10-22","사용","프론트 타이어 (허브 센터 ↔ 휀더)"],
+ ["S016","2-12a","2026-10-22","사용","리어 타이어 (허브 센터 ↔ 휀더)"],
+ ["S017","2-08u","2026-10-22","사용","차 하부로 이동"],
+ ["S018","2-04a","2026-10-22","사용","세팅상태"],
+ ["S019","2-04b","2026-10-22","사용","프론트 서스펜션 유형"],
+ ["S020","2-04b2","2026-10-22","사용","프론트 스프링 형태"],
+ ["S021","2-04c","2026-10-22","사용","리어 서스펜션 유형"],
+ ["S022","2-04c2","2026-10-22","사용","리어 스프링 형태"],
+ ["S023","2-09","2026-10-22","사용","프론트 댐퍼 체결부 기준 전장"],
+ ["S024","2-10","2026-10-22","사용","프론트 스프링 양끝 길이"],
+ ["S025","2-10b","2026-10-22","사용","프론트 범프스토퍼 위치"],
+ ["S026","2-11","2026-10-22","사용","프론트 범프스토퍼 끝 ↔ 차대"],
+ ["S027","2-11s","2026-10-22","사용","프론트 서스펜션 구조 상세 사진"],
+ ["S028","2-12b","2026-10-22","사용","리어 댐퍼 체결부 기준 전장"],
+ ["S029","2-12c","2026-10-22","사용","리어 스프링 양끝 길이"],
+ ["S030","2-12c2","2026-10-22","사용","리어 범프스토퍼 위치"],
+ ["S031","2-12d","2026-10-22","사용","리어 범프스토퍼 끝 ↔ 차대"],
+ ["S032","2-12s","2026-10-22","사용","리어 서스펜션 구조 상세 사진"],
+ ["S033","3-00","2026-10-22","사용","차 띄우기 (드룹 상태로)"],
+ ["S034","3-01","2026-10-22","사용","프론트 타이어 (허브 센터 ↔ 휀더) · 드룹"],
+ ["S035","3-02","2026-10-22","사용","리어 타이어 (허브 센터 ↔ 휀더) · 드룹"],
+ ["S036","3-02t","2026-10-22","사용","타이어 탈착"],
+ ["S037","3-02pf","2026-10-22","사용","프론트 휠 탈거 사진 (외부)"],
+ ["S038","3-02pr","2026-10-22","사용","리어 휠 탈거 사진 (외부)"],
+ ["S039","3-03","2026-10-22","사용","차 하부로 이동"],
+ ["S040","3-04","2026-10-22","사용","프론트 댐퍼 체결부 기준 전장 · 드룹"],
+ ["S041","3-05","2026-10-22","사용","프론트 스프링 양끝 길이 · 드룹"],
+ ["S042","2-13f","2026-10-22","사용","프론트 상단 체결부 형상 사진 (차 밑 · 휠하우스)"],
+ ["S043","3-06","2026-10-22","사용","프론트 범프스토퍼 끝 ↔ 차대 · 드룹"],
+ ["S044","3-06i","2026-10-22","사용","프론트 범프스토퍼 · 드룹"],
+ ["S045","3-06p","2026-10-22","사용","프론트 차고파이프 장착부 · 드룹"],
+ ["S046","3-07","2026-10-22","사용","리어 댐퍼 체결부 기준 전장 · 드룹"],
+ ["S047","3-08","2026-10-22","사용","리어 스프링 양끝 길이 · 드룹"],
+ ["S048","3-07u","2026-10-22","사용","리어 상단 체결부 형상 사진 (차 밑 · 휠하우스)"],
+ ["S049","3-09","2026-10-22","사용","리어 범프스토퍼 끝 ↔ 차대 · 드룹"],
+ ["S050","3-09i","2026-10-22","사용","리어 범프스토퍼 · 드룹"],
+ ["S051","3-09p","2026-10-22","사용","리어 차고파이프 장착부 · 드룹"],
+ ["S052","2-13fo","2026-10-22","사용","프론트 상단 마운트 위쪽 여유 공간 (엔진룸)"],
+ ["S053","2-13r","2026-10-22","사용","리어 상단 마운트 위쪽 여유 공간 (트렁크·실내 쪽)"],
+ ["S054","0-F","2026-10-22","보류","앞 쇽업소버 형태 고르기"],
+ ["S055","0-R","2026-10-22","보류","뒤 쇽업소버 형태 고르기"],
+ ["S056","2-05","2026-10-22","보류","순정 차고 측면 사진"],
+ ["S057","2-13","2026-10-22","보류","상단마운트 사진 (위에서 수직)"],
+ ["S058","2-14","2026-10-22","보류","상단마운트 위쪽 여유 공간"]
+];
+const SCREEN_NEXT="S059";
 const STAGES=["형태 고르기","사진·기본정보","줄자 측정 (내렸을 때)","드룹 (들었을 때)"];
 // 지금 차 상태: 단계에 car:"droop"|"off"를 주면 그 상태로 표시한다. 없으면 정하중.
 const CARSTATES=[["static","정하중"],["droop","드룹"],["off","탈거"]];
@@ -263,7 +328,7 @@ async function showList(){
   c.appendChild(el("p","small muted","지금은 고른 범위만 기록됩니다. 범위에 맞는 단계만 보여 주는 기능은 아직 없습니다."));
   const b=el("button","btn primary","시작");b.type="button";
   b.onclick=async()=>{const t=inp.value.trim();if(!t){status("차량 이름을 적어 주세요.",true);inp.focus();return}
-    run={id:uid(),title:t,scope,createdAt:new Date().toISOString(),pos:0,shape:{F:{},R:{}},values:{},photos:{},skipped:{}};idx=0;await save();showTask()};
+    run={id:uid(),idv:2,title:t,scope,createdAt:new Date().toISOString(),pos:0,shape:{F:{},R:{}},values:{},photos:{},skipped:{}};idx=0;await save();showTask()};
   c.appendChild(b);v.appendChild(c);
   const lc=el("div","card");lc.appendChild(el("h2",null,"이 휴대폰에 저장된 측정"));v.appendChild(lc);
   const runs=(await getAll("runs")).sort((a,b)=>(b.updatedAt||"").localeCompare(a.updatedAt||""));
@@ -279,6 +344,10 @@ async function showList(){
     const rm=el("button","btn","지우기");rm.type="button";rm.onclick=()=>askDelete(r,lc,row);
     row.appendChild(left);row.appendChild(rm);row.appendChild(zip);row.appendChild(go);lc.appendChild(row)});
   if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().catch(()=>{})}
+  // 화면 아이디 대장 보기 — 아이디 · 지금 화면 번호 · 지금 이름 · 상태 · 옛 아이디
+  {const d=document.createElement("details");d.className="card small";const sm=document.createElement("summary");sm.textContent="화면 아이디 대장 ("+SCREEN_IDS.length+"개 · 다음 "+SCREEN_NEXT+")";d.appendChild(sm);
+   SCREEN_IDS.forEach(([sid,old,made,st,name])=>{const i=TASKS.findIndex(t=>t.id===sid);const t=TASKS[i]||PARKED.find(x=>x.id===sid);
+     d.appendChild(el("div",null,sid+" · "+(i>=0?(i+1)+"단계":st)+" · "+(t?t.title:name)+(old?" · 옛 "+old:"")))});v.appendChild(d)}
 }
 
 /* ===== 측정 지우기: 바로 지우지 않고, 확인 칸을 띄운 뒤 3초가 지나야 「지우기」가 눌린다 ===== */
@@ -495,8 +564,27 @@ function showEnd(){
 const safe=s=>String(s).replace(/[\\/:*?"<>|\s]+/g,"_").slice(0,40);
 // 이어서 할 화면: 화면 순서가 바뀌어도 같은 화면으로 가도록 화면 아이디(posId)로 찾는다. posId가 없는 옛 기록만 순서 번호(pos)를 쓴다.
 function resumeIdx(r){const i=r.posId?TASKS.findIndex(t=>t.id===r.posId):-1;return i>=0?i:Math.min(r.pos||0,TASKS.length-1)}
-// 화면 아이디는 저장 기록의 열쇠라 겹치면 안 된다 — 겹치면 시작할 때 경고
-{const ids=TASKS.concat(PARKED).map(t=>t.id);const dup=ids.filter((x,i)=>ids.indexOf(x)!==i);if(dup.length)setTimeout(()=>status("화면 아이디가 겹칩니다: "+dup.join(", "),true),500)}
+// 화면 아이디는 저장 기록의 열쇠라 겹치면 안 된다 — 겹치거나 대장에 없거나 SCREEN_NEXT 이상이면 시작할 때 경고
+{const ids=TASKS.concat(PARKED).map(t=>t.id),led=SCREEN_IDS.map(r=>r[0]);const bad=[];
+ ids.concat(led).forEach((x,i,a)=>{if(a.indexOf(x)!==i&&i<ids.length)bad.push(x+" 겹침")});
+ led.forEach((x,i)=>{if(led.indexOf(x)!==i)bad.push(x+" 대장에 두 번")});
+ ids.forEach(x=>{if(!led.includes(x))bad.push(x+" 대장에 없음")});
+ led.forEach(x=>{if(x>=SCREEN_NEXT)bad.push(x+" ≥ SCREEN_NEXT")});
+ if(bad.length)setTimeout(()=>status("화면 아이디 문제: "+bad.join(", "),true),500)}
+// 옛 아이디(마인드맵 번호 2-06c 등)로 저장된 측정을 새 아이디(S001…)로 바꾼다. 측정마다 한 번만 (idv:2 표시).
+async function migrateIds(){
+  const mp={};SCREEN_IDS.forEach(r=>{if(r[1])mp[r[1]]=r[0]});
+  const conv=x=>{if(x==null)return x;const m=String(x).match(/^(.*?)(_memo|_s\d+)?$/);return mp[m[1]]?mp[m[1]]+(m[2]||""):x};
+  const keys=o=>{const n={};Object.entries(o||{}).forEach(([k,v])=>n[conv(k)]=v);return n};
+  let done=0;
+  for(const r of await getAll("runs")){if(r.idv===2)continue;
+    const vals={};Object.entries(r.values||{}).forEach(([k,v])=>{const nk=k[0]==="m"&&mp[k.slice(1)]?"m"+mp[k.slice(1)]:k;if(v&&typeof v==="object"&&v.task)v.task=conv(v.task);vals[nk]=v});
+    r.values=vals;r.photos=keys(r.photos);r.skipped=keys(r.skipped);r.notes=keys(r.notes);
+    (r.log||[]).forEach(e=>e.task=conv(e.task));if(r.posId)r.posId=conv(r.posId);
+    for(const p of await photosOf(r.id)){const nt=conv(p.taskId);if(nt!==p.taskId){p.taskId=nt;await put("photos",p)}}
+    r.idv=2;await put("runs",r);done++}
+  if(done)status("이전 기록 "+done+"건의 화면 아이디를 새 아이디(S001…)로 바꿨습니다.");
+}
 // 사람이 읽는 이름 규칙 (유지호 2026-10-22):
 //  날짜_차량/측정기록.csv · 특이사항.txt · record.json(자동 채우기용)
 //  날짜_차량/사진/<화면번호>단계_<차량>_<화면 제목>_<순번>.jpg
@@ -563,7 +651,7 @@ async function exportZip(){
 }
 
 $("#prev").onclick=()=>go(-1);$("#next").onclick=()=>go(1);let devSkip=false;$("#devskip").onclick=()=>{devSkip=true;go(1)};
-openDB().then(d=>{idb=d;showList()}).catch(e=>status("이 브라우저는 휴대폰 저장소를 쓸 수 없습니다 ("+e+").",true));
+openDB().then(async d=>{idb=d;await migrateIds();showList()}).catch(e=>status("이 브라우저는 휴대폰 저장소를 쓸 수 없습니다 ("+e+").",true));
 </script>
 <script>
 // 리비전 로그: 고칠 때마다 맨 끝에 [번호,"YYYY-MM-DD HH:MM","무엇을 무엇으로 바꿨는지"] 한 줄 추가
@@ -627,7 +715,8 @@ const CHANGELOG=[
  [57,"2026-10-22 17:10","ZIP 정리 규칙: 날짜_차량 폴더 안에 측정기록.csv(엑셀) · 특이사항.txt(메모 생긴 순서로 번호) · 사진/ 폴더. 사진 이름 「N단계_차량_화면제목_순번」, 특이사항 사진은 「메모사항 n번_N단계 화면제목_순번」으로 txt 번호와 맞춤"],
  [58,"2026-10-22 17:20","리비전 표시를 「베타 rev N」으로 바꿈 — 정식 v1부터 rev 1로 새로 셈"],
  [59,"2026-10-22 17:30","「이어서」가 화면 순서 번호 대신 화면 아이디로 찾아감 — 화면 순서를 바꿔도 하던 화면에서 이어짐. 화면 아이디가 겹치면 시작할 때 경고"],
- [60,"2026-10-22 17:45","사진을 지우고 다시 찍으면 순번이 겹쳐 ZIP에서 사진이 덮이던 것 고침. ZIP에 사진대조표.csv 추가 — 사진 아이디 ↔ 파일 이름 · 화면 아이디 · 화면 번호 · 몇 번째 사진 · 찍은 시각"]
+ [60,"2026-10-22 17:45","사진을 지우고 다시 찍으면 순번이 겹쳐 ZIP에서 사진이 덮이던 것 고침. ZIP에 사진대조표.csv 추가 — 사진 아이디 ↔ 파일 이름 · 화면 아이디 · 화면 번호 · 몇 번째 사진 · 찍은 시각"],
+ [61,"2026-10-22 18:00","화면 아이디를 마인드맵 번호(2-06c 등)에서 뜻 없는 일련번호 S001~S058로 바꿈. 코드에 화면 아이디 대장(SCREEN_IDS, 다음 번호 S059) — 번호는 다시 쓰지 않고, 없앤 화면은 「폐기」로 남김. 이 휴대폰에 저장된 이전 측정은 열 때 한 번 새 아이디로 자동 변환. 시작 화면 아래에 「화면 아이디 대장」 보기"]
 ];
 // 지금은 베타: 숫자 번호는 「베타 rev N」으로 보인다. 정식 v1이 되면 그때부터 번호를 문자열("1","2"…)로 적어 「rev 1」부터 센다 (유지호 2026-10-22).
 const revName=n=>typeof n==="string"?"rev "+n:"베타 rev "+n;
