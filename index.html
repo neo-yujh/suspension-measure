@@ -249,8 +249,9 @@ async function showList(){
   c.appendChild(el("div","small","측정 범위"));
   const sg=el("div","opts");let scope="all";
   SCOPES.forEach(([val,name,later])=>{const o=el("button","opt");o.type="button";o.setAttribute("aria-pressed",val===scope?"true":"false");
-    o.appendChild(el("span",null,name));if(later)o.appendChild(el("span","small muted","나중에 만듦"));
-    if(later)o.disabled=true;
+    o.appendChild(el("span",null,name));
+    // 범위 거르기는 화면을 끝까지 만든 뒤 구현 (유지호 2026-10-22) — 그전까지 「전체」만 쓸 수 있다
+    if(later||val!=="all"){o.appendChild(el("span","small muted","미구현"));o.disabled=true}
     o.onclick=()=>{scope=val;sg.querySelectorAll(".opt").forEach(x=>x.setAttribute("aria-pressed","false"));o.setAttribute("aria-pressed","true")};sg.appendChild(o)});
   c.appendChild(sg);
   c.appendChild(el("p","small muted","지금은 고른 범위만 기록됩니다. 범위에 맞는 단계만 보여 주는 기능은 아직 없습니다."));
@@ -517,7 +518,8 @@ const CHANGELOG=[
  [37,"2026-10-22 15:43","특이사항(메모·사진)을 측정 박스에서 떼어 아래 별도 점선 박스로 분리"],
  [38,"2026-10-22 15:48","드룹 범프스토퍼 다음에 차고파이프 장착부 화면 (분리형일 때만, 프론트 B16 · 리어 F16, 직접 입력 + 사진 1장 필수)"],
  [39,"2026-10-22 15:52","보기를 바꿔 조건이 안 맞게 된 화면의 값 자동 삭제(알림 표시) · 서스펜션 유형 판스프링이면 스프링 형태·스프링 길이(정하중·드룹) 화면 건너뜀"],
- [40,"2026-10-22 15:53","차고파이프 장착부: 직접 입력 → 드롭다운 상단 / 하단 / 직접 입력(기타)"]
+ [40,"2026-10-22 15:53","차고파이프 장착부: 직접 입력 → 드롭다운 상단 / 하단 / 직접 입력(기타)"],
+ [41,"2026-10-22 15:53","측정 범위: 「전체」만 고를 수 있게 하고 나머지(프론트·리어·스프링·댐퍼·커스텀)는 미구현으로 비활성화"]
 ];
 (function(){const last=CHANGELOG[CHANGELOG.length-1],tag=document.getElementById("revtag"),box=document.getElementById("revlog");
 tag.textContent="rev "+last[0]+" · "+last[1];
