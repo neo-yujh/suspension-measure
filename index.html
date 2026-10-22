@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>서스펜션 측정 실행</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+/* 휴대폰 한 손 조작: 위 진행 막대, 가운데 할 일 카드 하나, 아래 고정 버튼. 기록·사진은 이 휴대폰 브라우저 안(IndexedDB)에만 저장하고, 끝나면 ZIP 하나로 묶어 구글 드라이브에 올린다. */
+:root{
+  --bg:#f4f5f2; --card:#ffffff; --ink:#1c2830; --muted:#5d6b72; --line:#c3ccd0;
+  --accent:#0e6b6f; --accent-ink:#ffffff; --hand:#9a520c; --hand-bg:#fbefe0;
+  --ok:#2f7a3a; --warn:#a2560c; --sel-bg:#e1f2f1; --icon:#1c2830;
+  --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#131a1e; --card:#1c252a; --ink:#e4e9eb; --muted:#9caab0; --line:#3d4b51;
+  --accent:#5cc4bf; --accent-ink:#0d1a1c; --hand:#f0b073; --hand-bg:#3a2a19;
+  --ok:#7ccf88; --warn:#f0b073; --sel-bg:#173634; --icon:#e4e9eb; color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.app{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:calc(12px + env(safe-area-inset-top,0px));padding-bottom:110px;max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+h1{font-size:19px;margin:0} h2{font-size:17px;margin:0}
+.muted{color:var(--muted)} .small{font-size:13px} .mono{font-family:var(--f-mono)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.btn{font:inherit;font-size:15px;border-radius:8px;padding:10px 14px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;min-height:44px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+.btn:disabled{opacity:.45}
+.btn:focus-visible,input:focus-visible,.opt:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input[type=text],input[type=number],input[type=date]{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px;width:100%;min-height:44px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+.fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.unit{display:flex;align-items:center;gap:6px} .unit span{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.cell{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.progress{height:6px;background:var(--line);border-radius:3px;overflow:hidden} .progress>i{display:block;height:100%;background:var(--accent)}
+.stagebar{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted)}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.opt{font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px;cursor:pointer;display:flex;flex-direction:column;gap:6px;align-items:center;min-height:44px}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--sel-bg);font-weight:700}
+.opt svg{width:72px;height:56px;stroke:var(--icon);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.photos{display:flex;gap:8px;flex-wrap:wrap}
+.ph{width:88px;height:88px;border-radius:6px;border:1px solid var(--line);object-fit:cover}
+.phbtn{width:88px;height:88px;border-radius:6px;border:1px dashed var(--line);display:flex;align-items:center;justify-content:center;text-align:center;font-size:12px;color:var(--muted);cursor:pointer;background:var(--bg);font-family:inherit}
+.footer{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.footer .in{max-width:640px;margin:0 auto;display:flex;gap:8px} .footer .btn{flex:1}
+.status{font-size:12px;color:var(--muted);min-height:1.5em;margin:0} .status.err{color:var(--warn)}
+.runrow{display:flex;justify-content:space-between;gap:8px;align-items:center} .grow{flex:1 1 auto;min-width:0}
+.check{display:flex;gap:8px;align-items:center;font-size:14px} .check input{width:22px;height:22px}
+.calc{font-size:13px;color:var(--muted)}
+.hidden{display:none!important}
+/* 화면 안 카메라 */
+.cam{position:fixed;inset:0;background:#000;z-index:30;display:flex;flex-direction:column}
+.cam video{flex:1;width:100%;min-height:0;object-fit:contain;background:#000}
+.cam .bar{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:12px max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:#000}
+.cam .shutter{width:72px;height:72px;border-radius:50%;border:4px solid #fff;background:#fff;box-shadow:inset 0 0 0 4px #000;cursor:pointer}
+.cam .side{min-width:88px;color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:8px 10px;font:inherit;font-size:13px;cursor:pointer}
+.cam .hint{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));left:0;right:0;text-align:center;color:#fff;font-size:14px;text-shadow:0 1px 3px #000;padding:0 16px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header><h1>서스펜션 측정 실행</h1><p class="small muted" style="margin:2px 0 0">기록과 사진은 이 휴대폰에만 저장됩니다. 끝나면 ZIP으로 묶어 구글 드라이브에 올리세요.</p></header>
+  <div id="view"></div>
+  <p class="status" id="status" role="status"></p>
+</div>
+<div class="footer hidden" id="footer"><div class="in">
+  <button type="button" class="btn" id="prev">이전</button>
+  <button type="button" class="btn primary" id="next">확인 · 다음</button>
+</div></div>
+<input type="file" id="filepick" accept="image/*" capture="environment" class="hidden">
+
+<script>
+/* ===== 형태 선 그림 (도면 그림이 아니라 단순 아이콘) ===== */
+const ICON={
+ coil:'<path d="M36 4v8M28 12h16v36H28zM24 18l24 6M24 26l24 6M24 34l24 6M36 48v6"/>',
+ sep:'<path d="M36 4v10M30 14h12v34H30zM36 48v6"/>',
+ plate:'<path d="M12 46 36 8l24 38z"/><circle cx="36" cy="16" r="3"/><circle cx="20" cy="40" r="3"/><circle cx="52" cy="40" r="3"/><circle cx="36" cy="32" r="7"/>',
+ eye:'<circle cx="36" cy="26" r="16"/><circle cx="36" cy="26" r="7"/><path d="M36 42v12"/>',
+ rod:'<path d="M36 4v46M30 10h12M30 16h12M30 22h12M28 34h16"/>',
+ minsert:'<path d="M28 4v38a8 8 0 0 0 16 0V4"/><path d="M44 30h10v6H44"/>',
+ mclevis:'<path d="M30 4v20M42 4v20M22 20h28v32H22z"/><circle cx="36" cy="30" r="3"/><circle cx="36" cy="44" r="3"/>',
+ fork:'<path d="M36 4v14M20 18h32M20 18v30M52 18v30"/><circle cx="20" cy="40" r="3"/><circle cx="52" cy="40" r="3"/>',
+ fork4:'<path d="M36 4v10M28 14h16l12 14v22M28 14 16 28v22"/><circle cx="16" cy="44" r="3"/><circle cx="56" cy="44" r="3"/>',
+ tab:'<circle cx="34" cy="28" r="16"/><path d="M50 26h8v4h-8"/>',
+ other:'<circle cx="36" cy="28" r="16" stroke-dasharray="4 4"/><path d="M33 24a4 4 0 1 1 5 4v4M36 37v1"/>',
+ stud:'<path d="M36 4v20M30 24h12v8H30zM36 32v20M31 38h10M31 44h10"/>'
+};
+const svg=k=>'<svg viewBox="0 0 72 56" aria-hidden="true">'+(ICON[k]||"")+'</svg>';
+const SHAPES={
+  susp:[["맥퍼슨"],["더블위시본"],["멀티링크"],["토션빔"],["판스프링"],["5링크"]],
+  type:[["coil","코일오버형"],["sep","분리형 댐퍼"]],
+  top:[["plate","마운트 판"],["eye","아이"],["rod","로드·스터드"]],
+  low:[["minsert","맥퍼슨 인서트"],["mclevis","맥퍼슨 클레비스"],["eye","아이"],["fork","포크"],["fork4","4WD 포크"],["tab","인서트(너클 탭)"],["other","기타"],["stud","스터드"]]
+};
+/* ===== 측정 순서 (마인드맵 0~2단계). cell = 측정시트 v.261008 첫 탭 칸 위치 (제목 줄 바로 아래 줄을 값 칸으로 봄 — 확인 필요) ===== */
+const TASKS=[
+ {id:"0-F",st:0,kind:"shape",axle:"F",title:"앞 쇽업소버 형태 고르기",tip:"모양을 보고 고릅니다. 뒤 단계의 가지가 여기서 정해집니다."},
+ {id:"0-R",st:0,kind:"shape",axle:"R",title:"뒤 쇽업소버 형태 고르기",tip:"앞과 같으면 「앞과 같음」."},
+ {id:"1-01",st:1,kind:"photo",title:"외관 사진 4면",tip:"정면 · 우측면 · 후면 · 좌측면. 스크래치·도장 상태가 보이게.",shots:4},
+ {id:"1-02",st:1,kind:"photo",title:"대각선 사진 2면",tip:"대각선 전-측면, 후-측면.",shots:2},
+ {id:"1-03",st:1,kind:"photo",title:"차대번호 · 제원표 사진",tip:"차대번호, 운전석 도어 안쪽 차대 식별판. 없으면 차량등록증.",shots:2},
+ {id:"1-04",st:1,kind:"form",title:"기본정보",tip:"측정시트 3행.",fields:[["date","측정일","A3","date"],["worker","작업자","B3"],["maker","차량 메이커","C3"],["model","모델명 (예: 쏘나타)","D3"],["code","코드명 (예: DN8)","E3"],["trim","세부모델 (예: 2.5T 2WD EDC)","F3"],["year","연식","H3"],["owner","고객/차주명","I3"]]},
+ {id:"1-05",st:1,kind:"form",title:"타이어 사이즈 · 세팅상태",tip:"타이어 옆면 표기 그대로. 예: 235/35R20",fields:[["tireF","앞 타이어","B14"],["tireR","뒤 타이어","F14"],["setting","세팅상태 (OE · 다운스프링 · 튜닝품명)","A7"]]},
+ {id:"2-05",st:2,kind:"photo",title:"순정 차고 측면 사진",tip:"작업 전, 차가 바닥에 있는 상태.",shots:1},
+ {id:"2-06",st:2,kind:"form",title:"앞 휀더 갭 · 림 외경",tip:"휀더 갭: 타이어 윗면 ↔ 휀더 안쪽 끝. 줄자 눈금이 보이게 찍으세요.",fields:[["gapF","휀더 갭","B7","mm"],["rimF","림 외경","E7","mm"]],shots:1},
+ {id:"2-07",st:2,kind:"form",title:"뒤 휀더 갭 · 림 외경",tip:"앞과 같은 방법.",fields:[["gapR","휀더 갭","F7","mm"],["rimR","림 외경","I7","mm"]],shots:1},
+ {id:"2-08",st:2,kind:"hub",title:"앞 허브 센터 ↔ 휀더",tip:"잰 점을 표시해 두세요. 들었을 때 같은 점을 다시 잽니다.",cell:"B10",rimKey:"rimF",shots:1},
+ {id:"2-09",st:2,kind:"measure",title:"앞 댐퍼 체결부 기준 전장",tip:"잰 점을 표시해 두세요.",cell:"C10",shots:1},
+ {id:"2-10",st:2,kind:"measure",title:"앞 스프링 양끝 길이",tip:"상단 패드 ↔ 하단 패드. 잰 점을 표시해 두세요.",cell:"D10",shots:1},
+ {id:"2-11",st:2,kind:"measure",title:"앞 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼가 차대에 있을 때만.",cell:"E10",shots:1,optional:true},
+ {id:"2-12a",st:2,kind:"hub",title:"뒤 허브 센터 ↔ 휀더",tip:"잰 점을 표시해 두세요.",cell:"F10",rimKey:"rimR",shots:1},
+ {id:"2-12b",st:2,kind:"measure",title:"뒤 댐퍼 체결부 기준 전장",tip:"분리형이면 댐퍼만.",cell:"G10",shots:1},
+ {id:"2-12c",st:2,kind:"measure",title:"뒤 스프링 양끝 길이",tip:"분리형이면 스프링만 따로.",cell:"H10",shots:1},
+ {id:"2-12d",st:2,kind:"measure",title:"뒤 범프스토퍼 끝 ↔ 차대",tip:"차대 범프스토퍼일 때만.",cell:"I10",shots:1,optional:true},
+ {id:"2-13",st:2,kind:"photo",title:"상단마운트 사진 (위에서 수직)",tip:"앞뒤 상단마운트의 형태·위치·각도가 보이게.",shots:2},
+ {id:"2-14",st:2,kind:"form",title:"상단마운트 위쪽 여유 공간",tip:"조절 다이얼·탑핀이 튀어나와도 닿지 않는지. 가장 가까운 부품까지 거리.",fields:[["topClrF","앞 여유 거리",null,"mm"],["topClrR","뒤 여유 거리",null,"mm"]],shots:2}
+];
+const STAGES=["0 형태 고르기","1 사진·기본정보","2 내렸을 때"];
+
+/* ===== 휴대폰 저장소 (IndexedDB) ===== */
+let idb=null;
+function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open("measure-runner",1);r.onupgradeneeded=()=>{const d=r.result;d.createObjectStore("runs",{keyPath:"id"});const p=d.createObjectStore("photos",{keyPath:"id"});p.createIndex("run","runId")};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+function tx(store,mode,fn){return new Promise((res,rej)=>{const t=idb.transaction(store,mode);const s=t.objectStore(store);const out=fn(s);t.oncomplete=()=>res(out&&out.result!==undefined?out.result:out);t.onerror=()=>rej(t.error)})}
+const getAll=(store)=>tx(store,"readonly",s=>s.getAll());
+const put=(store,v)=>tx(store,"readwrite",s=>s.put(v));
+const del=(store,k)=>tx(store,"readwrite",s=>s.delete(k));
+function photosOf(runId){return new Promise((res,rej)=>{const t=idb.transaction("photos");const q=t.objectStore("photos").index("run").getAll(runId);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
+
+/* ===== 상태 ===== */
+let run=null, idx=0, collect=null, confirmSkip=false;
+const $=s=>document.querySelector(s);
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const status=(m,err)=>{const s=$("#status");s.textContent=m||"";s.classList.toggle("err",!!err)};
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+async function save(){run.updatedAt=new Date().toISOString();run.pos=idx;await put("runs",JSON.parse(JSON.stringify(run)));status("저장됨 · "+new Date().toLocaleTimeString())}
+
+/* ===== 사진: 화면 안 카메라, 안 되면 휴대폰 카메라 앱 ===== */
+let camStream=null;
+async function takePhoto(task){
+  if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)){return pickFile(task)}
+  try{camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1920},height:{ideal:1080}},audio:false})}
+  catch(e){status("카메라를 쓸 수 없어 휴대폰 카메라 앱으로 엽니다 ("+e.name+").",true);return pickFile(task)}
+  const box=el("div","cam");const v=el("video");v.playsInline=true;v.muted=true;v.autoplay=true;v.srcObject=camStream;box.appendChild(v);
+  box.appendChild(el("div","hint",task.title+" · "+((run.photos[task.id]||[]).length+1)+"번째"));
+  const bar=el("div","bar");const close=el("button","side","닫기");close.type="button";
+  const shut=el("button","shutter");shut.type="button";shut.setAttribute("aria-label","찍기");
+  const torch=el("button","side","플래시 끔");torch.type="button";
+  bar.appendChild(close);bar.appendChild(shut);bar.appendChild(torch);box.appendChild(bar);document.body.appendChild(box);
+  const track=camStream.getVideoTracks()[0];let on=false;
+  const caps=track.getCapabilities?track.getCapabilities():{};
+  if(!caps.torch){torch.disabled=true;torch.textContent="플래시 없음"}
+  torch.onclick=async()=>{try{on=!on;await track.applyConstraints({advanced:[{torch:on}]});torch.textContent=on?"플래시 켬":"플래시 끔"}catch(e){torch.disabled=true}};
+  const stop=()=>{camStream.getTracks().forEach(t=>t.stop());camStream=null;box.remove()};
+  close.onclick=stop;
+  shut.onclick=async()=>{
+    const c=document.createElement("canvas");c.width=v.videoWidth;c.height=v.videoHeight;c.getContext("2d").drawImage(v,0,0);
+    const blob=await new Promise(r=>c.toBlob(r,"image/jpeg",0.88));
+    shut.disabled=true;await storePhoto(task,blob);shut.disabled=false;
+    box.querySelector(".hint").textContent=task.title+" · "+((run.photos[task.id]||[]).length+1)+"번째 (찍은 것 "+(run.photos[task.id]||[]).length+"장)";
+  };
+}
+function pickFile(task){const fp=$("#filepick");fp.onchange=async()=>{const f=fp.files[0];fp.value="";if(!f)return;const blob=await shrink(f);await storePhoto(task,blob)};fp.click()}
+async function shrink(file){const bmp=await createImageBitmap(file);const k=Math.min(1,2400/Math.max(bmp.width,bmp.height));const c=document.createElement("canvas");c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);c.getContext("2d").drawImage(bmp,0,0,c.width,c.height);return new Promise(r=>c.toBlob(r,"image/jpeg",0.88))}
+async function storePhoto(task,blob){
+  const id=uid();const n=(run.photos[task.id]||[]).length+1;
+  await put("photos",{id,runId:run.id,taskId:task.id,n,blob,at:new Date().toISOString()});
+  (run.photos[task.id]=run.photos[task.id]||[]).push(id);await save();refreshPhotos(task);
+}
+const urls=new Map();
+async function refreshPhotos(task){
+  const wrap=document.getElementById("pw-"+task.id);if(!wrap)return;wrap.textContent="";
+  const all=await photosOf(run.id);const mine=all.filter(p=>p.taskId===task.id).sort((a,b)=>a.n-b.n);
+  mine.forEach(p=>{if(!urls.has(p.id))urls.set(p.id,URL.createObjectURL(p.blob));const im=el("img","ph");im.src=urls.get(p.id);im.alt=task.title+" 사진 "+p.n;
+    im.onclick=async()=>{if(confirmDel===p.id){await del("photos",p.id);run.photos[task.id]=(run.photos[task.id]||[]).filter(x=>x!==p.id);await save();confirmDel=null;refreshPhotos(task);status("사진을 지웠습니다.")}else{confirmDel=p.id;status("이 사진을 지우려면 한 번 더 누르세요.",true)}};
+    wrap.appendChild(im)});
+  const b=el("button","phbtn","사진 찍기 +");b.type="button";b.onclick=()=>takePhoto(task);wrap.appendChild(b);
+  const cap=document.getElementById("pc-"+task.id);if(cap)cap.textContent="사진 "+mine.length+" / 권장 "+task.shots+"장 · 사진을 두 번 누르면 지움";
+}
+let confirmDel=null;
+function photoBlock(t){const box=el("div");const cap=el("div","small muted");cap.id="pc-"+t.id;const w=el("div","photos");w.id="pw-"+t.id;box.appendChild(cap);box.appendChild(w);setTimeout(()=>refreshPhotos(t));return box}
+
+/* ===== 목록 화면 ===== */
+async function showList(){
+  $("#footer").classList.add("hidden");const v=$("#view");v.textContent="";
+  const c=el("div","card");c.appendChild(el("h2",null,"새 측정 시작"));
+  const lab=el("label","f","차량 이름 (예: 마세라티 그란투리스모 2018)");const inp=el("input");inp.type="text";inp.id="newtitle";lab.appendChild(inp);c.appendChild(lab);
+  const b=el("button","btn primary","시작");b.type="button";
+  b.onclick=async()=>{const t=inp.value.trim();if(!t){status("차량 이름을 적어 주세요.",true);inp.focus();return}
+    run={id:uid(),title:t,createdAt:new Date().toISOString(),pos:0,shape:{F:{},R:{}},values:{},photos:{},skipped:{}};idx=0;await save();showTask()};
+  c.appendChild(b);v.appendChild(c);
+  const lc=el("div","card");lc.appendChild(el("h2",null,"이 휴대폰에 저장된 측정"));v.appendChild(lc);
+  const runs=(await getAll("runs")).sort((a,b)=>(b.updatedAt||"").localeCompare(a.updatedAt||""));
+  if(!runs.length)lc.appendChild(el("p","small muted","아직 없습니다. 위에서 차량 이름을 적고 시작하세요."));
+  runs.forEach(r=>{const row=el("div","runrow");const left=el("div","grow");left.appendChild(el("div",null,r.title));
+    left.appendChild(el("div","small muted",(r.updatedAt||"").slice(0,16).replace("T"," ")+" · "+Math.min((r.pos||0)+1,TASKS.length)+"/"+TASKS.length+(r.exportedAt?" · ZIP 만듦":"")));
+    const go=el("button","btn","이어서");go.type="button";go.onclick=()=>{run=r;idx=Math.min(r.pos||0,TASKS.length-1);showTask()};
+    const zip=el("button","btn","ZIP");zip.type="button";zip.onclick=()=>{run=r;exportZip()};
+    row.appendChild(left);row.appendChild(zip);row.appendChild(go);lc.appendChild(row)});
+  if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().catch(()=>{})}
+}
+
+/* ===== 할 일 화면 ===== */
+function showTask(){
+  $("#footer").classList.remove("hidden");const t=TASKS[idx];const v=$("#view");v.textContent="";collect=null;confirmSkip=false;
+  const top=el("div");const pr=el("div","progress");const bar=el("i");bar.style.width=(idx/TASKS.length*100)+"%";pr.appendChild(bar);top.appendChild(pr);
+  const sb=el("div","stagebar");sb.appendChild(el("span",null,run.title));sb.appendChild(el("span",null,STAGES[t.st]+" · "+(idx+1)+"/"+TASKS.length));top.appendChild(sb);v.appendChild(top);
+  const c=el("div","card");const h=el("h2");h.appendChild(el("span","mono muted",t.id+" "));h.appendChild(document.createTextNode(t.title));c.appendChild(h);
+  if(t.tip)c.appendChild(el("p","small muted",t.tip));
+  if(t.kind==="shape")shapeUI(t,c);
+  if(t.kind==="form")formUI(t,c);
+  if(t.kind==="measure"||t.kind==="hub")measureUI(t,c);
+  if(t.shots)c.appendChild(photoBlock(t));
+  v.appendChild(c);
+  const back=el("button","btn","측정 목록으로");back.type="button";back.onclick=async()=>{if(collect)collect();await save();showList()};v.appendChild(back);
+  $("#prev").disabled=idx===0;$("#next").textContent=idx===TASKS.length-1?"확인 · 끝":"확인 · 다음";window.scrollTo(0,0);
+}
+function shapeUI(t,c){
+  const cur=run.shape[t.axle]=run.shape[t.axle]||{};
+  if(t.axle==="R"){const same=el("button","btn","앞과 같음");same.type="button";same.onclick=()=>{run.shape.R=JSON.parse(JSON.stringify(run.shape.F));showTask()};c.appendChild(same)}
+  [["susp","서스펜션 유형 → "+(t.axle==="F"?"C7":"G7")],["type","스프링"],["top","상단 끝"],["low","하단 끝"]].forEach(([k,label])=>{
+    c.appendChild(el("div","small",label));const g=el("div","opts");
+    SHAPES[k].forEach(([val,name])=>{const b=el("button","opt");b.type="button";b.setAttribute("aria-pressed",cur[k]===val?"true":"false");
+      if(ICON[val]&&k!=="susp"){const s=document.createElement("span");s.innerHTML=svg(val);b.appendChild(s)}
+      b.appendChild(el("span",null,name||val));
+      b.onclick=()=>{cur[k]=val;g.querySelectorAll(".opt").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true")};g.appendChild(b)});
+    c.appendChild(g)});
+  collect=()=>{if(cur.susp)run.values["susp"+t.axle]={v:cur.susp,cell:t.axle==="F"?"C7":"G7",label:(t.axle==="F"?"앞":"뒤")+" 서스펜션 유형",task:t.id}};
+}
+function fieldInput(key,label,cell,unit){
+  const lab=el("label","f");const top=el("span",null,label+" ");if(cell)top.appendChild(el("span","cell","→ "+cell));lab.appendChild(top);
+  const inp=el("input");inp.id="f-"+key;const pv=run.values[key];
+  if(unit==="date"){inp.type="date";inp.value=(pv&&pv.v)||today()}
+  else if(unit==="mm"){inp.type="number";inp.inputMode="decimal";inp.step="0.5";inp.value=pv?(pv.raw!=null?pv.raw:pv.v):""}
+  else{inp.type="text";inp.value=pv?pv.v:""}
+  if(unit==="mm"){const u=el("div","unit");u.appendChild(inp);u.appendChild(el("span",null,"mm"));lab.appendChild(u)}else lab.appendChild(inp);
+  return [lab,inp];
+}
+function formUI(t,c){
+  const g=el("div","fields");const ins=[];
+  t.fields.forEach(([key,label,cell,unit])=>{const [lab,inp]=fieldInput(key,label,cell,unit);g.appendChild(lab);ins.push([key,label,cell,unit,inp])});c.appendChild(g);
+  collect=()=>ins.forEach(([key,label,cell,unit,inp])=>{const val=inp.value.trim();if(val==="")delete run.values[key];else run.values[key]={v:unit==="mm"?Number(val):val,cell,label,unit:unit==="mm"?"mm":undefined,task:t.id}});
+}
+function measureUI(t,c){
+  const key="m"+t.id;const prev=run.values[key];const [lab,inp]=fieldInput(key,"잰 값",t.cell,"mm");c.appendChild(lab);
+  let fromRim=null;
+  if(t.kind==="hub"){const ck=el("label","check");fromRim=el("input");fromRim.type="checkbox";fromRim.id="rim-"+t.id;fromRim.checked=!!(prev&&prev.fromRim);
+    ck.appendChild(fromRim);ck.appendChild(document.createTextNode("림 하단부터 쟀음 (림 외경의 반을 뺀 값을 적습니다)"));c.appendChild(ck);
+    const calc=el("div","calc");c.appendChild(calc);
+    const upd=()=>{const rim=run.values[t.rimKey]&&run.values[t.rimKey].v;const raw=Number(inp.value);calc.textContent=fromRim.checked?(rim?("시트에 적을 값: "+(raw-rim/2).toFixed(1)+" mm (림 외경 "+rim+" mm)"):"림 외경이 비어 있습니다. 앞 단계에서 먼저 적어 주세요."):""};
+    inp.oninput=upd;fromRim.onchange=upd;upd()}
+  let na=null;
+  if(t.optional){const ck=el("label","check");na=el("input");na.type="checkbox";na.id="na-"+t.id;na.checked=!!run.skipped[t.id];ck.appendChild(na);ck.appendChild(document.createTextNode("해당 없음"));c.appendChild(ck)}
+  collect=()=>{
+    if(na&&na.checked){run.skipped[t.id]=true;delete run.values[key];return}delete run.skipped[t.id];
+    const raw=inp.value.trim();if(raw===""){delete run.values[key];return}
+    const r=Number(raw);let val=r,rim=null;
+    if(fromRim&&fromRim.checked){rim=run.values[t.rimKey]&&run.values[t.rimKey].v;if(rim)val=+(r-rim/2).toFixed(1)}
+    run.values[key]={v:val,raw:r,fromRim:!!(fromRim&&fromRim.checked),rim,cell:t.cell,label:t.title,unit:"mm",task:t.id};
+  };
+}
+function missing(t){
+  if(t.kind==="shape"){const s=run.shape[t.axle]||{};return !(s.type&&s.low)}
+  if(t.kind==="measure"||t.kind==="hub")return !run.values["m"+t.id]&&!run.skipped[t.id];
+  if(t.kind==="photo")return !(run.photos[t.id]||[]).length;
+  return false;
+}
+async function go(d){
+  if(collect)collect();const t=TASKS[idx];
+  if(d>0&&missing(t)&&!confirmSkip){confirmSkip=true;status(t.kind==="shape"?"스프링과 하단 끝을 골라 주세요. 그대로 넘어가려면 한 번 더 누르세요.":"비어 있습니다. 비워 두고 넘어가려면 한 번 더 누르세요.",true);return}
+  if(d>0&&idx===TASKS.length-1){await save();showEnd();return}
+  idx=Math.max(0,Math.min(TASKS.length-1,idx+d));await save();showTask();
+}
+function showEnd(){
+  $("#footer").classList.add("hidden");const v=$("#view");v.textContent="";
+  const c=el("div","card");c.appendChild(el("h2",null,"0~2단계 끝"));
+  const empty=TASKS.filter(missing);c.appendChild(el("p","small",empty.length?("빈 단계: "+empty.map(t=>t.id).join(", ")):"빈 단계 없음"));
+  c.appendChild(el("p","small muted","「ZIP 만들기」를 누르면 기록(record.json)과 사진이 한 파일로 묶입니다. 공유 창에서 「Drive」를 고르거나, 저장된 파일을 구글 드라이브 앱에서 올리세요."));
+  const z=el("button","btn primary","ZIP 만들기");z.type="button";z.onclick=exportZip;c.appendChild(z);
+  const back=el("button","btn","측정 목록으로");back.type="button";back.onclick=showList;c.appendChild(back);v.appendChild(c);
+}
+
+/* ===== ZIP 묶음 ===== */
+const safe=s=>String(s).replace(/[\\/:*?"<>|\s]+/g,"_").slice(0,40);
+async function exportZip(){
+  if(!window.JSZip){status("ZIP 도구를 불러오지 못했습니다. 인터넷 연결 후 다시 여세요.",true);return}
+  status("ZIP 만드는 중…");
+  const zip=new JSZip();const photos=await photosOf(run.id);const list={};
+  photos.sort((a,b)=>a.taskId.localeCompare(b.taskId)||a.n-b.n).forEach(p=>{const name="photos/"+p.taskId+"_"+String(p.n).padStart(2,"0")+".jpg";zip.file(name,p.blob);(list[p.taskId]=list[p.taskId]||[]).push(name)});
+  const record={format:"neotech-suspension-measure/1",sheet:"서스펜션 측정시트_양식_261008.xlsx / 측정시트",title:run.title,createdAt:run.createdAt,updatedAt:run.updatedAt,shape:run.shape,values:run.values,skipped:run.skipped,photos:list,
+    note:"values[*].cell = 측정시트 첫 탭 칸 위치(제목 줄 바로 아래 줄을 값 칸으로 봄 — 확인 필요). fromRim=true면 v는 raw−림외경/2."};
+  zip.file("record.json",JSON.stringify(record,null,1));
+  const blob=await zip.generateAsync({type:"blob"});
+  const fname=(run.createdAt||"").slice(0,10)+"_"+safe(run.title)+"_측정.zip";
+  const file=new File([blob],fname,{type:"application/zip"});
+  run.exportedAt=new Date().toISOString();await save();
+  if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:fname});status("공유 창을 열었습니다: "+fname);return}catch(e){if(e.name==="AbortError"){status("공유를 취소했습니다.");return}}}
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=fname;document.body.appendChild(a);a.click();a.remove();
+  status("휴대폰 「다운로드」에 저장했습니다: "+fname+" · 구글 드라이브 앱에서 올리세요.");
+}
+
+$("#prev").onclick=()=>go(-1);$("#next").onclick=()=>go(1);
+openDB().then(d=>{idb=d;showList()}).catch(e=>status("이 브라우저는 휴대폰 저장소를 쓸 수 없습니다 ("+e+").",true));
+</script>
+</body>
+</html>
