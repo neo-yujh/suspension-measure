@@ -190,7 +190,8 @@ const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=nu
 const status=(m,err)=>{const s=$("#status");s.textContent=m||"";s.classList.toggle("err",!!err)};
 const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
-async function save(){run.updatedAt=new Date().toISOString();run.pos=idx;await put("runs",JSON.parse(JSON.stringify(run)));status("저장됨 · "+new Date().toLocaleTimeString())}
+// 작업한 시간(activeMs): 저장 사이 간격이 10분을 넘으면 쉬다 온 것으로 보고 10분까지만 더한다 (밥·급한 일로 자리 비운 시간 제외)
+async function save(){const nowMs=Date.now();if(run.lastActive){run.activeMs=(run.activeMs||0)+Math.min(nowMs-run.lastActive,10*60*1000)}run.lastActive=nowMs;run.updatedAt=new Date().toISOString();run.pos=idx;await put("runs",JSON.parse(JSON.stringify(run)));status("저장됨 · "+new Date().toLocaleTimeString())}
 
 /* ===== 사진: 화면 안 카메라, 안 되면 휴대폰 카메라 앱 ===== */
 let camStream=null;
@@ -267,7 +268,11 @@ async function showList(){
   const runs=(await getAll("runs")).sort((a,b)=>(b.updatedAt||"").localeCompare(a.updatedAt||""));
   if(!runs.length)lc.appendChild(el("p","small muted","아직 없습니다. 위에서 차량 이름을 적고 시작하세요."));
   runs.forEach(r=>{const row=el("div","runrow");const left=el("div","grow");left.appendChild(el("div",null,r.title));
-    left.appendChild(el("div","small muted",(r.updatedAt||"").slice(0,16).replace("T"," ")+" · "+scopeName(r.scope)+" · "+Math.min((r.pos||0)+1,TASKS.length)+"/"+TASKS.length+(r.exportedAt?" · ZIP 만듦":"")));
+    {const fmt=x=>x?new Date(x).toLocaleString("ko-KR",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false}):"-";
+     const am=Math.round((r.activeMs||0)/60000),dur=am>=60?Math.floor(am/60)+"시간 "+(am%60)+"분":am+"분";
+     const sk=Object.values(r.skipped||{}).filter(x=>x!=="조건 안 맞음").length;
+     left.appendChild(el("div","small muted","시작 "+fmt(r.createdAt)+" · 마지막 수정 "+fmt(r.updatedAt)+" · 작업한 시간 "+dur));
+     left.appendChild(el("div","small muted",scopeName(r.scope)+" · 지금 "+Math.min((r.pos||0)+1,TASKS.length)+"번째 화면 / 전체 "+TASKS.length+" · 건너뛴 항목 "+sk+"개"+(r.exportedAt?" · ZIP 만듦":"")))}
     const go=el("button","btn","이어서");go.type="button";go.onclick=()=>{run=r;idx=Math.min(r.pos||0,TASKS.length-1);showTask()};
     const zip=el("button","btn","ZIP");zip.type="button";zip.onclick=()=>{run=r;exportZip()};
     const rm=el("button","btn","지우기");rm.type="button";rm.onclick=()=>askDelete(r,lc,row);
@@ -564,7 +569,8 @@ const CHANGELOG=[
  [52,"2026-10-22 16:28","화면 제목 앞 번호: 단계 id(예: 3-02t) → 지금 순서대로 자동 번호(1. 2. 3. …). 저장용 id는 그대로"],
  [53,"2026-10-22 16:32","상단 체결부 엔진룸·트렁크 사진 → 「상단 마운트 위쪽 여유 공간」으로 바꿈: 사진 2장(탑뷰 볼트 패턴 + 옆에서 튀어나온 정도·공간, 줄자). 프론트 필수 · 리어 권장"],
  [54,"2026-10-22 16:34","상단 마운트 위쪽 여유 공간: 사진 칸을 ① 탑뷰 · ② 옆에서 로 나눠 각각 「사진 찍기 +」 (비면 어느 칸이 비었는지 알려 줌)"],
- [55,"2026-10-22 16:35","측정마다 수정 기록(언제 · 어느 항목 · 무엇에서 무엇으로) 남김: 값·메모·건너뛰기·사진 추가/삭제. 각 화면 아래 「이 항목 수정 기록」, ZIP의 record.json에 log로 들어감"]
+ [55,"2026-10-22 16:35","측정마다 수정 기록(언제 · 어느 항목 · 무엇에서 무엇으로) 남김: 값·메모·건너뛰기·사진 추가/삭제. 각 화면 아래 「이 항목 수정 기록」, ZIP의 record.json에 log로 들어감"],
+ [56,"2026-10-22 16:38","측정 목록에 시작 시각 · 마지막 수정 시각 · 작업한 시간(10분 넘게 비운 시간 제외) · 지금 몇 번째 화면 · 건너뛴 항목 수 표시"]
 ];
 (function(){const last=CHANGELOG[CHANGELOG.length-1],tag=document.getElementById("revtag"),box=document.getElementById("revlog");
 tag.textContent="rev "+last[0]+" · "+last[1];
