@@ -304,7 +304,7 @@ function showTask(){
   const cs=t.car||"static";const carRow=el("div","carstate");carRow.appendChild(el("span","small muted","차 상태"));
   CARSTATES.forEach(([k,name],i)=>{if(i)carRow.appendChild(el("span","arrow","→"));carRow.appendChild(el("span","cs"+(k===cs?" on":""),name))});
   v.appendChild(carRow);
-  const c=el("div","card");const h=el("h2");h.appendChild(el("span","mono muted",t.id+" "));h.appendChild(document.createTextNode(t.title));c.appendChild(h);
+  const c=el("div","card");const h=el("h2");h.appendChild(el("span","mono muted",(TASKS.indexOf(t)+1)+". ")); // 화면 번호는 지금 순서대로 자동으로 매긴다. 단계 id(t.id)는 저장 기록용이라 바꾸지 않는다h.appendChild(document.createTextNode(t.title));c.appendChild(h);
   if(t.tip)c.appendChild(el("p","small muted",t.tip));
   if(t.kind==="info"&&t.items){const ul=el("ul","small");t.items.forEach(x=>ul.appendChild(el("li",null,x)));c.appendChild(ul)}
   if(t.kind==="choice")choiceUI(t,c);
@@ -533,7 +533,8 @@ const CHANGELOG=[
  [48,"2026-10-22 16:20","리어 상단 체결부 · 트렁크·실내 쪽 사진(권장)을 차 밑 측정이 다 끝난 맨 마지막으로 옮김 (차에서 나와 내장재를 뜯고 찍으니까)"],
  [49,"2026-10-22 16:21","맨 마지막(리어 트렁크 사진 앞)에 프론트 상단 체결부 · 엔진룸 위에서 찍는 사진 추가 (필수, 캠버각 주의 안내)"],
  [50,"2026-10-22 16:22","프론트 엔진룸 상단 체결부 사진 안내를 측정시트 원문(U27 4번 수직 뷰 · 35행 캠버 장공 방향·PCD · 41행)으로 교체"],
- [51,"2026-10-22 16:26","서스펜션 구조 상세 사진: 「줄자로 재서 수치가 보이게」 → 「줄자를 대거나 손가락 몇 개가 들어가는지 함께 찍어 여유 거리를 가늠할 수 있게」"]
+ [51,"2026-10-22 16:26","서스펜션 구조 상세 사진: 「줄자로 재서 수치가 보이게」 → 「줄자를 대거나 손가락 몇 개가 들어가는지 함께 찍어 여유 거리를 가늠할 수 있게」"],
+ [52,"2026-10-22 16:28","화면 제목 앞 번호: 단계 id(예: 3-02t) → 지금 순서대로 자동 번호(1. 2. 3. …). 저장용 id는 그대로"]
 ];
 (function(){const last=CHANGELOG[CHANGELOG.length-1],tag=document.getElementById("revtag"),box=document.getElementById("revlog");
 tag.textContent="rev "+last[0]+" · "+last[1];
