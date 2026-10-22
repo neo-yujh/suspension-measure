@@ -110,6 +110,9 @@ const TASKS=[
  {id:"2-08",st:2,kind:"hub",title:"프론트 타이어 (허브 센터 ↔ 휀더)",tip:"잰 점을 표시해 두세요. 들었을 때 같은 점을 다시 잽니다.",cell:"B10",rimKey:"rimF",shots:1},
  {id:"2-12a",st:2,kind:"hub",title:"리어 타이어 (허브 센터 ↔ 휀더)",tip:"잰 점을 표시해 두세요.",cell:"F10",rimKey:"rimR",shots:1},
  {id:"2-08u",st:2,kind:"info",title:"차 하부로 이동",tip:"여기부터는 차 밑으로 들어가서 잽니다. 차는 바퀴로 선 채 그대로 둡니다. 준비됐으면 「확인 · 다음」.",items:["줄자 · 손전등 챙기기","다음 순서: 프론트 댐퍼 → 프론트 스프링 → 리어 댐퍼 → 리어 스프링"]},
+ {id:"2-04a",st:2,kind:"choice",key:"setting",title:"세팅상태",tip:"지금 달려 있는 서스펜션이 순정인지 튜닝품인지.",cell:"A7",options:["OE (순정)","다운스프링"],other:"튜닝품 (제품명 직접 입력)"},
+ {id:"2-04b",st:2,kind:"choice",key:"suspF",title:"프론트 서스펜션 유형",tip:"차 밑에서 프론트 서스펜션 구조를 보고 고릅니다.",cell:"C7",options:["맥퍼슨","더블위시본","멀티링크","토션빔","판스프링","5링크"],other:"그 밖 (직접 입력)"},
+ {id:"2-04c",st:2,kind:"choice",key:"suspR",title:"리어 서스펜션 유형",tip:"차 밑에서 리어 서스펜션 구조를 보고 고릅니다.",cell:"G7",options:["맥퍼슨","더블위시본","멀티링크","토션빔","판스프링","5링크"],other:"그 밖 (직접 입력)"},
  {id:"2-09",st:2,kind:"measure",title:"프론트 댐퍼 체결부 기준 전장",tip:"잰 점을 표시해 두세요.",cell:"C10",shots:1},
  {id:"2-10",st:2,kind:"measure",title:"프론트 스프링 양끝 길이",tip:"상단 패드 ↔ 하단 패드. 잰 점을 표시해 두세요.",cell:"D10",shots:1},
  {id:"2-12b",st:2,kind:"measure",title:"리어 댐퍼 체결부 기준 전장",tip:"분리형이면 댐퍼만.",cell:"G10",shots:1},
@@ -119,7 +122,7 @@ const TASKS=[
  {id:"1-01",st:1,kind:"photo",title:"외관 사진 4면",tip:"정면 · 우측면 · 후면 · 좌측면. 스크래치·도장 상태가 보이게.",shots:4},
  {id:"1-02",st:1,kind:"photo",title:"대각선 사진 2면",tip:"대각선 전-측면, 후-측면.",shots:2},
  {id:"1-03",st:1,kind:"photo",title:"차대번호 · 제원표 사진",tip:"차대번호, 운전석 도어 안쪽 차대 식별판. 없으면 차량등록증.",shots:2},
- {id:"1-05",st:1,kind:"form",title:"타이어 사이즈 · 세팅상태",tip:"타이어 옆면 표기 그대로. 예: 235/35R20",fields:[["tireF","앞 타이어","B14"],["tireR","뒤 타이어","F14"],["setting","세팅상태 (OE · 다운스프링 · 튜닝품명)","A7"]]},
+ {id:"1-05",st:1,kind:"form",title:"타이어 사이즈",tip:"타이어 옆면 표기 그대로. 예: 235/35R20",fields:[["tireF","앞 타이어","B14"],["tireR","뒤 타이어","F14"]]},
  {id:"2-05",st:2,kind:"photo",title:"순정 차고 측면 사진",tip:"작업 전, 차가 바닥에 있는 상태.",shots:1},
  {id:"2-11",st:2,kind:"measure",title:"프론트 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼가 차대에 있을 때만.",cell:"E10",shots:1,optional:true},
  {id:"2-12d",st:2,kind:"measure",title:"리어 범프스토퍼 끝 ↔ 차대",tip:"차대 범프스토퍼일 때만.",cell:"I10",shots:1,optional:true},
@@ -252,6 +255,7 @@ function showTask(){
   const c=el("div","card");const h=el("h2");h.appendChild(el("span","mono muted",t.id+" "));h.appendChild(document.createTextNode(t.title));c.appendChild(h);
   if(t.tip)c.appendChild(el("p","small muted",t.tip));
   if(t.kind==="info"&&t.items){const ul=el("ul","small");t.items.forEach(x=>ul.appendChild(el("li",null,x)));c.appendChild(ul)}
+  if(t.kind==="choice")choiceUI(t,c);
   if(t.kind==="shape")shapeUI(t,c);
   if(t.kind==="form")formUI(t,c);
   if(t.kind==="measure"||t.kind==="hub")measureUI(t,c);
@@ -260,17 +264,28 @@ function showTask(){
   const back=el("button","btn","측정 목록으로");back.type="button";back.onclick=async()=>{if(collect)collect();await save();showList()};v.appendChild(back);
   $("#prev").disabled=idx===0;$("#next").textContent=idx===TASKS.length-1?"확인 · 끝":"확인 · 다음";window.scrollTo(0,0);
 }
+function choiceUI(t,c){
+  // 보기 중 하나를 누르거나 「직접 입력」을 골라 적는다. 값은 하나만.
+  const pv=run.values[t.key];const cur=pv?String(pv.v):"";
+  c.appendChild(el("div","cell","→ "+t.cell));
+  const g=el("div","opts");let pick=t.options.includes(cur)?cur:(cur?"__other":"");
+  const free=el("input");free.type="text";free.id="o-"+t.key;free.placeholder="직접 입력";free.value=pick==="__other"?cur:"";
+  const all=t.options.map(o=>[o,o]).concat([["__other",t.other||"직접 입력"]]);
+  all.forEach(([v,label])=>{const b=el("button","opt",label);b.type="button";b.setAttribute("aria-pressed",pick===v?"true":"false");
+    b.onclick=()=>{pick=v;g.querySelectorAll(".opt").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true");free.classList.toggle("hidden",v!=="__other");if(v==="__other")free.focus()};g.appendChild(b)});
+  c.appendChild(g);free.classList.toggle("hidden",pick!=="__other");c.appendChild(free);
+  collect=()=>{const val=pick==="__other"?free.value.trim():pick;if(!val){delete run.values[t.key];return}run.values[t.key]={v:val,cell:t.cell,label:t.title,task:t.id}};
+}
 function shapeUI(t,c){
   const cur=run.shape[t.axle]=run.shape[t.axle]||{};
   if(t.axle==="R"){const same=el("button","btn","앞과 같음");same.type="button";same.onclick=()=>{run.shape.R=JSON.parse(JSON.stringify(run.shape.F));showTask()};c.appendChild(same)}
-  [["susp","서스펜션 유형 → "+(t.axle==="F"?"C7":"G7")],["type","스프링"],["top","상단 끝"],["low","하단 끝"]].forEach(([k,label])=>{
+  [["type","스프링"],["top","상단 끝"],["low","하단 끝"]].forEach(([k,label])=>{
     c.appendChild(el("div","small",label));const g=el("div","opts");
     SHAPES[k].forEach(([val,name])=>{const b=el("button","opt");b.type="button";b.setAttribute("aria-pressed",cur[k]===val?"true":"false");
       if(ICON[val]&&k!=="susp"){const s=document.createElement("span");s.innerHTML=svg(val);b.appendChild(s)}
       b.appendChild(el("span",null,name||val));
       b.onclick=()=>{cur[k]=val;g.querySelectorAll(".opt").forEach(x=>x.setAttribute("aria-pressed","false"));b.setAttribute("aria-pressed","true")};g.appendChild(b)});
     c.appendChild(g)});
-  collect=()=>{if(cur.susp)run.values["susp"+t.axle]={v:cur.susp,cell:t.axle==="F"?"C7":"G7",label:(t.axle==="F"?"앞":"뒤")+" 서스펜션 유형",task:t.id}};
 }
 function fieldInput(key,label,cell,unit){
   const lab=el("label","f");const top=el("span",null,label+" ");if(cell)top.appendChild(el("span","cell","→ "+cell));lab.appendChild(top);
@@ -322,6 +337,7 @@ function missing(t){
   if(t.kind==="shape"){const s=run.shape[t.axle]||{};return !(s.type&&s.low)}
   if(t.kind==="measure"||t.kind==="hub")return !run.values[t.key||("m"+t.id)]&&!run.skipped[t.id];
   if(t.kind==="photo")return !(run.photos[t.id]||[]).length;
+  if(t.kind==="choice")return !run.values[t.key];
   return false;
 }
 async function go(d){
