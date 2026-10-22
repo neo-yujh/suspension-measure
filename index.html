@@ -77,6 +77,7 @@ label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mu
 <div class="footer hidden" id="footer"><div class="in">
   <button type="button" class="btn" id="prev">이전</button>
   <button type="button" class="btn primary" id="next">확인 · 다음</button>
+  <button type="button" class="btn" id="devskip" style="flex:none;border-style:dashed;font-size:12px;opacity:.7">개발용 건너뛰기</button>
 </div></div>
 <input type="file" id="filepick" accept="image/*" capture="environment" class="hidden">
 
@@ -121,9 +122,9 @@ const TASKS=[
  {id:"2-12a",st:2,kind:"hub",title:"리어 타이어 (허브 센터 ↔ 휀더)",tip:"잰 점을 표시해 두세요.",cell:"F10",rimKey:"rimR",shots:1},
  {id:"2-08u",st:2,kind:"info",title:"차 하부로 이동",tip:"여기부터는 차 밑으로 들어가서 잽니다. 차는 바퀴로 선 채 그대로 둡니다. 준비됐으면 「확인 · 다음」.",items:["줄자 · 손전등 챙기기","다음 순서: 프론트 댐퍼 → 프론트 스프링 → 리어 댐퍼 → 리어 스프링"]},
  {id:"2-04a",st:2,kind:"choice",key:"setting",title:"세팅상태",tip:"지금 달려 있는 서스펜션이 순정인지 튜닝품인지.",cell:"A7",options:["OE (순정)","다운스프링"],other:"튜닝품 (제품명 직접 입력)"},
- {id:"2-04b",st:2,kind:"choice",key:"suspF",title:"프론트 서스펜션 유형",tip:"차 밑에서 프론트 서스펜션 구조를 보고 고릅니다. 구조가 보이게 사진을 한 장 찍어 두면 나중에 참고할 수 있습니다 (안 찍어도 넘어갈 수 있음).",cell:"C7",options:["맥퍼슨","더블위시본","멀티링크","토션빔","판스프링","5링크"],other:"그 밖 (직접 입력)",shots:1},
+ {id:"2-04b",st:2,kind:"choice",key:"suspF",title:"프론트 서스펜션 유형",tip:"차 밑에서 프론트 서스펜션 구조를 보고 고릅니다. 구조가 보이게 사진을 찍으세요.",cell:"C7",options:["맥퍼슨","더블위시본","멀티링크","토션빔","판스프링","5링크"],other:"그 밖 (직접 입력)",shots:1},
  {id:"2-04b2",st:2,kind:"choice",key:"springF",title:"프론트 스프링 형태",tip:"스프링이 쇽업소버에 끼워져 있으면 코일오버, 스프링이 따로 달려 있으면 분리형입니다.",cell:null,options:["코일오버","분리형"],noOther:true},
- {id:"2-04c",st:2,kind:"choice",key:"suspR",title:"리어 서스펜션 유형",tip:"차 밑에서 리어 서스펜션 구조를 보고 고릅니다. 구조가 보이게 사진을 한 장 찍어 두면 나중에 참고할 수 있습니다 (안 찍어도 넘어갈 수 있음).",cell:"G7",options:["맥퍼슨","더블위시본","멀티링크","토션빔","판스프링","5링크"],other:"그 밖 (직접 입력)",shots:1},
+ {id:"2-04c",st:2,kind:"choice",key:"suspR",title:"리어 서스펜션 유형",tip:"차 밑에서 리어 서스펜션 구조를 보고 고릅니다. 구조가 보이게 사진을 찍으세요.",cell:"G7",options:["맥퍼슨","더블위시본","멀티링크","토션빔","판스프링","5링크"],other:"그 밖 (직접 입력)",shots:1},
  {id:"2-04c2",st:2,kind:"choice",key:"springR",title:"리어 스프링 형태",tip:"스프링이 쇽업소버에 끼워져 있으면 코일오버, 스프링이 따로 달려 있으면 분리형입니다.",cell:null,options:["코일오버","분리형"],noOther:true},
  {id:"2-09",st:2,kind:"measure",title:"프론트 댐퍼 체결부 기준 전장",tip:"잰 점을 표시해 두세요.",cell:"C10",shots:1},
  {id:"2-10",st:2,kind:"measure",title:"프론트 스프링 양끝 길이",tip:"상단 패드 ↔ 하단 패드. 잰 점을 표시해 두세요.",cell:"D10",coilSkip:"springF",shots:1},
@@ -386,9 +387,10 @@ function measureUI(t,c){
 }
 function applies(t){if(!t.onlyIf)return true;const v=run.values[t.onlyIf.key];if(t.onlyIf.is)return !!(v&&v.v===t.onlyIf.is);return !(v&&v.v===t.onlyIf.not)}
 function photoNeeded(t){
-  if(!t.photoReq||!applies(t))return false;
-  if(t.photoReq.unlessKey){const v=run.values[t.photoReq.unlessKey];if(v&&v.v===t.photoReq.unless)return false}
-  return !(run.photos[t.id]||[]).length;
+  // 사진 칸이 있는 단계는 모두 권장 장수 이상 찍어야 넘어간다 (photoReq.unlessKey 조건이면 면제)
+  if(!t.shots||!applies(t))return false;
+  if(t.photoReq&&t.photoReq.unlessKey){const v=run.values[t.photoReq.unlessKey];if(v&&v.v===t.photoReq.unless)return false}
+  return (run.photos[t.id]||[]).length<t.shots;
 }
 function missing(t){
   if(!applies(t))return false;
@@ -400,8 +402,12 @@ function missing(t){
 }
 async function go(d){
   if(collect)collect();const t=TASKS[idx];
-  if(d>0&&photoNeeded(t)){status("이 단계는 사진이 꼭 필요합니다. 사진을 찍은 뒤 넘어가세요.",true);return}
+  // 개발 확인용: devSkip이면 사진·빈칸 검사를 건너뛴다 (실사용 전 버튼 제거)
+  if(d>0&&devSkip){devSkip=false;run.skipped[t.id]="개발용 건너뛰기"}
+  else{
+  if(d>0&&photoNeeded(t)){status("사진을 권장 "+t.shots+"장 이상 찍어야 넘어갈 수 있습니다.",true);return}
   if(d>0&&missing(t)&&!confirmSkip){confirmSkip=true;status(t.kind==="shape"?"하단 끝을 골라 주세요. 그대로 넘어가려면 한 번 더 누르세요.":"비어 있습니다. 비워 두고 넘어가려면 한 번 더 누르세요.",true);return}
+  }
   if(d>0&&idx===TASKS.length-1){await save();showEnd();return}
   let n=idx+d;
   while(n>=0&&n<TASKS.length&&!applies(TASKS[n])){run.skipped[TASKS[n].id]="조건 안 맞음 ("+(TASKS[n].onlyIf.not||("≠"+TASKS[n].onlyIf.is))+")";n+=d}
@@ -436,7 +442,7 @@ async function exportZip(){
   status("휴대폰 「다운로드」에 저장했습니다: "+fname+" · 구글 드라이브 앱에서 올리세요.");
 }
 
-$("#prev").onclick=()=>go(-1);$("#next").onclick=()=>go(1);
+$("#prev").onclick=()=>go(-1);$("#next").onclick=()=>go(1);let devSkip=false;$("#devskip").onclick=()=>{devSkip=true;go(1)};
 openDB().then(d=>{idb=d;showList()}).catch(e=>status("이 브라우저는 휴대폰 저장소를 쓸 수 없습니다 ("+e+").",true));
 </script>
 </body>
