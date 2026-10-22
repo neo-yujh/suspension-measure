@@ -191,7 +191,7 @@ const status=(m,err)=>{const s=$("#status");s.textContent=m||"";s.classList.togg
 const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 // 작업한 시간(activeMs): 저장 사이 간격이 10분을 넘으면 쉬다 온 것으로 보고 10분까지만 더한다 (밥·급한 일로 자리 비운 시간 제외)
-async function save(){const nowMs=Date.now();if(run.lastActive){run.activeMs=(run.activeMs||0)+Math.min(nowMs-run.lastActive,10*60*1000)}run.lastActive=nowMs;run.updatedAt=new Date().toISOString();run.pos=idx;await put("runs",JSON.parse(JSON.stringify(run)));status("저장됨 · "+new Date().toLocaleTimeString())}
+async function save(){const nowMs=Date.now();if(run.lastActive){run.activeMs=(run.activeMs||0)+Math.min(nowMs-run.lastActive,10*60*1000)}run.lastActive=nowMs;run.updatedAt=new Date().toISOString();run.pos=idx;run.posId=TASKS[idx]&&TASKS[idx].id;await put("runs",JSON.parse(JSON.stringify(run)));status("저장됨 · "+new Date().toLocaleTimeString())}
 
 /* ===== 사진: 화면 안 카메라, 안 되면 휴대폰 카메라 앱 ===== */
 let camStream=null;
@@ -272,8 +272,8 @@ async function showList(){
      const am=Math.round((r.activeMs||0)/60000),dur=am>=60?Math.floor(am/60)+"시간 "+(am%60)+"분":am+"분";
      const sk=Object.values(r.skipped||{}).filter(x=>x!=="조건 안 맞음").length;
      left.appendChild(el("div","small muted","시작 "+fmt(r.createdAt)+" · 마지막 수정 "+fmt(r.updatedAt)+" · 작업한 시간 "+dur));
-     left.appendChild(el("div","small muted",scopeName(r.scope)+" · 지금 "+Math.min((r.pos||0)+1,TASKS.length)+"번째 화면 / 전체 "+TASKS.length+" · 건너뛴 항목 "+sk+"개"+(r.exportedAt?" · ZIP 만듦":"")))}
-    const go=el("button","btn","이어서");go.type="button";go.onclick=()=>{run=r;idx=Math.min(r.pos||0,TASKS.length-1);showTask()};
+     left.appendChild(el("div","small muted",scopeName(r.scope)+" · 지금 "+(resumeIdx(r)+1)+"번째 화면 / 전체 "+TASKS.length+" · 건너뛴 항목 "+sk+"개"+(r.exportedAt?" · ZIP 만듦":"")))}
+    const go=el("button","btn","이어서");go.type="button";go.onclick=()=>{run=r;idx=resumeIdx(r);showTask()};
     const zip=el("button","btn","ZIP");zip.type="button";zip.onclick=()=>{run=r;exportZip()};
     const rm=el("button","btn","지우기");rm.type="button";rm.onclick=()=>askDelete(r,lc,row);
     row.appendChild(left);row.appendChild(rm);row.appendChild(zip);row.appendChild(go);lc.appendChild(row)});
@@ -492,6 +492,10 @@ function showEnd(){
 
 /* ===== ZIP 묶음 ===== */
 const safe=s=>String(s).replace(/[\\/:*?"<>|\s]+/g,"_").slice(0,40);
+// 이어서 할 화면: 화면 순서가 바뀌어도 같은 화면으로 가도록 화면 아이디(posId)로 찾는다. posId가 없는 옛 기록만 순서 번호(pos)를 쓴다.
+function resumeIdx(r){const i=r.posId?TASKS.findIndex(t=>t.id===r.posId):-1;return i>=0?i:Math.min(r.pos||0,TASKS.length-1)}
+// 화면 아이디는 저장 기록의 열쇠라 겹치면 안 된다 — 겹치면 시작할 때 경고
+{const ids=TASKS.concat(PARKED).map(t=>t.id);const dup=ids.filter((x,i)=>ids.indexOf(x)!==i);if(dup.length)setTimeout(()=>status("화면 아이디가 겹칩니다: "+dup.join(", "),true),500)}
 // 사람이 읽는 이름 규칙 (유지호 2026-10-22):
 //  날짜_차량/측정기록.csv · 특이사항.txt · record.json(자동 채우기용)
 //  날짜_차량/사진/<화면번호>단계_<차량>_<화면 제목>_<순번>.jpg
@@ -614,7 +618,8 @@ const CHANGELOG=[
  [55,"2026-10-22 16:35","측정마다 수정 기록(언제 · 어느 항목 · 무엇에서 무엇으로) 남김: 값·메모·건너뛰기·사진 추가/삭제. 각 화면 아래 「이 항목 수정 기록」, ZIP의 record.json에 log로 들어감"],
  [56,"2026-10-22 16:38","측정 목록에 시작 시각 · 마지막 수정 시각 · 작업한 시간(10분 넘게 비운 시간 제외) · 지금 몇 번째 화면 · 건너뛴 항목 수 표시"],
  [57,"2026-10-22 17:10","ZIP 정리 규칙: 날짜_차량 폴더 안에 측정기록.csv(엑셀) · 특이사항.txt(메모 생긴 순서로 번호) · 사진/ 폴더. 사진 이름 「N단계_차량_화면제목_순번」, 특이사항 사진은 「메모사항 n번_N단계 화면제목_순번」으로 txt 번호와 맞춤"],
- [58,"2026-10-22 17:20","리비전 표시를 「베타 rev N」으로 바꿈 — 정식 v1부터 rev 1로 새로 셈"]
+ [58,"2026-10-22 17:20","리비전 표시를 「베타 rev N」으로 바꿈 — 정식 v1부터 rev 1로 새로 셈"],
+ [59,"2026-10-22 17:30","「이어서」가 화면 순서 번호 대신 화면 아이디로 찾아감 — 화면 순서를 바꿔도 하던 화면에서 이어짐. 화면 아이디가 겹치면 시작할 때 경고"]
 ];
 // 지금은 베타: 숫자 번호는 「베타 rev N」으로 보인다. 정식 v1이 되면 그때부터 번호를 문자열("1","2"…)로 적어 「rev 1」부터 센다 (유지호 2026-10-22).
 const revName=n=>typeof n==="string"?"rev "+n:"베타 rev "+n;
