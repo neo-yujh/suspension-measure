@@ -141,9 +141,11 @@ const TASKS=[
  {id:"3-04",st:3,car:"droop",kind:"measure",title:"프론트 댐퍼 체결부 기준 전장 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"C12",ref:"m2-09",shots:1},
  {id:"3-05",st:3,car:"droop",kind:"measure",title:"프론트 스프링 양끝 길이 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"D12",ref:"m2-10",coilSkip:"springF",shots:1},
  {id:"3-06",st:3,car:"droop",kind:"measure",title:"프론트 범프스토퍼 끝 ↔ 차대 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"E12",ref:"m2-11",onlyIf:{key:"bumpPosF",not:"댐퍼 내부"},shots:1,photoReq:true},
+ {id:"3-06i",st:3,car:"droop",kind:"info",title:"프론트 범프스토퍼 · 드룹",tip:"범프스토퍼가 댐퍼 내부라 지금은 재지 않습니다. 확인했으면 「확인 · 다음」.",items:["추후 댐퍼 분해 후 범프스토퍼 자유장을 측정합니다"],onlyIf:{key:"bumpPosF",is:"댐퍼 내부"}},
  {id:"3-07",st:3,car:"droop",kind:"measure",title:"리어 댐퍼 체결부 기준 전장 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"G12",ref:"m2-12b",shots:1},
  {id:"3-08",st:3,car:"droop",kind:"measure",title:"리어 스프링 양끝 길이 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"H12",ref:"m2-12c",coilSkip:"springR",shots:1},
  {id:"3-09",st:3,car:"droop",kind:"measure",title:"리어 범프스토퍼 끝 ↔ 차대 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"I12",ref:"m2-12d",onlyIf:{key:"bumpPosR",not:"댐퍼 내부"},shots:1,photoReq:true},
+ {id:"3-09i",st:3,car:"droop",kind:"info",title:"리어 범프스토퍼 · 드룹",tip:"범프스토퍼가 댐퍼 내부라 지금은 재지 않습니다. 확인했으면 「확인 · 다음」.",items:["추후 댐퍼 분해 후 범프스토퍼 자유장을 측정합니다"],onlyIf:{key:"bumpPosR",is:"댐퍼 내부"}},
 ];
 // 아직 순서를 정하지 않아 흐름에서 빼 둔 화면. 형태 고르기(0-F·0-R)는 탈거 뒤 사진 찍으면서 하기로 함 (2026-10-22 유지호).
 const PARKED=[
@@ -382,7 +384,7 @@ function measureUI(t,c){
     run.values[key]={v:val,raw:r,fromRim:!!(fromRim&&fromRim.checked),rim,cell:t.cell,label:t.title,unit:"mm",task:t.id};
   };
 }
-function applies(t){if(!t.onlyIf)return true;const v=run.values[t.onlyIf.key];return !(v&&v.v===t.onlyIf.not)}
+function applies(t){if(!t.onlyIf)return true;const v=run.values[t.onlyIf.key];if(t.onlyIf.is)return !!(v&&v.v===t.onlyIf.is);return !(v&&v.v===t.onlyIf.not)}
 function photoNeeded(t){
   if(!t.photoReq||!applies(t))return false;
   if(t.photoReq.unlessKey){const v=run.values[t.photoReq.unlessKey];if(v&&v.v===t.photoReq.unless)return false}
@@ -402,7 +404,7 @@ async function go(d){
   if(d>0&&missing(t)&&!confirmSkip){confirmSkip=true;status(t.kind==="shape"?"하단 끝을 골라 주세요. 그대로 넘어가려면 한 번 더 누르세요.":"비어 있습니다. 비워 두고 넘어가려면 한 번 더 누르세요.",true);return}
   if(d>0&&idx===TASKS.length-1){await save();showEnd();return}
   let n=idx+d;
-  while(n>=0&&n<TASKS.length&&!applies(TASKS[n])){run.skipped[TASKS[n].id]="조건 안 맞음 ("+TASKS[n].onlyIf.not+")";n+=d}
+  while(n>=0&&n<TASKS.length&&!applies(TASKS[n])){run.skipped[TASKS[n].id]="조건 안 맞음 ("+(TASKS[n].onlyIf.not||("≠"+TASKS[n].onlyIf.is))+")";n+=d}
   if(d>0&&n>=TASKS.length){await save();showEnd();return}
   idx=Math.max(0,Math.min(TASKS.length-1,n));await save();showTask();
 }
