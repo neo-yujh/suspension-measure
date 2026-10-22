@@ -125,16 +125,16 @@ const TASKS=[
  {id:"2-08u",st:2,kind:"info",title:"차 하부로 이동",tip:"여기부터는 차 밑으로 들어가서 잽니다. 차는 바퀴로 선 채 그대로 둡니다. 준비됐으면 「확인 · 다음」.",items:["줄자 · 손전등 챙기기","다음 순서: 프론트 댐퍼 → 프론트 스프링 → 리어 댐퍼 → 리어 스프링"]},
  {id:"2-04a",st:2,kind:"choice",key:"setting",title:"세팅상태",tip:"지금 달려 있는 서스펜션이 순정인지 튜닝품인지.",cell:"A7",options:["OE (순정)","다운스프링"],other:"튜닝품 (제품명 직접 입력)"},
  {id:"2-04b",st:2,kind:"choice",key:"suspF",title:"프론트 서스펜션 유형",tip:"차 밑에서 프론트 서스펜션 구조를 보고 고릅니다. 구조가 보이게 사진을 찍으세요.",cell:"C7",options:["맥퍼슨","더블위시본","멀티링크","토션빔","판스프링","5링크"],other:"그 밖 (직접 입력)",shots:1},
- {id:"2-04b2",st:2,kind:"choice",key:"springF",title:"프론트 스프링 형태",tip:"스프링이 쇽업소버에 끼워져 있으면 코일오버, 스프링이 따로 달려 있으면 분리형입니다.",cell:null,options:["코일오버","분리형"],noOther:true},
+ {id:"2-04b2",skipIf:[{key:"suspF",is:"판스프링"}],st:2,kind:"choice",key:"springF",title:"프론트 스프링 형태",tip:"스프링이 쇽업소버에 끼워져 있으면 코일오버, 스프링이 따로 달려 있으면 분리형입니다.",cell:null,options:["코일오버","분리형"],noOther:true},
  {id:"2-04c",st:2,kind:"choice",key:"suspR",title:"리어 서스펜션 유형",tip:"차 밑에서 리어 서스펜션 구조를 보고 고릅니다. 구조가 보이게 사진을 찍으세요.",cell:"G7",options:["맥퍼슨","더블위시본","멀티링크","토션빔","판스프링","5링크"],other:"그 밖 (직접 입력)",shots:1},
- {id:"2-04c2",st:2,kind:"choice",key:"springR",title:"리어 스프링 형태",tip:"스프링이 쇽업소버에 끼워져 있으면 코일오버, 스프링이 따로 달려 있으면 분리형입니다.",cell:null,options:["코일오버","분리형"],noOther:true},
+ {id:"2-04c2",skipIf:[{key:"suspR",is:"판스프링"}],st:2,kind:"choice",key:"springR",title:"리어 스프링 형태",tip:"스프링이 쇽업소버에 끼워져 있으면 코일오버, 스프링이 따로 달려 있으면 분리형입니다.",cell:null,options:["코일오버","분리형"],noOther:true},
  {id:"2-09",st:2,kind:"measure",title:"프론트 댐퍼 체결부 기준 전장",tip:"잰 점을 표시해 두세요.",cell:"C10",shots:1},
- {id:"2-10",st:2,kind:"measure",title:"프론트 스프링 양끝 길이",tip:"상단 패드 ↔ 하단 패드. 잰 점을 표시해 두세요.",cell:"D10",coilSkip:"springF",shots:1},
+ {id:"2-10",skipIf:[{key:"suspF",is:"판스프링"}],st:2,kind:"measure",title:"프론트 스프링 양끝 길이",tip:"상단 패드 ↔ 하단 패드. 잰 점을 표시해 두세요.",cell:"D10",coilSkip:"springF",shots:1},
  {id:"2-10b",st:2,kind:"choice",key:"bumpPosF",title:"프론트 범프스토퍼 위치",tip:"범프스토퍼가 보이게 사진을 찍으세요. 댐퍼 내부를 고르면 사진 칸이 사라지고 다음 측정도 건너뜁니다 (나중에 분해 후 자유장 측정).",cell:"E16",options:["댐퍼 내부","차대","로어암"],other:"기타 (직접 입력)",shots:1,photoReq:{unlessKey:"bumpPosF",unless:"댐퍼 내부"}},
  {id:"2-11",st:2,kind:"measure",title:"프론트 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼 끝에서 맞닿는 면까지.",onlyIf:{key:"bumpPosF",not:"댐퍼 내부"},cell:"E10",shots:1,photoReq:true},
  {id:"2-11s",st:2,kind:"photo",title:"프론트 서스펜션 구조 상세 사진",tip:"서스펜션 구조를 부품 하나하나 가까이 찍습니다 (예: 스테빌라이저 바 마운트·링크, 암 체결부, 너클). 간섭이 우려되는 부분은 줄자로 거리를 재서 수치가 보이게 찍습니다. 권장 장수·찍을 부품 목록은 남정우 수석 피드백 받아 확정 예정 — 지금은 임시 1장.",shots:1,photoOpt:true},
  {id:"2-12b",st:2,kind:"measure",title:"리어 댐퍼 체결부 기준 전장",tip:"분리형이면 댐퍼만.",cell:"G10",shots:1},
- {id:"2-12c",st:2,kind:"measure",title:"리어 스프링 양끝 길이",tip:"분리형이면 스프링만 따로.",cell:"H10",coilSkip:"springR",shots:1},
+ {id:"2-12c",skipIf:[{key:"suspR",is:"판스프링"}],st:2,kind:"measure",title:"리어 스프링 양끝 길이",tip:"분리형이면 스프링만 따로.",cell:"H10",coilSkip:"springR",shots:1},
  {id:"2-12c2",st:2,kind:"choice",key:"bumpPosR",title:"리어 범프스토퍼 위치",tip:"범프스토퍼가 보이게 사진을 찍으세요. 댐퍼 내부를 고르면 사진 칸이 사라지고 다음 측정도 건너뜁니다 (나중에 분해 후 자유장 측정).",cell:"I16",options:["댐퍼 내부","차대","로어암"],other:"기타 (직접 입력)",shots:1,photoReq:{unlessKey:"bumpPosR",unless:"댐퍼 내부"}},
  {id:"2-12d",st:2,kind:"measure",title:"리어 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼 끝에서 맞닿는 면까지.",onlyIf:{key:"bumpPosR",not:"댐퍼 내부"},cell:"I10",shots:1,photoReq:true},
  {id:"2-12s",st:2,kind:"photo",title:"리어 서스펜션 구조 상세 사진",tip:"서스펜션 구조를 부품 하나하나 가까이 찍습니다 (예: 스테빌라이저 바 마운트·링크, 암 체결부, 너클). 간섭이 우려되는 부분은 줄자로 거리를 재서 수치가 보이게 찍습니다. 권장 장수·찍을 부품 목록은 남정우 수석 피드백 받아 확정 예정 — 지금은 임시 1장.",shots:1,photoOpt:true},
@@ -146,15 +146,15 @@ const TASKS=[
  {id:"3-02pr",st:3,car:"droop",kind:"photo",title:"리어 휠 탈거 사진 (외부)",tip:"휠을 뗀 리어 쪽을 차 바깥에서 찍습니다. 서스펜션·브레이크 주변이 다 보이게.",shots:1},
  {id:"3-03",st:3,car:"droop",kind:"info",title:"차 하부로 이동",tip:"여기부터는 차 밑으로 들어가서 잽니다. 차는 든 채로 둡니다. 준비됐으면 「확인 · 다음」.",items:["다음 순서: 프론트 댐퍼 → 프론트 스프링 → 프론트 범프스토퍼 → 리어 댐퍼 → 리어 스프링 → 리어 범프스토퍼"]},
  {id:"3-04",st:3,car:"droop",kind:"measure",title:"프론트 댐퍼 체결부 기준 전장 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"C12",ref:"m2-09",shots:1},
- {id:"3-05",st:3,car:"droop",kind:"measure",title:"프론트 스프링 양끝 길이 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"D12",ref:"m2-10",coilSkip:"springF",shots:1},
+ {id:"3-05",skipIf:[{key:"suspF",is:"판스프링"}],st:3,car:"droop",kind:"measure",title:"프론트 스프링 양끝 길이 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"D12",ref:"m2-10",coilSkip:"springF",shots:1},
  {id:"3-06",st:3,car:"droop",kind:"measure",title:"프론트 범프스토퍼 끝 ↔ 차대 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"E12",ref:"m2-11",onlyIf:{key:"bumpPosF",not:"댐퍼 내부"},shots:1,photoReq:true},
  {id:"3-06i",st:3,car:"droop",kind:"info",title:"프론트 범프스토퍼 · 드룹",tip:"범프스토퍼가 댐퍼 내부라 지금은 재지 않습니다. 확인했으면 「확인 · 다음」.",items:["추후 댐퍼 분해 후 범프스토퍼 자유장을 측정합니다"],onlyIf:{key:"bumpPosF",is:"댐퍼 내부"}},
- {id:"3-06p",st:3,car:"droop",kind:"form",title:"프론트 차고파이프 장착부 · 드룹",tip:"분리형이라 스프링 시트에 차고조절 파이프(차고파이프)를 달 자리를 봅니다. 장착부가 어떻게 생겼는지 적고, 주변이 다 보이게 찍습니다.",fields:[["pipeF","장착부 상태","B16"]],onlyIf:{key:"springF",is:"분리형"},shots:1},
+ {id:"3-06p",st:3,car:"droop",kind:"form",title:"프론트 차고파이프 장착부 · 드룹",tip:"분리형이라 스프링 시트에 차고조절 파이프(차고파이프)를 달 자리를 봅니다. 장착부가 어떻게 생겼는지 적고, 주변이 다 보이게 찍습니다.",fields:[["pipeF","프론트 차고파이프 장착부 상태","B16"]],onlyIf:{key:"springF",is:"분리형"},shots:1},
  {id:"3-07",st:3,car:"droop",kind:"measure",title:"리어 댐퍼 체결부 기준 전장 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"G12",ref:"m2-12b",shots:1},
- {id:"3-08",st:3,car:"droop",kind:"measure",title:"리어 스프링 양끝 길이 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"H12",ref:"m2-12c",coilSkip:"springR",shots:1},
+ {id:"3-08",skipIf:[{key:"suspR",is:"판스프링"}],st:3,car:"droop",kind:"measure",title:"리어 스프링 양끝 길이 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"H12",ref:"m2-12c",coilSkip:"springR",shots:1},
  {id:"3-09",st:3,car:"droop",kind:"measure",title:"리어 범프스토퍼 끝 ↔ 차대 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"I12",ref:"m2-12d",onlyIf:{key:"bumpPosR",not:"댐퍼 내부"},shots:1,photoReq:true},
  {id:"3-09i",st:3,car:"droop",kind:"info",title:"리어 범프스토퍼 · 드룹",tip:"범프스토퍼가 댐퍼 내부라 지금은 재지 않습니다. 확인했으면 「확인 · 다음」.",items:["추후 댐퍼 분해 후 범프스토퍼 자유장을 측정합니다"],onlyIf:{key:"bumpPosR",is:"댐퍼 내부"}},
- {id:"3-09p",st:3,car:"droop",kind:"form",title:"리어 차고파이프 장착부 · 드룹",tip:"분리형이라 스프링 시트에 차고조절 파이프(차고파이프)를 달 자리를 봅니다. 장착부가 어떻게 생겼는지 적고, 주변이 다 보이게 찍습니다.",fields:[["pipeR","장착부 상태","F16"]],onlyIf:{key:"springR",is:"분리형"},shots:1},
+ {id:"3-09p",st:3,car:"droop",kind:"form",title:"리어 차고파이프 장착부 · 드룹",tip:"분리형이라 스프링 시트에 차고조절 파이프(차고파이프)를 달 자리를 봅니다. 장착부가 어떻게 생겼는지 적고, 주변이 다 보이게 찍습니다.",fields:[["pipeR","리어 차고파이프 장착부 상태","F16"]],onlyIf:{key:"springR",is:"분리형"},shots:1},
 ];
 // 아직 순서를 정하지 않아 흐름에서 빼 둔 화면. 형태 고르기(0-F·0-R)는 탈거 뒤 사진 찍으면서 하기로 함 (2026-10-22 유지호).
 const PARKED=[
@@ -400,7 +400,8 @@ function measureUI(t,c){
     run.values[key]={v:val,raw:r,fromRim:!!(fromRim&&fromRim.checked),rim,cell:t.cell,label:t.title,unit:"mm",task:t.id};
   };
 }
-function applies(t){if(!t.onlyIf)return true;const v=run.values[t.onlyIf.key];if(t.onlyIf.is)return !!(v&&v.v===t.onlyIf.is);return !(v&&v.v===t.onlyIf.not)}
+function applies(t){if(t.skipIf&&t.skipIf.some(c=>{const v=run.values[c.key];return v&&v.v===c.is}))return false;
+  if(!t.onlyIf)return true;const v=run.values[t.onlyIf.key];if(t.onlyIf.is)return !!(v&&v.v===t.onlyIf.is);return !(v&&v.v===t.onlyIf.not)}
 function photoNeeded(t){
   // 사진 칸이 있는 단계는 모두 필수 장수 이상 (photoOpt:true인 권장 사진은 한 번 경고만) 찍어야 넘어간다 (photoReq.unlessKey 조건이면 면제)
   if(!t.shots||t.photoOpt||!applies(t))return false;
@@ -416,8 +417,21 @@ function missing(t){
   if(t.kind==="choice")return !run.values[t.key];
   return false;
 }
+// 앞에서 보기를 바꿔 조건이 안 맞게 된 화면의 값을 지운다 (측정시트에 엉뚱한 값이 남지 않게). 사진은 지우지 않는다.
+let pruneMsg=null;
+function pruneInapplicable(){
+  const gone=[];let changed=true;
+  while(changed){changed=false;
+    TASKS.forEach(t=>{if(applies(t))return;
+      const keys=t.fields?t.fields.map(f=>f[0]):(t.kind==="choice"?[t.key]:(t.kind==="measure"||t.kind==="hub")?[t.key||("m"+t.id)]:[]);
+      keys.forEach(k=>{if(k&&run.values[k]){gone.push(run.values[k].label||t.title);delete run.values[k];changed=true}})})}
+  // 코일오버가 아니게 됐으면 「코일오버 — 자유장에서 계산」 건너뛰기 표시도 지운다
+  TASKS.forEach(t=>{if(t.coilSkip&&run.skipped[t.id]&&String(run.skipped[t.id]).startsWith("코일오버")){const sv=run.values[t.coilSkip];if(!(sv&&sv.v==="코일오버"))delete run.skipped[t.id]}});
+  return gone;
+}
 async function go(d){
-  if(collect)collect();const t=TASKS[idx];
+  if(collect)collect();
+  {const gone=pruneInapplicable();pruneMsg=gone.length?"앞에서 고른 보기가 바뀌어 맞지 않게 된 값 "+gone.length+"개를 지웠습니다: "+gone.join(", "):null}const t=TASKS[idx];
   // 개발 확인용: devSkip이면 사진·빈칸 검사를 건너뛴다 (실사용 전 버튼 제거)
   if(d>0&&devSkip){devSkip=false;run.skipped[t.id]="개발용 건너뛰기"}
   else{
@@ -426,9 +440,9 @@ async function go(d){
   }
   if(d>0&&idx===TASKS.length-1){await save();showEnd();return}
   let n=idx+d;
-  while(n>=0&&n<TASKS.length&&!applies(TASKS[n])){run.skipped[TASKS[n].id]="조건 안 맞음 ("+(TASKS[n].onlyIf.not||("≠"+TASKS[n].onlyIf.is))+")";n+=d}
+  while(n>=0&&n<TASKS.length&&!applies(TASKS[n])){run.skipped[TASKS[n].id]="조건 안 맞음";n+=d}
   if(d>0&&n>=TASKS.length){await save();showEnd();return}
-  idx=Math.max(0,Math.min(TASKS.length-1,n));await save();showTask();
+  idx=Math.max(0,Math.min(TASKS.length-1,n));await save();showTask();if(pruneMsg){status(pruneMsg,true);pruneMsg=null}
 }
 function showEnd(){
   $("#footer").classList.add("hidden");const v=$("#view");v.textContent="";
@@ -501,7 +515,8 @@ const CHANGELOG=[
  [35,"2026-10-22 15:41","타이어 탈착: 휠볼트 규격(M14×1.5 예시) → 소켓(복스) 크기 드롭다운 17·19·21 mm + 직접 입력 (공구 찾는 시간 줄이기용)"],
  [36,"2026-10-22 15:42","타이어 탈착 다음에 프론트 · 리어 휠 탈거 외부 사진 화면 추가 (각 1장 필수)"],
  [37,"2026-10-22 15:43","특이사항(메모·사진)을 측정 박스에서 떼어 아래 별도 점선 박스로 분리"],
- [38,"2026-10-22 15:48","드룹 범프스토퍼 다음에 차고파이프 장착부 화면 (분리형일 때만, 프론트 B16 · 리어 F16, 직접 입력 + 사진 1장 필수)"]
+ [38,"2026-10-22 15:48","드룹 범프스토퍼 다음에 차고파이프 장착부 화면 (분리형일 때만, 프론트 B16 · 리어 F16, 직접 입력 + 사진 1장 필수)"],
+ [39,"2026-10-22 15:52","보기를 바꿔 조건이 안 맞게 된 화면의 값 자동 삭제(알림 표시) · 서스펜션 유형 판스프링이면 스프링 형태·스프링 길이(정하중·드룹) 화면 건너뜀"]
 ];
 (function(){const last=CHANGELOG[CHANGELOG.length-1],tag=document.getElementById("revtag"),box=document.getElementById("revlog");
 tag.textContent="rev "+last[0]+" · "+last[1];
