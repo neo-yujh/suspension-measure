@@ -113,6 +113,7 @@ const TASKS=[
  {id:"S005",st:1,kind:"photo",title:"차량 좌측면 사진",tip:"왼쪽 옆면 전체. 스크래치·도장 상태가 보이게.",shots:1},
  {id:"S006",st:1,kind:"photo",title:"차대번호 사진",tip:"차대번호 글자가 읽히게 가까이.",shots:1},
  {id:"S007",st:1,kind:"photo",title:"차량 제원표 사진",tip:"운전석 도어 안쪽 제원표(공차중량·연식·모델). 없으면 차량등록증.",shots:1},
+ {id:"S101",st:1,kind:"choice",key:"side",title:"측정할 쪽 고르기",tip:"한쪽만 잽니다. 프론트·리어 모두 여기서 고른 쪽에서 재고 찍습니다 (사진 리스트 비고 「한쪽에 한하여 일관」).",cell:null,options:["운전석 쪽","조수석 쪽"],noOther:true},
  {id:"S008",st:2,kind:"info",title:"리프트 올리기",tip:"차가 바퀴로 선 상태 그대로 리프트를 측정하기 좋은 높이로 올립니다. 다 올렸으면 「확인 · 다음」.",items:["바퀴가 리프트 발판 위에 그대로 있는지 (정하중 상태 유지)","줄자로 휀더·허브를 재기 편한 높이인지"]},
  {id:"S009",st:2,kind:"measure",key:"gapF",title:"프론트 휀더 갭",tip:"타이어 윗면 ↔ 휀더 안쪽 끝. 줄자 눈금이 보이게 찍으세요.",cell:"B7",shots:1},
  {id:"S010",st:2,kind:"measure",key:"rimF",title:"프론트 림 외경",tip:"줄자로 림 바깥 지름.",cell:"E7",shots:1},
@@ -159,9 +160,10 @@ const TASKS=[
  {id:"S051",st:3,car:"droop",kind:"form",title:"리어 차고파이프 장착부 · 드룹",tip:"분리형이라 스프링 시트에 차고조절 파이프(차고파이프)를 달 자리를 봅니다. 장착부가 어떻게 생겼는지 적고, 주변이 다 보이게 찍습니다.",fields:[["pipeR","리어 차고파이프 장착부 위치 (기타는 「직접 입력」)","F16","pick:상단,하단"]],onlyIf:{key:"springR",is:"분리형"},shots:1},
  {id:"S052",st:3,car:"droop",kind:"photo",title:"프론트 상단 마운트 위쪽 여유 공간 (엔진룸)",tip:"⚠ 캠버 장공 방향 확인용 — 중요. 사진 2장: ① 위에서 수직(탑뷰) — 왜곡 없이, 상단 마운트 형태·위치·각도, 캠버 마운트 장공 방향, 마운트 볼트 패턴(PCD)이 보이게. ② 옆에서 — 볼트·로드가 튀어나온 정도와 보닛까지 남는 공간이 보이게, 줄자를 함께 대고. (측정시트 U27 4·6번 · 35행 · 41행)",shots:2,slots:["① 위에서 수직 (탑뷰 · 볼트 패턴)","② 옆에서 (튀어나온 정도 · 여유 공간, 줄자)"]},
  {id:"S053",st:3,car:"droop",kind:"photo",title:"리어 상단 마운트 위쪽 여유 공간 (트렁크·실내 쪽)",tip:"리어 마운트 너트가 트렁크·실내 쪽에 나와 있는 차만 내장재를 열고 찍습니다. 아니면 건너뛰세요 (휠하우스 쪽 사진은 차 밑에서 이미 찍었습니다). 사진 2장: ① 위에서 수직(탑뷰) — 왜곡 없이, 마운트 볼트 패턴(PCD)이 보이게. ② 옆에서 — 볼트·로드가 튀어나온 정도와 내장재까지 남는 공간이 보이게, 줄자를 함께 대고.",shots:2,photoOpt:true,slots:["① 위에서 수직 (탑뷰 · 볼트 패턴)","② 옆에서 (튀어나온 정도 · 여유 공간, 줄자)"]},
+ {id:"S102",st:3,car:"droop",kind:"form",title:"좌우 대칭성 (반대쪽 엔진룸·휠하우스 보기)",tip:"반대쪽 상단 마운트를 보고, 캠버 장공 방향·마운트 형상이 이쪽과 같은지 고릅니다 (BMW 등은 좌우가 달라 품번이 다를 수 있음). 비대칭이면 반대쪽도 위에서 수직으로 찍고 다른 점을 특이사항에 적습니다.",fields:[["symF","프론트 좌우","D36","pick:대칭,비대칭"],["symR","리어 좌우","F36","pick:대칭,비대칭"]],shots:1,photoOpt:true},
  {id:"S059",st:4,car:"off",kind:"info",title:"쇽업소버 탈거",tip:"앞의 측정에 빈칸이 없는지 확인한 뒤 측정하는 쪽 프론트·리어 쇽업소버를 탈거합니다. 다 됐으면 「확인 · 다음」.",items:["빈 단계가 없는지 (끝 화면 목록 또는 「이전」으로 확인)","프론트 쇽업소버를 뗐는지","리어 쇽업소버를 뗐는지","뗀 볼트·너트를 한곳에 모아 두었는지"]},
- {id:"S060",st:4,car:"off",kind:"measure",title:"프론트 차대 마운트 통과 구멍 직경",tip:"쇽업소버를 뗀 자리에서 차대 쪽 마운트 구멍의 지름을 잽니다 (측정 필수). 버니어 캘리퍼스로, 구멍이 보이게 찍으세요.",cell:"C29",shots:1,photoReq:true},
- {id:"S061",st:4,car:"off",kind:"measure",title:"리어 차대 마운트 통과 구멍 직경",tip:"쇽업소버를 뗀 자리에서 차대 쪽 마운트 구멍의 지름을 잽니다 (측정 필수). 버니어 캘리퍼스로, 구멍이 보이게 찍으세요.",cell:"G29",shots:1,photoReq:true},
+ {id:"S060",st:4,car:"off",kind:"measure",title:"프론트 차대 마운트 통과 구멍 직경",tip:"쇽업소버를 뗀 자리에서 차대 쪽 마운트 구멍의 지름을 잽니다 (측정 필수). 버니어 캘리퍼스로, 구멍이 보이게 찍으세요.",cell:"D29",shots:1,photoReq:true},
+ {id:"S061",st:4,car:"off",kind:"measure",title:"리어 차대 마운트 통과 구멍 직경",tip:"쇽업소버를 뗀 자리에서 차대 쪽 마운트 구멍의 지름을 잽니다 (측정 필수). 버니어 캘리퍼스로, 구멍이 보이게 찍으세요.",cell:"F29",shots:1,photoReq:true},
  {id:"S062",st:4,car:"off",kind:"photo",title:"탈거한 쇽업소버 어셈블리 사진",tip:"뗀 쇽업소버를 통째로 찍습니다 (측정시트 사진 리스트 11번). 라벨이나 순정 품번이 보이면 가까이 한 장 더.",shots:2,slots:["프론트 어셈블리 (라벨·품번)","리어 어셈블리 (라벨·품번)"]},
  {id:"S054",st:4,car:"off",kind:"shape",axle:"F",title:"앞 쇽업소버 형태 고르기",tip:"탈거한 프론트 쇽업소버의 상단·하단 끝 모양을 보고 고릅니다. 측정 도면(부록 A)을 고르는 기준입니다."},
  {id:"S055",st:4,car:"off",kind:"shape",axle:"R",title:"뒤 쇽업소버 형태 고르기",tip:"앞과 같으면 「앞과 같음」."},
@@ -178,6 +180,7 @@ const TASKS=[
  {id:"S073",st:4,car:"off",kind:"info",title:"3D 스캔 (분해 전)",tip:"앞뒤 쇽업소버 어셈블리를 분해 전에 스캔합니다. 다 됐으면 「확인 · 다음」.",items:["더스트 커버를 고정해 댐퍼 가이드 끝이 보이게 했는지 (리바운드 스트로크 확인용)","댐퍼마다 앞면·뒷면 두 번 스캔했는지","마운트 상면 같은 치수 기준 부위를 충분히 스캔했는지 (다관절이면 프로브로)","잘 안 읽히는 부위는 수기 측정으로 채웠는지"]},
  {id:"S074",st:5,car:"off",kind:"info",title:"쇽업소버 분해",tip:"스프링 탈착기로 프론트·리어 쇽업소버를 분해합니다. 다 됐으면 「확인 · 다음」.",items:["스프링 탈착기에 바르게 물렸는지 (스프링이 튀지 않게)","프론트·리어를 분해했는지","부품을 앞뒤 섞이지 않게 나눠 두었는지"]},
  {id:"S075",st:5,car:"off",kind:"choice",key:"edc",title:"전자식 쇽업소버(EDC)인가요?",tip:"댐퍼에 전기 커넥터·배선이 달려 있으면 EDC입니다. 고른 값에 따라 커넥터 사진·저항값 화면이 나옵니다.",cell:null,options:["EDC","일반 (전기 연결 없음)"],noOther:true},
+ {id:"S103",onlyIf:{key:"edc",is:"EDC"},st:5,car:"off",kind:"photo",title:"EDC 캔슬러 부착 위치 사진",tip:"차에 EDC 캔슬러(경고등 끄는 저항 모듈)가 달려 있을 때만 위치가 보이게 찍습니다 (측정시트 40행). 없으면 그냥 넘어가세요.",shots:1,photoOpt:true},
  {id:"S076",st:5,car:"off",kind:"photo",title:"프론트 분해 후 사진 (댐퍼·마운트)",tip:"BC볼트나 로드가 들어갈 여유 공간이 보이게 찍습니다.",shots:4,slots:["① 로드 끝 측면","② 마운트의 로드 체결부 (밑에서 위로)","③ 마운트의 스프링 체결부 (밑에서 위로)","④ 댐퍼 순정 품번 (사진 리스트 12번)"]},
  {id:"S077",skipIf:[{key:"suspF",is:"판스프링"}],st:5,car:"off",kind:"photo",title:"프론트 스프링 사진",tip:"코일 끝 형상이 보이게 찍습니다.",shots:3,slots:["① 스프링 전체 측면","② 상단면 (코일 끝)","③ 하단면 (코일 끝)"]},
  {id:"S078",st:5,car:"off",kind:"photo",title:"프론트 EDC 커넥터 사진",tip:"측정시트 39행. 좌우가 다를 수 있으니 반대편 커넥터도 확인합니다. 기존 부품과 같으면 특이사항에 호환 차종을 적습니다.",onlyIf:{key:"edc",is:"EDC"},shots:3,slots:["① 품번","② 단면 형상","③ 측면 형상"]},
@@ -191,8 +194,8 @@ const TASKS=[
  {id:"S086",st:5,car:"off",kind:"measure",title:"리어 범프스토퍼 고무 길이 · 분해 후",tip:"분해 전에 더스트 커버에 가려 못 잰 값입니다.",cell:"I14",onlyIf:{skipped:"S068"},shots:1},
  {id:"S087",st:5,car:"off",kind:"form",title:"리어 EDC 저항값",tip:"멀티미터는 부정확하므로 저항 전용 측정기로 잽니다. 시간이 지나면 값이 변하므로 빨리 잽니다.",fields:[["edcOhmR","리어 저항값 (Ω)","F38"]],onlyIf:{key:"edc",is:"EDC"},shots:1},
  {id:"S088",st:5,car:"off",kind:"info",title:"3D 스캔 (분해 후)",tip:"단품을 스캔합니다. 다 됐으면 「확인 · 다음」.",items:["프론트·리어 마운트 상면·하면 (마운트 볼트, 브래킷 형상과 위치)","리어 스프링 상단 패드·하단 패드","측정 도면의 분해 후 칸을 다 채웠는지 (도면은 부록 A에서 고른 것)"]},
- {id:"S089",skipIf:[{key:"suspF",is:"판스프링"}],st:6,car:"off",kind:"form",title:"프론트 스프링 설계치수",tip:"끝 형상: G 면취 그라인딩 · O 오픈 · C 닫힌 코일 · F 플랫 · P 피그테일. 스프링 측정 도면(SPRING-COILOVER / SPRING-SEPARATE)도 함께 채웁니다.",fields:[["spIdTopF","상부 내경","D21","mm"],["spEndTopF","상부 끝 형상","D21","pick:G,O,C,F,P"],["spIdLowF","하부 내경","D22","mm"],["spEndLowF","하부 끝 형상","D22","pick:G,O,C,F,P"],["spLenF","길이 (자유장)","D23","mm"],["spWireF","권선 두께","D24","mm"],["spTurnsF","권선 수 (n)","D25"]],shots:1},
- {id:"S090",skipIf:[{key:"suspR",is:"판스프링"}],st:6,car:"off",kind:"form",title:"리어 스프링 설계치수",tip:"끝 형상: G 면취 그라인딩 · O 오픈 · C 닫힌 코일 · F 플랫 · P 피그테일. 스프링 측정 도면(SPRING-COILOVER / SPRING-SEPARATE)도 함께 채웁니다.",fields:[["spIdTopR","상부 내경","F21","mm"],["spEndTopR","상부 끝 형상","F21","pick:G,O,C,F,P"],["spIdLowR","하부 내경","F22","mm"],["spEndLowR","하부 끝 형상","F22","pick:G,O,C,F,P"],["spLenR","길이 (자유장)","F23","mm"],["spWireR","권선 두께","F24","mm"],["spTurnsR","권선 수 (n)","F25"]],shots:1},
+ {id:"S089",skipIf:[{key:"suspF",is:"판스프링"}],st:6,car:"off",kind:"form",title:"프론트 스프링 설계치수",tip:"끝 형상: G 면취 그라인딩 · O 오픈 · C 닫힌 코일 · F 플랫 · P 피그테일. 스프링 측정 도면(SPRING-COILOVER / SPRING-SEPARATE)도 함께 채웁니다.",fields:[["spIdTopF","상부 내경","D21","mm"],["spEndTopF","상부 끝 형상","E21","pick:G,O,C,F,P"],["spIdLowF","하부 내경","D22","mm"],["spEndLowF","하부 끝 형상","E22","pick:G,O,C,F,P"],["spLenF","길이 (자유장)","D23","mm"],["spWireF","권선 두께","D24","mm"],["spTurnsF","권선 수 (n)","D25"]],shots:1},
+ {id:"S090",skipIf:[{key:"suspR",is:"판스프링"}],st:6,car:"off",kind:"form",title:"리어 스프링 설계치수",tip:"끝 형상: G 면취 그라인딩 · O 오픈 · C 닫힌 코일 · F 플랫 · P 피그테일. 스프링 측정 도면(SPRING-COILOVER / SPRING-SEPARATE)도 함께 채웁니다.",fields:[["spIdTopR","상부 내경","F21","mm"],["spEndTopR","상부 끝 형상","G21","pick:G,O,C,F,P"],["spIdLowR","하부 내경","F22","mm"],["spEndLowR","하부 끝 형상","G22","pick:G,O,C,F,P"],["spLenR","길이 (자유장)","F23","mm"],["spWireR","권선 두께","F24","mm"],["spTurnsR","권선 수 (n)","F25"]],shots:1},
  {id:"S091",skipIf:[{key:"suspF",is:"판스프링"}],st:6,car:"off",kind:"form",title:"프론트 스프링 다이노",tip:"시작 구간부터 약 80% 스트로크까지 10 mm 간격으로 눌러 하중-변위 선도를 남기고, 작동구간 상수를 적습니다 (측정시트 NOTE 7). 누르는 중에 휘면(버클링) 휜 뒤 구간 값은 참고치로 특이사항에 적습니다. 선도 화면을 찍으세요.",fields:[["spRateF","작동구간 상수 (kgf/mm)","D26"]],shots:1},
  {id:"S092",skipIf:[{key:"suspR",is:"판스프링"}],st:6,car:"off",kind:"form",title:"리어 스프링 다이노",tip:"시작 구간부터 약 80% 스트로크까지 10 mm 간격으로 눌러 하중-변위 선도를 남기고, 작동구간 상수를 적습니다 (측정시트 NOTE 7). 누르는 중에 휘면(버클링) 휜 뒤 구간 값은 참고치로 특이사항에 적습니다. 선도 화면을 찍으세요.",fields:[["spRateR","작동구간 상수 (kgf/mm)","F26"]],shots:1},
  {id:"S093",st:6,car:"off",kind:"photo",title:"프론트 차대 쪽 스프링 안착부 (분리형)",tip:"분리형이라 차대 쪽 스프링 안착부를 재서 SPRING-SEPARATE 도면에 채우고 찍습니다 (측정시트 NOTE 8). 차고 브래킷·스프링 하단 고무 호환 여부는 특이사항에.",onlyIf:{key:"springF",is:"분리형"},shots:1},
@@ -314,9 +317,12 @@ const SCREEN_IDS=[
  ["S097","","2026-10-26","사용","프론트 휀더 일치"],
  ["S098","","2026-10-26","사용","리어 휀더 일치"],
  ["S099","","2026-10-26","사용","재조립 · 장착 · 출고"],
- ["S100","","2026-10-26","사용","자료 정리"]
+ ["S100","","2026-10-26","사용","자료 정리"],
+ ["S101","","2026-11-16","사용","측정할 쪽 고르기"],
+ ["S102","","2026-11-16","사용","좌우 대칭성"],
+ ["S103","","2026-11-16","사용","EDC 캔슬러 부착 위치 사진"]
 ];
-const SCREEN_NEXT="S101";
+const SCREEN_NEXT="S104";
 const STAGES=["형태 고르기","사진·기본정보","줄자 측정 (내렸을 때)","드룹 (들었을 때)","탈거 (분해 전)","분해","스프링 측정","재조립 · 출고"];
 // 지금 차 상태: 단계에 car:"droop"|"off"를 주면 그 상태로 표시한다. 없으면 정하중.
 const CARSTATES=[["static","정하중"],["droop","드룹"],["off","탈거"]];
@@ -494,7 +500,7 @@ function logEdit(task,what,from,to){(run.log=run.log||[]).push({at:nowStr(),task
 function takeSnap(){snap=JSON.parse(JSON.stringify({values:run.values||{},notes:run.notes||{},skipped:run.skipped||{}}))}
 function commitEdits(){
   if(!snap||!run)return;const t=TASKS[idx];
-  const vs=x=>x==null?"":(typeof x==="object"?(x.v!=null?String(x.v)+(x.fromRim?" (림 하단부터)":""):JSON.stringify(x)):String(x));
+  const vs=x=>x==null?"":(typeof x==="object"?(x.v!=null?String(x.v)+(x.fromRim?(x.rim?" (림 하단부터)":" (림 하단부터 — 빼지 않음)"):""):JSON.stringify(x)):String(x));
   const cur={values:run.values||{},notes:run.notes||{},skipped:run.skipped||{}};
   [["values","값"],["notes","특이사항 메모"],["skipped","건너뛰기"]].forEach(([part,name])=>{
     const keys=new Set([...Object.keys(snap[part]),...Object.keys(cur[part])]);
@@ -638,8 +644,10 @@ function photoNeeded(t){
 function missing(t){
   if(!applies(t))return false;
   if(t.kind==="shape"){const s=run.shape[t.axle]||{};return !s.low}
+  if(t.kind==="hub"){const hv=run.values[t.key||("m"+t.id)];if(hv&&hv.fromRim&&!hv.rim)return true} // B3: 림 외경 없이 「림 하단부터」 — 빼지 않은 값
   if(t.kind==="measure"||t.kind==="hub")return !run.values[t.key||("m"+t.id)]&&!run.skipped[t.id];
-  if(t.slots&&t.photoOpt)return slotShort(t).length>0;
+  if(t.fields&&t.fields.some(f=>!run.values[f[0]]))return true; // B2: 입력 칸 중 하나라도 비면 빔
+  if(t.slots)return slotShort(t).length>0; // B1: 칸별 사진은 칸마다(_s1…) 확인
   if(t.photoOpt)return (run.photos[t.id]||[]).length<t.shots;
   if(t.kind==="photo")return !(run.photos[t.id]||[]).length;
   if(t.kind==="choice")return !run.values[t.key];
@@ -666,6 +674,7 @@ async function go(d){
   if(d>0&&devSkip){devSkip=false;run.skipped[t.id]="개발용 건너뛰기"}
   else{
   if(d>0&&photoNeeded(t)){status(t.slots?("필수 사진이 비어 있습니다: "+slotShort(t).join(", ")):("사진을 필수 "+t.shots+"장 이상 찍어야 넘어갈 수 있습니다."),true);return}
+  if(d>0&&t.kind==="hub"){const hv=run.values[t.key||("m"+t.id)];if(hv&&hv.fromRim&&!hv.rim){status("림 외경이 비어 있어 림 반지름을 뺄 수 없습니다. 림 외경 화면에서 먼저 적거나 「림 하단부터 쟀음」을 끄세요.",true);return}}
   if(d>0&&missing(t)&&!confirmSkip){confirmSkip=true;status(t.kind==="shape"?"하단 끝을 골라 주세요. 그대로 넘어가려면 한 번 더 누르세요.":"비어 있습니다. 비워 두고 넘어가려면 한 번 더 누르세요.",true);return}
   }
   if(d>0&&idx===TASKS.length-1){await save();showEnd();return}
@@ -743,7 +752,7 @@ function recordCsv(memoNo){
     const sk=run.skipped&&run.skipped[t.id];const st=!applies(t)?"조건 안 맞음":(sk&&sk!=="조건 안 맞음"?(sk===true?"해당 없음":String(sk)):"");
     const mn=memoNo[t.id]?"메모사항 "+memoNo[t.id]+"번":"";
     if(!vals.length)rows.push([(i+1)+"단계",t.title,"","",t.cell||"",st,nph||"",mn]);
-    vals.forEach(([k,v])=>rows.push([(i+1)+"단계",v.label||t.title,v.v+(v.fromRim?" (림 하단부터 "+v.raw+")":""),v.unit||"",v.cell||"",st,nph||"",mn]));
+    vals.forEach(([k,v])=>rows.push([(i+1)+"단계",v.label||t.title,v.v+(v.fromRim?(v.rim?" (림 하단부터 "+v.raw+")":" (림 하단부터 잰 값 — 림 외경 없어 빼지 않음)"):""),v.unit||"",v.cell||"",st,nph||"",mn]));
   });
   // 지금 흐름에 없는 화면(보류·폐기)에 적혀 있던 값도 빠뜨리지 않고 맨 아래에 「보류」로 적는다
   Object.entries(run.values||{}).forEach(([k,v])=>{if(!v||TASKS.some(t=>t.id===v.task))return;const s=stepOf(v.task||k);
@@ -860,7 +869,8 @@ const CHANGELOG=[
  [64,"2026-10-22 18:30","끝 화면의 빈 단계를 화면 아이디 대신 「화면 번호. 제목」으로 한 줄씩 나열. 5개 넘으면 접어 두고 「… 더 보기 / 접기」"],
  [65,"2026-10-22 18:50","충돌 정리: ② 폴더·ZIP 날짜를 한국 시간으로 ④ 흐름에 없는 화면의 값도 측정기록.csv 맨 아래 「보류」로 ⑤ 보기를 바꿔 해당 없게 된 화면의 사진은 사진/임시/로 ⑥ csv 「조건 안 맞음」을 지금 보기로 다시 판단, 다시 해당되면 표시 지움 ⑦ 한 측정은 한 탭에서만 열림(다른 탭에서 열기·ZIP·지우기 막음) ⑧ 같은 날 같은 차량 이름이면 「_2」「_3」 자동 ⑨ ZIP 만든 뒤 고치면 목록에 「ZIP 만든 뒤 고침 n건」, 지울 때 경고"],
  [66,"2026-10-23 10:44","드룹 다음에 「탈거 (분해 전)」 단계 15화면(S059~S073) 추가: 탈거 안내 → 차대 마운트 통과 구멍 직경 프론트·리어(C29·G29 — 칸 위치 추정) → 어셈블리 사진 → 프론트 전장·스프링 조립 길이·범프스토퍼 고무 길이(C14~E14) → 리어(G14~I14) → 분리형 고무패드(16행) → 분해 전 사진 → 3D 스캔 안내. 스프링 조립 길이·범프스토퍼 고무 길이에 「건너뛰기」 버튼(3D 스캔에서 잼 / 분해 후 잼) — 누르면 사진 없이 넘어감"],
- [67,"2026-10-26 07:35","끝 과정까지 화면 추가 (S074~S100): 분해(분해 안내 · EDC 여부 · 분해 후 사진 · 스프링 사진 · EDC 커넥터 · 최대압축 길이 · 분해 전에 건너뛴 범프스토퍼 고무 길이 · EDC 저항 D38/F38 · 분해 후 3D 스캔) → 스프링 측정(설계치수 21~25행 · 다이노 상수 26행 · 분리형 차대 안착부) → 재조립 · 출고(재조립 전 확인 · 휀더 일치 18행 · 재조립 · 자료 정리). 형태 고르기 프론트·리어(S054·S055)를 보관 목록에서 꺼내 탈거한 어셈블리 사진 다음에 둠"]
+ [67,"2026-10-26 07:35","끝 과정까지 화면 추가 (S074~S100): 분해(분해 안내 · EDC 여부 · 분해 후 사진 · 스프링 사진 · EDC 커넥터 · 최대압축 길이 · 분해 전에 건너뛴 범프스토퍼 고무 길이 · EDC 저항 D38/F38 · 분해 후 3D 스캔) → 스프링 측정(설계치수 21~25행 · 다이노 상수 26행 · 분리형 차대 안착부) → 재조립 · 출고(재조립 전 확인 · 휀더 일치 18행 · 재조립 · 자료 정리). 형태 고르기 프론트·리어(S054·S055)를 보관 목록에서 꺼내 탈거한 어셈블리 사진 다음에 둠"],
+ [68,"2026-11-16 10:00","자가 검토 반영: 버그 ① 칸별 사진을 다 찍어도 빈 단계로 잡히던 것 고침 ② 입력 칸 화면에서 칸이 하나라도 비면 경고·끝 화면 빈 단계에 나옴 ③ 림 외경 없이 「림 하단부터 쟀음」이면 다음으로 못 넘어감(뒤로 가서 비워 두면 기록에 「빼지 않음」 표시). 칸 위치: 차대 마운트 구멍 직경 D29·F29, 스프링 끝 형상 E21·E22·G21·G22(앞 칸 내경·뒤 칸 형상). 새 화면: 측정할 쪽 고르기(S101, 제원표 다음) · 좌우 대칭성 D36·F36(S102, 상단 마운트 사진 다음) · EDC 캔슬러 부착 위치 사진(S103, EDC일 때만·선택)"]
 ];
 // 지금은 베타: 숫자 번호는 「베타 rev N」으로 보인다. 정식 v1이 되면 그때부터 번호를 문자열("1","2"…)로 적어 「rev 1」부터 센다 (유지호 2026-10-22).
 const revName=n=>typeof n==="string"?"rev "+n:"베타 rev "+n;
