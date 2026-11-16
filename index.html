@@ -114,14 +114,17 @@ const TASKS=[
  {id:"S006",st:1,kind:"photo",title:"차대번호 사진",tip:"차대번호 글자가 읽히게 가까이.",shots:1},
  {id:"S007",st:1,kind:"photo",title:"차량 제원표 사진",tip:"운전석 도어 안쪽 제원표(공차중량·연식·모델). 없으면 차량등록증.",shots:1},
  {id:"S101",st:1,kind:"choice",key:"side",title:"측정할 쪽 고르기",tip:"한쪽만 잽니다. 프론트·리어 모두 여기서 고른 쪽에서 재고 찍습니다 (사진 리스트 비고 「한쪽에 한하여 일관」).",cell:null,options:["운전석 쪽","조수석 쪽"],noOther:true},
+ {id:"S052",st:1,kind:"photo",title:"프론트 상단 마운트 위쪽 여유 공간 (엔진룸)",tip:"⚠ 캠버 장공 방향 확인용 — 중요. 사진 2장: ① 위에서 수직(탑뷰) — 왜곡 없이, 상단 마운트 형태·위치·각도, 캠버 마운트 장공 방향, 마운트 볼트 패턴(PCD)이 보이게. ② 옆에서 — 볼트·로드가 튀어나온 정도와 보닛까지 남는 공간이 보이게, 줄자를 함께 대고. (측정시트 U27 4·6번 · 35행 · 41행)",shots:2,slots:["① 위에서 수직 (탑뷰 · 볼트 패턴)","② 옆에서 (튀어나온 정도 · 여유 공간, 줄자)"]},
+ {id:"S053",st:1,kind:"photo",title:"리어 상단 마운트 위쪽 여유 공간 (트렁크·실내 쪽)",tip:"리어 마운트 너트가 트렁크·실내 쪽에 나와 있는 차만 내장재를 열고 찍습니다. 아니면 건너뛰세요 (휠하우스 쪽 사진은 뒤에 차 밑에서 찍습니다). 사진 2장: ① 위에서 수직(탑뷰) — 왜곡 없이, 마운트 볼트 패턴(PCD)이 보이게. ② 옆에서 — 볼트·로드가 튀어나온 정도와 내장재까지 남는 공간이 보이게, 줄자를 함께 대고.",shots:2,photoOpt:true,slots:["① 위에서 수직 (탑뷰 · 볼트 패턴)","② 옆에서 (튀어나온 정도 · 여유 공간, 줄자)"]},
+ {id:"S102",st:1,kind:"form",title:"좌우 대칭성 (반대쪽 엔진룸·휠하우스 보기)",tip:"반대쪽 상단 마운트를 보고, 캠버 장공 방향·마운트 형상이 이쪽과 같은지 고릅니다 (BMW 등은 좌우가 달라 품번이 다를 수 있음). 비대칭이면 반대쪽도 위에서 수직으로 찍고 다른 점을 특이사항에 적습니다.",fields:[["symF","프론트 좌우","D36","pick:대칭,비대칭"],["symR","리어 좌우","F36","pick:대칭,비대칭"]],shots:1,photoOpt:true},
  {id:"S008",st:2,kind:"info",title:"리프트 올리기",tip:"차가 바퀴로 선 상태 그대로 리프트를 측정하기 좋은 높이로 올립니다. 다 올렸으면 「확인 · 다음」.",items:["바퀴가 리프트 발판 위에 그대로 있는지 (정하중 상태 유지)","줄자로 휀더·허브를 재기 편한 높이인지"]},
  {id:"S009",st:2,kind:"measure",key:"gapF",title:"프론트 휀더 갭",tip:"타이어 윗면 ↔ 휀더 안쪽 끝. 줄자 눈금이 보이게 찍으세요.",cell:"B7",shots:1},
  {id:"S010",st:2,kind:"measure",key:"rimF",title:"프론트 림 외경",tip:"줄자로 림 바깥 지름.",cell:"E7",shots:1},
  {id:"S011",st:2,kind:"form",title:"프론트 타이어 스펙",tip:"타이어 옆면 표기 그대로. 예: 235/35R20. 옆면 글자가 읽히게 찍으세요.",fields:[["tireF","프론트 타이어","B14"]],shots:1},
+ {id:"S015",st:2,kind:"hub",title:"프론트 타이어 (허브 센터 ↔ 휀더)",tip:"잰 점을 표시해 두세요. 들었을 때 같은 점을 다시 잽니다.",cell:"B10",rimKey:"rimF",shots:1},
  {id:"S012",st:2,kind:"measure",key:"gapR",title:"리어 휀더 갭",tip:"타이어 윗면 ↔ 휀더 안쪽 끝. 줄자 눈금이 보이게 찍으세요.",cell:"F7",shots:1},
  {id:"S013",st:2,kind:"measure",key:"rimR",title:"리어 림 외경",tip:"줄자로 림 바깥 지름.",cell:"I7",shots:1},
  {id:"S014",st:2,kind:"form",title:"리어 타이어 스펙",tip:"타이어 옆면 표기 그대로. 예: 235/35R20. 옆면 글자가 읽히게 찍으세요.",fields:[["tireR","리어 타이어","F14"]],shots:1},
- {id:"S015",st:2,kind:"hub",title:"프론트 타이어 (허브 센터 ↔ 휀더)",tip:"잰 점을 표시해 두세요. 들었을 때 같은 점을 다시 잽니다.",cell:"B10",rimKey:"rimF",shots:1},
  {id:"S016",st:2,kind:"hub",title:"리어 타이어 (허브 센터 ↔ 휀더)",tip:"잰 점을 표시해 두세요.",cell:"F10",rimKey:"rimR",shots:1},
  {id:"S017",st:2,kind:"info",title:"차 하부로 이동",tip:"여기부터는 차 밑으로 들어가서 잽니다. 차는 바퀴로 선 채 그대로 둡니다. 준비됐으면 「확인 · 다음」.",items:["줄자 · 손전등 챙기기","다음 순서: 프론트 댐퍼 → 프론트 스프링 → 리어 댐퍼 → 리어 스프링"]},
  {id:"S018",st:2,kind:"choice",key:"setting",title:"세팅상태",tip:"지금 달려 있는 서스펜션이 순정인지 튜닝품인지.",cell:"A7",options:["OE (순정)","다운스프링"],other:"튜닝품 (제품명 직접 입력)"},
@@ -129,6 +132,8 @@ const TASKS=[
  {id:"S020",skipIf:[{key:"suspF",is:"판스프링"}],st:2,kind:"choice",key:"springF",title:"프론트 스프링 형태",tip:"스프링이 쇽업소버에 끼워져 있으면 코일오버, 스프링이 따로 달려 있으면 분리형입니다.",cell:null,options:["코일오버","분리형"],noOther:true},
  {id:"S021",st:2,kind:"choice",key:"suspR",title:"리어 서스펜션 유형",tip:"차 밑에서 리어 서스펜션 구조를 보고 고릅니다. 구조가 보이게 사진을 찍으세요.",cell:"G7",options:["맥퍼슨","더블위시본","멀티링크","토션빔","판스프링","5링크"],other:"그 밖 (직접 입력)",shots:1},
  {id:"S022",skipIf:[{key:"suspR",is:"판스프링"}],st:2,kind:"choice",key:"springR",title:"리어 스프링 형태",tip:"스프링이 쇽업소버에 끼워져 있으면 코일오버, 스프링이 따로 달려 있으면 분리형입니다.",cell:null,options:["코일오버","분리형"],noOther:true},
+ {id:"S075",st:2,kind:"choice",key:"edc",title:"전자식 쇽업소버(EDC)인가요?",tip:"댐퍼에 전기 커넥터·배선이 달려 있으면 EDC입니다. 고른 값에 따라 캔슬러 사진과, 분해 후 커넥터 사진·저항값 화면이 나옵니다. 탈거할 때 커넥터를 뽑아야 합니다.",cell:null,options:["EDC","일반 (전기 연결 없음)"],noOther:true},
+ {id:"S103",onlyIf:{key:"edc",is:"EDC"},st:2,kind:"photo",title:"EDC 캔슬러 부착 위치 사진",tip:"EDC 캔슬러(경고등 끄는 저항 모듈)가 달려 있을 때만 위치가 보이게 찍습니다 (측정시트 40행). 없으면 그냥 넘어가세요.",shots:1,photoOpt:true},
  {id:"S023",st:2,kind:"measure",title:"프론트 댐퍼 체결부 기준 전장",tip:"잰 점을 표시해 두세요.",cell:"C10",shots:1},
  {id:"S024",skipIf:[{key:"suspF",is:"판스프링"}],st:2,kind:"measure",title:"프론트 스프링 양끝 길이",tip:"상단 패드 ↔ 하단 패드. 잰 점을 표시해 두세요.",cell:"D10",coilSkip:"springF",shots:1},
  {id:"S025",st:2,kind:"choice",key:"bumpPosF",title:"프론트 범프스토퍼 위치",tip:"범프스토퍼가 보이게 사진을 찍으세요. 댐퍼 내부를 고르면 사진 칸이 사라지고 다음 측정도 건너뜁니다 (나중에 분해 후 자유장 측정).",cell:"E16",options:["댐퍼 내부","차대","로어암"],other:"기타 (직접 입력)",shots:1,photoReq:{unlessKey:"bumpPosF",unless:"댐퍼 내부"}},
@@ -158,12 +163,11 @@ const TASKS=[
  {id:"S049",st:3,car:"droop",kind:"measure",title:"리어 범프스토퍼 끝 ↔ 차대 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"I12",ref:"mS031",onlyIf:{key:"bumpPosR",not:"댐퍼 내부"},shots:1,photoReq:true},
  {id:"S050",st:3,car:"droop",kind:"info",title:"리어 범프스토퍼 · 드룹",tip:"범프스토퍼가 댐퍼 내부라 지금은 재지 않습니다. 확인했으면 「확인 · 다음」.",items:["추후 댐퍼 분해 후 범프스토퍼 자유장을 측정합니다"],onlyIf:{key:"bumpPosR",is:"댐퍼 내부"}},
  {id:"S051",st:3,car:"droop",kind:"form",title:"리어 차고파이프 장착부 · 드룹",tip:"분리형이라 스프링 시트에 차고조절 파이프(차고파이프)를 달 자리를 봅니다. 장착부가 어떻게 생겼는지 적고, 주변이 다 보이게 찍습니다.",fields:[["pipeR","리어 차고파이프 장착부 위치 (기타는 「직접 입력」)","F16","pick:상단,하단"]],onlyIf:{key:"springR",is:"분리형"},shots:1},
- {id:"S052",st:3,car:"droop",kind:"photo",title:"프론트 상단 마운트 위쪽 여유 공간 (엔진룸)",tip:"⚠ 캠버 장공 방향 확인용 — 중요. 사진 2장: ① 위에서 수직(탑뷰) — 왜곡 없이, 상단 마운트 형태·위치·각도, 캠버 마운트 장공 방향, 마운트 볼트 패턴(PCD)이 보이게. ② 옆에서 — 볼트·로드가 튀어나온 정도와 보닛까지 남는 공간이 보이게, 줄자를 함께 대고. (측정시트 U27 4·6번 · 35행 · 41행)",shots:2,slots:["① 위에서 수직 (탑뷰 · 볼트 패턴)","② 옆에서 (튀어나온 정도 · 여유 공간, 줄자)"]},
- {id:"S053",st:3,car:"droop",kind:"photo",title:"리어 상단 마운트 위쪽 여유 공간 (트렁크·실내 쪽)",tip:"리어 마운트 너트가 트렁크·실내 쪽에 나와 있는 차만 내장재를 열고 찍습니다. 아니면 건너뛰세요 (휠하우스 쪽 사진은 차 밑에서 이미 찍었습니다). 사진 2장: ① 위에서 수직(탑뷰) — 왜곡 없이, 마운트 볼트 패턴(PCD)이 보이게. ② 옆에서 — 볼트·로드가 튀어나온 정도와 내장재까지 남는 공간이 보이게, 줄자를 함께 대고.",shots:2,photoOpt:true,slots:["① 위에서 수직 (탑뷰 · 볼트 패턴)","② 옆에서 (튀어나온 정도 · 여유 공간, 줄자)"]},
- {id:"S102",st:3,car:"droop",kind:"form",title:"좌우 대칭성 (반대쪽 엔진룸·휠하우스 보기)",tip:"반대쪽 상단 마운트를 보고, 캠버 장공 방향·마운트 형상이 이쪽과 같은지 고릅니다 (BMW 등은 좌우가 달라 품번이 다를 수 있음). 비대칭이면 반대쪽도 위에서 수직으로 찍고 다른 점을 특이사항에 적습니다.",fields:[["symF","프론트 좌우","D36","pick:대칭,비대칭"],["symR","리어 좌우","F36","pick:대칭,비대칭"]],shots:1,photoOpt:true},
- {id:"S059",st:4,car:"off",kind:"info",title:"쇽업소버 탈거",tip:"앞의 측정에 빈칸이 없는지 확인한 뒤 측정하는 쪽 프론트·리어 쇽업소버를 탈거합니다. 다 됐으면 「확인 · 다음」.",items:["빈 단계가 없는지 (끝 화면 목록 또는 「이전」으로 확인)","프론트 쇽업소버를 뗐는지","리어 쇽업소버를 뗐는지","뗀 볼트·너트를 한곳에 모아 두었는지"]},
+ {id:"S059",st:4,car:"off",kind:"info",showMissing:true,title:"쇽업소버 탈거",tip:"앞의 측정에 빈칸이 없는지 확인한 뒤 측정하는 쪽 프론트·리어 쇽업소버를 탈거합니다. 다 됐으면 「확인 · 다음」.",items:["빈 단계가 없는지 (아래 목록)","프론트 쇽업소버를 뗐는지","리어 쇽업소버를 뗐는지","뗀 볼트·너트를 한곳에 모아 두었는지"]},
  {id:"S060",st:4,car:"off",kind:"measure",title:"프론트 차대 마운트 통과 구멍 직경",tip:"쇽업소버를 뗀 자리에서 차대 쪽 마운트 구멍의 지름을 잽니다 (측정 필수). 버니어 캘리퍼스로, 구멍이 보이게 찍으세요.",cell:"D29",shots:1,photoReq:true},
  {id:"S061",st:4,car:"off",kind:"measure",title:"리어 차대 마운트 통과 구멍 직경",tip:"쇽업소버를 뗀 자리에서 차대 쪽 마운트 구멍의 지름을 잽니다 (측정 필수). 버니어 캘리퍼스로, 구멍이 보이게 찍으세요.",cell:"F29",shots:1,photoReq:true},
+ {id:"S093",st:4,car:"off",kind:"photo",title:"프론트 차대 쪽 스프링 안착부 (분리형)",tip:"분리형이라 차대 쪽 스프링 안착부를 재서 SPRING-SEPARATE 도면에 채우고 찍습니다 (측정시트 NOTE 8). 차고 브래킷·스프링 하단 고무 호환 여부는 특이사항에.",onlyIf:{key:"springF",is:"분리형"},shots:1},
+ {id:"S094",st:4,car:"off",kind:"photo",title:"리어 차대 쪽 스프링 안착부 (분리형)",tip:"분리형이라 차대 쪽 스프링 안착부를 재서 SPRING-SEPARATE 도면에 채우고 찍습니다 (측정시트 NOTE 8). 차고 브래킷·스프링 하단 고무 호환 여부는 특이사항에.",onlyIf:{key:"springR",is:"분리형"},shots:1},
  {id:"S062",st:4,car:"off",kind:"photo",title:"탈거한 쇽업소버 어셈블리 사진",tip:"뗀 쇽업소버를 통째로 찍습니다 (측정시트 사진 리스트 11번). 라벨이나 순정 품번이 보이면 가까이 한 장 더.",shots:2,slots:["프론트 어셈블리 (라벨·품번)","리어 어셈블리 (라벨·품번)"]},
  {id:"S054",st:4,car:"off",kind:"shape",axle:"F",title:"앞 쇽업소버 형태 고르기",tip:"탈거한 프론트 쇽업소버의 상단·하단 끝 모양을 보고 고릅니다. 측정 도면(부록 A)을 고르는 기준입니다."},
  {id:"S055",st:4,car:"off",kind:"shape",axle:"R",title:"뒤 쇽업소버 형태 고르기",tip:"앞과 같으면 「앞과 같음」."},
@@ -179,8 +183,6 @@ const TASKS=[
  {id:"S072",st:4,car:"off",kind:"photo",title:"리어 쇽업소버 분해 전 사진",tip:"가까이서 찍으면 원근이 생기므로 멀리서 줌으로 찍습니다. 특징이 있는 방향은 모두.",shots:4,slots:["① 전체 측면 (특징 방향 모두)","② 하단면","③ 상단면 (마운트 형상)","④ 상단마운트 측면 (돌출 깊이)"]},
  {id:"S073",st:4,car:"off",kind:"info",title:"3D 스캔 (분해 전)",tip:"앞뒤 쇽업소버 어셈블리를 분해 전에 스캔합니다. 다 됐으면 「확인 · 다음」.",items:["더스트 커버를 고정해 댐퍼 가이드 끝이 보이게 했는지 (리바운드 스트로크 확인용)","댐퍼마다 앞면·뒷면 두 번 스캔했는지","마운트 상면 같은 치수 기준 부위를 충분히 스캔했는지 (다관절이면 프로브로)","잘 안 읽히는 부위는 수기 측정으로 채웠는지"]},
  {id:"S074",st:5,car:"off",kind:"info",title:"쇽업소버 분해",tip:"스프링 탈착기로 프론트·리어 쇽업소버를 분해합니다. 다 됐으면 「확인 · 다음」.",items:["스프링 탈착기에 바르게 물렸는지 (스프링이 튀지 않게)","프론트·리어를 분해했는지","부품을 앞뒤 섞이지 않게 나눠 두었는지"]},
- {id:"S075",st:5,car:"off",kind:"choice",key:"edc",title:"전자식 쇽업소버(EDC)인가요?",tip:"댐퍼에 전기 커넥터·배선이 달려 있으면 EDC입니다. 고른 값에 따라 커넥터 사진·저항값 화면이 나옵니다.",cell:null,options:["EDC","일반 (전기 연결 없음)"],noOther:true},
- {id:"S103",onlyIf:{key:"edc",is:"EDC"},st:5,car:"off",kind:"photo",title:"EDC 캔슬러 부착 위치 사진",tip:"차에 EDC 캔슬러(경고등 끄는 저항 모듈)가 달려 있을 때만 위치가 보이게 찍습니다 (측정시트 40행). 없으면 그냥 넘어가세요.",shots:1,photoOpt:true},
  {id:"S076",st:5,car:"off",kind:"photo",title:"프론트 분해 후 사진 (댐퍼·마운트)",tip:"BC볼트나 로드가 들어갈 여유 공간이 보이게 찍습니다.",shots:4,slots:["① 로드 끝 측면","② 마운트의 로드 체결부 (밑에서 위로)","③ 마운트의 스프링 체결부 (밑에서 위로)","④ 댐퍼 순정 품번 (사진 리스트 12번)"]},
  {id:"S077",skipIf:[{key:"suspF",is:"판스프링"}],st:5,car:"off",kind:"photo",title:"프론트 스프링 사진",tip:"코일 끝 형상이 보이게 찍습니다.",shots:3,slots:["① 스프링 전체 측면","② 상단면 (코일 끝)","③ 하단면 (코일 끝)"]},
  {id:"S078",st:5,car:"off",kind:"photo",title:"프론트 EDC 커넥터 사진",tip:"측정시트 39행. 좌우가 다를 수 있으니 반대편 커넥터도 확인합니다. 기존 부품과 같으면 특이사항에 호환 차종을 적습니다.",onlyIf:{key:"edc",is:"EDC"},shots:3,slots:["① 품번","② 단면 형상","③ 측면 형상"]},
@@ -198,9 +200,7 @@ const TASKS=[
  {id:"S090",skipIf:[{key:"suspR",is:"판스프링"}],st:6,car:"off",kind:"form",title:"리어 스프링 설계치수",tip:"끝 형상: G 면취 그라인딩 · O 오픈 · C 닫힌 코일 · F 플랫 · P 피그테일. 스프링 측정 도면(SPRING-COILOVER / SPRING-SEPARATE)도 함께 채웁니다.",fields:[["spIdTopR","상부 내경","F21","mm"],["spEndTopR","상부 끝 형상","G21","pick:G,O,C,F,P"],["spIdLowR","하부 내경","F22","mm"],["spEndLowR","하부 끝 형상","G22","pick:G,O,C,F,P"],["spLenR","길이 (자유장)","F23","mm"],["spWireR","권선 두께","F24","mm"],["spTurnsR","권선 수 (n)","F25"]],shots:1},
  {id:"S091",skipIf:[{key:"suspF",is:"판스프링"}],st:6,car:"off",kind:"form",title:"프론트 스프링 다이노",tip:"시작 구간부터 약 80% 스트로크까지 10 mm 간격으로 눌러 하중-변위 선도를 남기고, 작동구간 상수를 적습니다 (측정시트 NOTE 7). 누르는 중에 휘면(버클링) 휜 뒤 구간 값은 참고치로 특이사항에 적습니다. 선도 화면을 찍으세요.",fields:[["spRateF","작동구간 상수 (kgf/mm)","D26"]],shots:1},
  {id:"S092",skipIf:[{key:"suspR",is:"판스프링"}],st:6,car:"off",kind:"form",title:"리어 스프링 다이노",tip:"시작 구간부터 약 80% 스트로크까지 10 mm 간격으로 눌러 하중-변위 선도를 남기고, 작동구간 상수를 적습니다 (측정시트 NOTE 7). 누르는 중에 휘면(버클링) 휜 뒤 구간 값은 참고치로 특이사항에 적습니다. 선도 화면을 찍으세요.",fields:[["spRateR","작동구간 상수 (kgf/mm)","F26"]],shots:1},
- {id:"S093",st:6,car:"off",kind:"photo",title:"프론트 차대 쪽 스프링 안착부 (분리형)",tip:"분리형이라 차대 쪽 스프링 안착부를 재서 SPRING-SEPARATE 도면에 채우고 찍습니다 (측정시트 NOTE 8). 차고 브래킷·스프링 하단 고무 호환 여부는 특이사항에.",onlyIf:{key:"springF",is:"분리형"},shots:1},
- {id:"S094",st:6,car:"off",kind:"photo",title:"리어 차대 쪽 스프링 안착부 (분리형)",tip:"분리형이라 차대 쪽 스프링 안착부를 재서 SPRING-SEPARATE 도면에 채우고 찍습니다 (측정시트 NOTE 8). 차고 브래킷·스프링 하단 고무 호환 여부는 특이사항에.",onlyIf:{key:"springR",is:"분리형"},shots:1},
- {id:"S095",st:7,car:"off",kind:"info",title:"재조립 전 확인",tip:"재조립하면 다시 잴 수 없습니다. 빠진 것이 없을 때 「확인 · 다음」.",items:["빈 단계가 없는지 (「이전」으로 확인 — 끝 화면에도 목록이 나옵니다)","측정 도면에 빈칸이 없는지","3D 스캔 데이터를 열어 축이 틀어졌거나 빠진 부위가 없는지"]},
+ {id:"S095",st:7,car:"off",kind:"info",showMissing:true,title:"재조립 전 확인",tip:"재조립하면 다시 잴 수 없습니다. 빠진 것이 없을 때 「확인 · 다음」.",items:["빈 단계가 없는지 (아래 목록)","측정 도면에 빈칸이 없는지","3D 스캔 데이터를 열어 축이 틀어졌거나 빠진 부위가 없는지"]},
  {id:"S096",st:7,car:"off",kind:"choice",key:"fenderMatch",title:"휀더 일치 측정을 하나요?",tip:"스프링 없이 댐퍼만 차에 달고 타이어 윗선을 휀더에 맞춰 잽니다. 네오테크 쇽업소버 설계 때 최저 차고의 기준이 되고 간섭을 미리 볼 수 있습니다 (측정시트 NOTE 9). 필요할 때만.",cell:null,options:["한다","안 한다"],noOther:true},
  {id:"S097",st:7,car:"off",kind:"form",title:"프론트 휀더 일치",tip:"타이어 윗선이 휀더와 일치할 때 잽니다. 칸 위치(18행)는 확인 필요.",fields:[["fmHubF","허브 센터 ↔ 휀더","B18","mm"],["fmLenF","체결부 기준 전장","C18","mm"],["fmBumpF","스토퍼 끝 ↔ 차대","E18","mm"]],onlyIf:{key:"fenderMatch",is:"한다"},shots:1},
  {id:"S098",st:7,car:"off",kind:"form",title:"리어 휀더 일치",tip:"타이어 윗선이 휀더와 일치할 때 잽니다. 칸 위치(18행)는 확인 필요.",fields:[["fmHubR","허브 센터 ↔ 휀더","F18","mm"],["fmLenR","체결부 기준 전장","G18","mm"],["fmBumpR","스토퍼 끝 ↔ 차대","I18","mm"]],onlyIf:{key:"fenderMatch",is:"한다"},shots:1},
@@ -521,6 +521,12 @@ function showTask(){
   const c=el("div","card");const h=el("h2");h.appendChild(el("span","mono muted",(TASKS.indexOf(t)+1)+". ")); /* 화면 번호는 지금 순서대로 자동으로 매긴다. 단계 id(t.id)는 저장 기록용이라 바꾸지 않는다 */h.appendChild(document.createTextNode(t.title));c.appendChild(h);
   if(t.tip)c.appendChild(el("p","small muted",t.tip));
   if(t.kind==="info"&&t.items){const ul=el("ul","small");t.items.forEach(x=>ul.appendChild(el("li",null,x)));c.appendChild(ul)}
+  // 중간 점검 화면: 지금까지(이 화면 앞) 빈 단계를 바로 보여 준다
+  if(t.showMissing){const empty=TASKS.slice(0,idx).filter(missing);const box=el("div","card small");box.style.background="var(--bg)";
+    if(!empty.length)box.appendChild(el("div",null,"지금까지 빈 단계 없음"));
+    else{box.appendChild(el("div",null,"지금까지 빈 단계 "+empty.length+"개 — 누르면 그 화면으로 갑니다"));const ul=el("ul");ul.style.margin="0";
+      empty.forEach(e=>{const li=el("li");const a=el("a",null,(TASKS.indexOf(e)+1)+". "+e.title);a.href="#";a.onclick=async ev=>{ev.preventDefault();if(collect)collect();commitEdits();idx=TASKS.indexOf(e);await save();showTask()};li.appendChild(a);ul.appendChild(li)});box.appendChild(ul)}
+    c.appendChild(box)}
   if(t.kind==="choice")choiceUI(t,c);
   if(t.kind==="shape")shapeUI(t,c);
   if(t.fields)formUI(t,c); // form 단계, 또는 안내(info) 단계에 붙인 입력 칸
@@ -870,7 +876,8 @@ const CHANGELOG=[
  [65,"2026-10-22 18:50","충돌 정리: ② 폴더·ZIP 날짜를 한국 시간으로 ④ 흐름에 없는 화면의 값도 측정기록.csv 맨 아래 「보류」로 ⑤ 보기를 바꿔 해당 없게 된 화면의 사진은 사진/임시/로 ⑥ csv 「조건 안 맞음」을 지금 보기로 다시 판단, 다시 해당되면 표시 지움 ⑦ 한 측정은 한 탭에서만 열림(다른 탭에서 열기·ZIP·지우기 막음) ⑧ 같은 날 같은 차량 이름이면 「_2」「_3」 자동 ⑨ ZIP 만든 뒤 고치면 목록에 「ZIP 만든 뒤 고침 n건」, 지울 때 경고"],
  [66,"2026-10-23 10:44","드룹 다음에 「탈거 (분해 전)」 단계 15화면(S059~S073) 추가: 탈거 안내 → 차대 마운트 통과 구멍 직경 프론트·리어(C29·G29 — 칸 위치 추정) → 어셈블리 사진 → 프론트 전장·스프링 조립 길이·범프스토퍼 고무 길이(C14~E14) → 리어(G14~I14) → 분리형 고무패드(16행) → 분해 전 사진 → 3D 스캔 안내. 스프링 조립 길이·범프스토퍼 고무 길이에 「건너뛰기」 버튼(3D 스캔에서 잼 / 분해 후 잼) — 누르면 사진 없이 넘어감"],
  [67,"2026-10-26 07:35","끝 과정까지 화면 추가 (S074~S100): 분해(분해 안내 · EDC 여부 · 분해 후 사진 · 스프링 사진 · EDC 커넥터 · 최대압축 길이 · 분해 전에 건너뛴 범프스토퍼 고무 길이 · EDC 저항 D38/F38 · 분해 후 3D 스캔) → 스프링 측정(설계치수 21~25행 · 다이노 상수 26행 · 분리형 차대 안착부) → 재조립 · 출고(재조립 전 확인 · 휀더 일치 18행 · 재조립 · 자료 정리). 형태 고르기 프론트·리어(S054·S055)를 보관 목록에서 꺼내 탈거한 어셈블리 사진 다음에 둠"],
- [68,"2026-11-16 10:00","자가 검토 반영: 버그 ① 칸별 사진을 다 찍어도 빈 단계로 잡히던 것 고침 ② 입력 칸 화면에서 칸이 하나라도 비면 경고·끝 화면 빈 단계에 나옴 ③ 림 외경 없이 「림 하단부터 쟀음」이면 다음으로 못 넘어감(뒤로 가서 비워 두면 기록에 「빼지 않음」 표시). 칸 위치: 차대 마운트 구멍 직경 D29·F29, 스프링 끝 형상 E21·E22·G21·G22(앞 칸 내경·뒤 칸 형상). 새 화면: 측정할 쪽 고르기(S101, 제원표 다음) · 좌우 대칭성 D36·F36(S102, 상단 마운트 사진 다음) · EDC 캔슬러 부착 위치 사진(S103, EDC일 때만·선택)"]
+ [68,"2026-11-16 10:00","자가 검토 반영: 버그 ① 칸별 사진을 다 찍어도 빈 단계로 잡히던 것 고침 ② 입력 칸 화면에서 칸이 하나라도 비면 경고·끝 화면 빈 단계에 나옴 ③ 림 외경 없이 「림 하단부터 쟀음」이면 다음으로 못 넘어감(뒤로 가서 비워 두면 기록에 「빼지 않음」 표시). 칸 위치: 차대 마운트 구멍 직경 D29·F29, 스프링 끝 형상 E21·E22·G21·G22(앞 칸 내경·뒤 칸 형상). 새 화면: 측정할 쪽 고르기(S101, 제원표 다음) · 좌우 대칭성 D36·F36(S102, 상단 마운트 사진 다음) · EDC 캔슬러 부착 위치 사진(S103, EDC일 때만·선택)"],
+ [69,"2026-11-16 10:40","자가 검토 순서 제안 O1~O5 반영: ① 엔진룸·트렁크 상단 마운트 사진과 좌우 대칭성을 리프트 올리기 전(측정할 쪽 고르기 다음)으로 ② 정하중 바퀴 측정을 프론트 4개(휀더 갭·림 외경·타이어 스펙·허브 센터) → 리어 4개 순서로 ③ EDC 고르기와 캔슬러 사진을 정하중 차 밑(유형 고르기 다음)으로 — 커넥터 사진·저항은 분해 후 그대로 ④ 분리형 차대 쪽 스프링 안착부를 탈거 단계(차대 마운트 구멍 직경 다음)로 ⑤ 쇽업소버 탈거·재조립 전 확인 화면에 지금까지 빈 단계 목록(누르면 그 화면으로)"]
 ];
 // 지금은 베타: 숫자 번호는 「베타 rev N」으로 보인다. 정식 v1이 되면 그때부터 번호를 문자열("1","2"…)로 적어 「rev 1」부터 센다 (유지호 2026-10-22).
 const revName=n=>typeof n==="string"?"rev "+n:"베타 rev "+n;
