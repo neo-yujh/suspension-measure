@@ -830,7 +830,7 @@ const fsafe=s=>String(s).replace(/[\\/:*?"<>|]+/g,"_").replace(/\s+/g," ").trim(
 // 사진 이름 (2026-11-17 유지호 결정): 날짜_차량_단계_축_화면아이디_항목_[칸]_순번 — 화면을 끼워 넣어도 바뀌지 않게 S아이디 기준
 const STAGE={0:"0시작",1:"0외관",2:"1정하중",3:"2드룹",4:"3탈거",5:"4분해",6:"5스프링",7:"6출고"};
 function photoName(r,car,base,tag,nn){const t=TASKS.find(x=>x.id===base)||PARKED.find(x=>x.id===base)||{title:base};
-  const ti=String(t.title||base).replace(/^⚠s*/,"");const ax=/^프론트/.test(ti)?"FRT":/^리어/.test(ti)?"RR":"ALL";
+  const ti=String(t.title||base).replace(/^⚠\s*/,"");const ax=/^프론트/.test(ti)?"FRT":/^리어/.test(ti)?"RR":"ALL";
   const item=ti.replace(/^(프론트|리어)\s*/,"").replace(/^⚠\s*/,"").replace(/\([^)]*\)/g,"").replace(/\s*·\s*(드룹|분해 전|분해 후|탈거 후)\s*$/,"").replace(/[↔·\s]+/g,"").slice(0,24);
   return [localDay(r.createdAt).replace(/-/g,""),car,STAGE[t.st]||"9보류",ax,base,item||base,tag].filter(Boolean).map(fsafe).join("_")+"_"+nn}
 function stepOf(taskId){const base=String(taskId).replace(/_(memo|raw|s\d+)$/,"");const i=TASKS.findIndex(t=>t.id===base);const t=i>=0?TASKS[i]:PARKED.find(x=>x.id===base);
