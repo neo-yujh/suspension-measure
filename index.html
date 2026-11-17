@@ -827,6 +827,12 @@ async function migrateIds(){
 //  날짜_차량/사진/<화면번호>단계_<차량>_<화면 제목>_<순번>.jpg
 //  특이사항 사진: 사진/메모사항 <n>번_<화면번호>단계 <화면 제목>_<순번>.jpg — n은 특이사항.txt의 번호(메모가 생긴 순서)
 const fsafe=s=>String(s).replace(/[\\/:*?"<>|]+/g,"_").replace(/\s+/g," ").trim().slice(0,90);
+// 사진 이름 (2026-11-17 유지호 결정): 날짜_차량_단계_축_화면아이디_항목_[칸]_순번 — 화면을 끼워 넣어도 바뀌지 않게 S아이디 기준
+const STAGE={0:"0시작",1:"0외관",2:"1정하중",3:"2드룹",4:"3탈거",5:"4분해",6:"5스프링",7:"6출고"};
+function photoName(r,car,base,tag,nn){const t=TASKS.find(x=>x.id===base)||PARKED.find(x=>x.id===base)||{title:base};
+  const ti=String(t.title||base).replace(/^⚠s*/,"");const ax=/^프론트/.test(ti)?"FRT":/^리어/.test(ti)?"RR":"ALL";
+  const item=ti.replace(/^(프론트|리어)\s*/,"").replace(/^⚠\s*/,"").replace(/\([^)]*\)/g,"").replace(/\s*·\s*(드룹|분해 전|분해 후|탈거 후)\s*$/,"").replace(/[↔·\s]+/g,"").slice(0,24);
+  return [localDay(r.createdAt).replace(/-/g,""),car,STAGE[t.st]||"9보류",ax,base,item||base,tag].filter(Boolean).map(fsafe).join("_")+"_"+nn}
 function stepOf(taskId){const base=String(taskId).replace(/_(memo|raw|s\d+)$/,"");const i=TASKS.findIndex(t=>t.id===base);const t=i>=0?TASKS[i]:PARKED.find(x=>x.id===base);
   let title=t?t.title:base;const m=String(taskId).match(/_s(\d+)$/);if(m&&t&&t.slots)title+=" "+t.slots[+m[1]-1];
   return {no:i>=0?i+1:0,title,base}}
@@ -871,7 +877,7 @@ async function exportZip(){
     // 앞에서 보기를 바꿔 해당 없게 된 화면의 사진은 지우지 않고 「사진/임시/」에 따로 담는다 (특이사항 사진은 그대로)
     const st=TASKS.find(x=>x.id===s.base);const temp=!memo&&st&&!applies(st);
     if(p.fname){const nm="로우데이터/"+fsafe(s.no+"단계_"+car+"_"+s.title)+"_"+nn+"_"+fsafe(p.fname);zip.file(nm,p.blob);map.push([p.id,nm,s.base,s.no+"단계",s.title,"로우데이터",k,loc(p.at)]);return}
-    const name="사진/"+(temp?"임시/":"")+(memo?fsafe("메모사항 "+memoNo[s.base]+"번_"+stepLabel(s))+"_"+nn:fsafe((s.no?s.no+"단계":"보류")+"_"+car+"_"+s.title)+"_"+nn)+".jpg";
+    const sl=(p.taskId.match(/_s(\d+)$/)||[])[1];const name="사진/"+(temp?"임시/":"")+photoName(run,car,s.base,memo?"메모":(sl?"s"+sl:""),nn)+".jpg";
     zip.file(name,p.blob);(list[p.taskId]=list[p.taskId]||[]).push(name);
     map.push([p.id,name.slice(3),s.base,s.no?s.no+"단계":"보류",s.title,memo?"특이사항 메모사항 "+memoNo[s.base]+"번":temp?"임시 (조건 안 맞음)":(/_s\d+$/.test(p.taskId)?"칸 "+p.taskId.split("_s")[1]:"측정"),k,loc(p.at)])});
   zip.file("사진대조표.csv","﻿"+map.map(r=>r.map(csvCell).join(",")).join("\r\n"));
@@ -974,7 +980,8 @@ const CHANGELOG=[
  [71,"2026-11-17 08:20","버그: 타이어 스펙 입력 칸 4개가 너무 좁아 숫자가 안 보이던 것 — 한 줄 전체 폭으로"],
  [72,"2026-11-17 10:30","간섭검사 화면 추가(유지호 결정): 정하중 휠 달린 상태에 몸통↔타이어(S114·S115, 33행) · 드룹 휠 탈거 후 장착부 주변 간섭(S116·S119, 30행) · 몸통↔등속조인트(S117·S120, 32행, 도식 + 「등속조인트 없음」 버튼) · 스테빌 브래킷↔휠하우스(S118·S121, 34행) · 탈거 후 몸통 두께(S122·S123, 31행, 버니어 또는 3D 스캔). 각 화면에 도식. 구조 상세 사진 안내에서 스테빌 링크 예시 삭제"],
  [73,"2026-11-17 11:00","등속조인트 도식 고침(유지호 지적): 쇽 몸통 아래 끝 밑으로 드라이브 샤프트·등속조인트 부트가 지나가는 일반 배치로, 화살표는 몸통 아래 끝 ↔ 부트 위"],
- [74,"2026-11-17 11:30","유지호 결정: 분리형이면 스프링 조립 상태 길이(S064·S067)를 숨김 — 드룹 스프링 길이가 조립 상태 길이(드룹 화면 안내에 「빼면 다시 못 잼」). 스프링 다이노(S091·S092)에 로우데이터 파일(CSV 등) 넣기 칸 — 필수, ZIP의 로우데이터/ 폴더로 나감. 작동구간 상수는 선택, 선도 사진은 권장으로"]
+ [74,"2026-11-17 11:30","유지호 결정: 분리형이면 스프링 조립 상태 길이(S064·S067)를 숨김 — 드룹 스프링 길이가 조립 상태 길이(드룹 화면 안내에 「빼면 다시 못 잼」). 스프링 다이노(S091·S092)에 로우데이터 파일(CSV 등) 넣기 칸 — 필수, ZIP의 로우데이터/ 폴더로 나감. 작동구간 상수는 선택, 선도 사진은 권장으로"],
+ [75,"2026-11-17 12:00","사진 이름 형식 바꿈(유지호 결정): 날짜_차량_단계_축_화면아이디_항목_[칸·메모]_순번.jpg (예: 20261117_캐스퍼EV_2드룹_FRT_S042_상단체결부형상사진_01.jpg). 단계 0외관~6출고, 축 FRT·RR·ALL(회사 표기), 「N단계」 번호는 뺌 — 화면을 끼워 넣어도 이름이 안 바뀜. 사진대조표에 화면 번호는 그대로"]
 ];
 // 지금은 베타: 숫자 번호는 「베타 rev N」으로 보인다. 정식 v1이 되면 그때부터 번호를 문자열("1","2"…)로 적어 「rev 1」부터 센다 (유지호 2026-10-22).
 const revName=n=>typeof n==="string"?"rev "+n:"베타 rev "+n;
