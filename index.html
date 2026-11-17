@@ -576,7 +576,7 @@ function showTask(){
   const c=el("div","card");const h=el("h2");h.appendChild(el("span","mono muted",(TASKS.indexOf(t)+1)+". ")); /* 화면 번호는 지금 순서대로 자동으로 매긴다. 단계 id(t.id)는 저장 기록용이라 바꾸지 않는다 */h.appendChild(document.createTextNode(t.title));c.appendChild(h);
   if(t.tip)c.appendChild(el("p","small muted",t.tip));
   if(t.view)c.appendChild(carView(t.view));
-  if(t.fig)c.appendChild(figView(t.fig));
+  {const fk=figFor(t);if(fk){const im=el("img");im.src="figs/"+fk+".svg";im.alt="측정 위치 도식";im.style.cssText="display:block;width:100%;max-width:380px;margin:8px auto;border:1px solid var(--line);border-radius:6px;background:#fff";c.appendChild(im)}else if(t.fig)c.appendChild(figView(t.fig));} // 측정 도식(figs/, figure_rebuild/make_figs.py로 생성) — rev 77
   (t.warn||[]).forEach(w=>{if(w.ids.some(id=>String(run.skipped[id]||"").startsWith(w.pre))){const b=el("div","card small",w.text);b.style.borderColor="var(--warn)";b.style.color="var(--warn)";c.appendChild(b)}});
   if(t.kind==="info"&&t.items){const ul=el("ul","small");t.items.forEach(x=>ul.appendChild(el("li",null,x)));c.appendChild(ul)}
   // 중간 점검 화면: 지금까지(이 화면 앞) 빈 단계를 바로 보여 준다
@@ -602,6 +602,20 @@ function showTask(){
   $("#prev").disabled=idx===0;$("#next").textContent=idx===TASKS.length-1?"확인 · 끝":"확인 · 다음";window.scrollTo(0,0);
 }
 // 간섭검사 도식 (단순 선 그림, 재는 곳을 화살표 하나로)
+// 화면별 측정 도식 (rev 77). 값이 [코일오버/스트럿, 분리형]이면 리어 스프링 형태(springR)로 고른다.
+const FIGMAP={S009:"wheel_fender_gap",S012:"wheel_fender_gap",S010:"wheel_rim_od",S013:"wheel_rim_od",
+ S015:"wheel_hub_fender",S016:"wheel_hub_fender",S034:"wheel_hub_fender",S035:"wheel_hub_fender",
+ S023:"strut_damper_len",S024:"strut_spring_len",S026:"strut_bump_gap",
+ S028:["strut_damper_len","sep_damper_len"],S029:["strut_spring_len","sep_spring_len"],S031:["strut_bump_gap","sep_bump_gap"],
+ S114:"strut_body_tire",S115:"strut_body_tire",
+ S040:"droop_damper_len",S041:"droop_spring_len",S043:"droop_bump_gap",
+ S046:["droop_damper_len","sep_droop_damper_len"],S047:["droop_spring_len","sep_droop_spring_len"],S049:["droop_bump_gap","sep_droop_bump_gap"],
+ S116:"strut_mount_interf",S119:"strut_mount_interf",S117:"strut_body_cv",S120:"strut_body_cv",S118:"strut_stab_wh",S121:"strut_stab_wh",
+ S060:"mount_hole_dia",S061:"mount_hole_dia",S104:"mount_hole_dia",S105:"mount_hole_dia",
+ S063:"off_damper_len",S066:"off_damper_len",S064:"off_spring_len",S067:"off_spring_len",
+ S065:"off_bump_len",S068:"off_bump_len",S080:"off_bump_len",S086:"off_bump_len",S079:"off_max_comp",S085:"off_max_comp",
+ S122:"off_body_dia",S123:"off_body_dia",S110:"stab_link",S111:"stab_link"};
+function figFor(t){const m=FIGMAP[t.id];if(!m)return null;if(typeof m==="string")return m;const v=run.values.springR;return v&&v.v==="분리형"?m[1]:m[0]}
 const FIG={
  tire:'<rect x="20" y="20" width="40" height="120" rx="8" style="fill:none;stroke:var(--icon);stroke-width:3"/><rect x="120" y="30" width="22" height="100" rx="4" style="fill:none;stroke:var(--icon);stroke-width:3"/><line x1="64" y1="80" x2="116" y2="80" style="stroke:var(--accent);stroke-width:3" marker-start="url(#ar)" marker-end="url(#ar)"/><text x="40" y="155" text-anchor="middle">타이어</text><text x="131" y="145" text-anchor="middle">쇽 몸통</text>',
  mount:'<rect x="80" y="40" width="24" height="90" rx="4" style="fill:none;stroke:var(--icon);stroke-width:3"/><rect x="66" y="22" width="52" height="18" style="fill:none;stroke:var(--icon);stroke-width:3"/><rect x="150" y="10" width="40" height="40" style="fill:none;stroke:var(--icon);stroke-width:3"/><line x1="122" y1="30" x2="146" y2="30" style="stroke:var(--accent);stroke-width:3" marker-start="url(#ar)" marker-end="url(#ar)"/><text x="92" y="150" text-anchor="middle">쇽 장착부</text><text x="170" y="65" text-anchor="middle">주변 부품</text>',
@@ -1006,7 +1020,8 @@ const CHANGELOG=[
  [73,"2026-11-17 11:00","등속조인트 도식 고침(유지호 지적): 쇽 몸통 아래 끝 밑으로 드라이브 샤프트·등속조인트 부트가 지나가는 일반 배치로, 화살표는 몸통 아래 끝 ↔ 부트 위"],
  [74,"2026-11-17 11:30","유지호 결정: 분리형이면 스프링 조립 상태 길이(S064·S067)를 숨김 — 드룹 스프링 길이가 조립 상태 길이(드룹 화면 안내에 「빼면 다시 못 잼」). 스프링 다이노(S091·S092)에 로우데이터 파일(CSV 등) 넣기 칸 — 필수, ZIP의 로우데이터/ 폴더로 나감. 작동구간 상수는 선택, 선도 사진은 권장으로"],
  [75,"2026-11-17 12:00","사진 이름 형식 바꿈(유지호 결정): 날짜_차량_단계_축_화면아이디_항목_[칸·메모]_순번.jpg (예: 20261117_캐스퍼EV_2드룹_FRT_S042_상단체결부형상사진_01.jpg). 단계 0외관~6출고, 축 FRT·RR·ALL(회사 표기), 「N단계」 번호는 뺌 — 화면을 끼워 넣어도 이름이 안 바뀜. 사진대조표에 화면 번호는 그대로"],
- [76,"2026-11-17 18:00","유지호 rev 75 검토 반영: 서스펜션 유형 사진 뺌 · 캔슬러 품번 칸+해당없음 · 코일오버 건너뛰기 문구(탈거 후 조립 길이로 역산)와 건너뛰면 조립 상태 길이 필수(탈거 화면 주의) · 스테빌 링크 해당없음 · 쇽 전장 「3D 스캔에서 측정」 + 3D 스캔 화면 주의 · 분해 전 사진에 라벨 합침(S062 보류) · 출고 뒤 「자리 업무」 단계(S124~S130: 3D 값 입력) · 분해 후 사진 문구·품번 칸 뺌 · EDC 커넥터 문구 · 스트로크 회사 기준 정의. 자가 검토 버그: 뒤로 가도 건너뛰기 표시 유지·취소 버튼 · 해당없음/코일오버 건너뛰기면 사진 면제 · 권장 사진은 빈 단계에서 뺌 · 로우데이터 필수·지우기 · 옛 타이어 표기 유지 · 체결 타입 수정 기록 · 로우데이터 파일 이름 새 규칙·record.json · 시트 이름 261026"]
+ [76,"2026-11-17 18:00","유지호 rev 75 검토 반영: 서스펜션 유형 사진 뺌 · 캔슬러 품번 칸+해당없음 · 코일오버 건너뛰기 문구(탈거 후 조립 길이로 역산)와 건너뛰면 조립 상태 길이 필수(탈거 화면 주의) · 스테빌 링크 해당없음 · 쇽 전장 「3D 스캔에서 측정」 + 3D 스캔 화면 주의 · 분해 전 사진에 라벨 합침(S062 보류) · 출고 뒤 「자리 업무」 단계(S124~S130: 3D 값 입력) · 분해 후 사진 문구·품번 칸 뺌 · EDC 커넥터 문구 · 스트로크 회사 기준 정의. 자가 검토 버그: 뒤로 가도 건너뛰기 표시 유지·취소 버튼 · 해당없음/코일오버 건너뛰기면 사진 면제 · 권장 사진은 빈 단계에서 뺌 · 로우데이터 필수·지우기 · 옛 타이어 표기 유지 · 체결 타입 수정 기록 · 로우데이터 파일 이름 새 규칙·record.json · 시트 이름 261026"],
+ [77,"2026-11-17 19:00","측정 도식 35종으로 바꿈(유지호 요청: 화살표 끝점·실차·측정 단계 상태 일치) — 정하중·드룹(바퀴 탈거)·탈거·분해 후 댐퍼 단품·범프스토퍼 단품·분리형 리어·바퀴·장착부. 리어는 스프링 형태(분리형)에 따라 그림을 고름. 스트럿 전장 아래 기준 = 위쪽 볼트 중심(유지호 확인). 그림 파일 figs/"]
 ];
 // 지금은 베타: 숫자 번호는 「베타 rev N」으로 보인다. 정식 v1이 되면 그때부터 번호를 문자열("1","2"…)로 적어 「rev 1」부터 센다 (유지호 2026-10-22).
 const revName=n=>typeof n==="string"?"rev "+n:"베타 rev "+n;
