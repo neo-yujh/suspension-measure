@@ -104,7 +104,7 @@ const SHAPES={
   susp:[["맥퍼슨"],["더블위시본"],["멀티링크"],["토션빔"],["판스프링"],["5링크"]],
   type:[["coil","코일오버형"],["sep","분리형 댐퍼"]],
   top:[["plate","마운트 판"],["eye","아이"],["rod","로드·스터드"]],
-  low:[["minsert","맥퍼슨 인서트"],["mclevis","맥퍼슨 클레비스"],["eye","아이"],["fork","포크"],["fork4","4WD 포크"],["tab","인서트(너클 탭)"],["eclevis","아이 투 클레비스"],["other","기타"],["stud","스터드"]]
+  low:[["minsert","맥퍼슨 인서트"],["mclevis","맥퍼슨 클레비스"],["eye","아이"],["fork","포크"],["fork4","4WD 포크"],["tab","인서트(너클 탭)"],["other","기타"],["stud","스터드"]]
 };
 /* ===== 측정 순서 (마인드맵 0~2단계). cell = 측정시트 v.261008 첫 탭 칸 위치 (제목 줄 바로 아래 줄을 값 칸으로 봄 — 확인 필요) ===== */
 const TASKS=[
@@ -140,13 +140,13 @@ const TASKS=[
  {id:"S055",st:2,kind:"shape",axle:"R",title:"리어 쇽업소버 체결 타입 (상단·하단)",tip:"프론트와 같으면 「앞과 같음」. 탈거 후에 한 번 더 확인합니다."},
  {id:"S075",st:2,kind:"choice",key:"edc",title:"전자식 쇽업소버(EDC)인가요?",tip:"댐퍼에 전기 커넥터·배선이 달려 있으면 EDC입니다. 고른 값에 따라 캔슬러 사진과, 분해 후 커넥터 사진·저항값 화면이 나옵니다. 탈거할 때 커넥터를 뽑아야 합니다.",cell:null,options:["EDC","일반 (전기 연결 없음)"],noOther:true},
  {id:"S103",onlyIf:{key:"edc",is:"EDC"},st:2,kind:"photo",title:"EDC 캔슬러 품번 · 부착 위치",tip:"EDC 캔슬러(경고등 끄는 저항 모듈)가 달려 있으면 품번을 적고 위치가 보이게 찍습니다 (측정시트 40행). 캔슬러가 없거나 품번이 안 보이면 「해당없음」.",fields:[["cancelPN","캔슬러 품번",null]],na:"해당없음",shots:1,photoOpt:true},
- {id:"S023",datum:["F","car"],st:2,kind:"measure",title:"프론트 댐퍼 체결부 기준 전장",tip:"잰 점을 표시해 두세요.",cell:"C10",shots:1},
+ {id:"S023",datum:["F","car"],st:2,kind:"measure",title:"프론트 댐퍼 체결부 기준 전장",tip:"잰 점을 표시해 두세요. 아래 끝 = 하단 체결 볼트 중심 — 볼트가 2개 이상이면 지면에 가장 가까운 볼트 (클레비스는 아래 볼트, 2026-11-17 유지호).",cell:"C10",shots:1},
  {id:"S024",skipIf:[{key:"suspF",is:"판스프링"}],st:2,kind:"measure",title:"프론트 스프링 양끝 길이",tip:"상단 패드 ↔ 하단 패드. 잰 점을 표시해 두세요.",cell:"D10",coilSkip:"springF",shots:1},
  {id:"S025",st:2,kind:"choice",key:"bumpPosF",title:"프론트 범프스토퍼 위치",tip:"범프스토퍼가 보이게 사진을 찍으세요. 댐퍼 내부를 고르면 사진 칸이 사라지고 다음 측정도 건너뜁니다 (나중에 분해 후 자유장 측정).",cell:"E16",options:["댐퍼 내부","차대","로어암"],other:"기타 (직접 입력)",shots:1,photoReq:{unlessKey:"bumpPosF",unless:"댐퍼 내부"}},
  {id:"S026",st:2,kind:"measure",title:"프론트 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼 끝에서 맞닿는 면까지.",onlyIf:{key:"bumpPosF",not:"댐퍼 내부"},cell:"E10",shots:1,photoReq:true},
  {id:"S027",st:2,kind:"photo",title:"프론트 서스펜션 구조 상세 사진",tip:"서스펜션 구조를 부품 하나하나 가까이 찍습니다 (예: 암 체결부, 너클). 간섭이 우려되는 부분은 줄자를 대거나 손가락 몇 개가 들어가는지 함께 찍어, 여유 거리를 가늠할 수 있게 합니다. 권장 장수·찍을 부품 목록은 남정우 수석 피드백 받아 확정 예정 — 지금은 임시 1장.",shots:1,photoOpt:true},
  {id:"S114",st:2,kind:"measure",optional:true,fig:"tire",title:"프론트 쇽 몸통 ↔ 타이어 거리",tip:"손가락으로 측정해도 됩니다. 쇽업소버 몸통에서 타이어 안쪽 면까지 가장 가까운 곳을 잽니다. 몸통이 타이어 옆에 없으면 「해당 없음」.",cell:"D33",shots:1},
- {id:"S028",datum:["R","car"],st:2,kind:"measure",title:"리어 댐퍼 체결부 기준 전장",tip:"분리형이면 댐퍼만.",cell:"G10",shots:1},
+ {id:"S028",datum:["R","car"],st:2,kind:"measure",title:"리어 댐퍼 체결부 기준 전장",tip:"분리형이면 댐퍼만. 아래 끝 = 하단 체결 볼트 중심 — 볼트가 2개 이상이면 지면에 가장 가까운 볼트 (클레비스는 아래 볼트, 2026-11-17 유지호).",cell:"G10",shots:1},
  {id:"S029",skipIf:[{key:"suspR",is:"판스프링"}],st:2,kind:"measure",title:"리어 스프링 양끝 길이",tip:"분리형이면 스프링만 따로.",cell:"H10",coilSkip:"springR",shots:1},
  {id:"S030",st:2,kind:"choice",key:"bumpPosR",title:"리어 범프스토퍼 위치",tip:"범프스토퍼가 보이게 사진을 찍으세요. 댐퍼 내부를 고르면 사진 칸이 사라지고 다음 측정도 건너뜁니다 (나중에 분해 후 자유장 측정).",cell:"I16",options:["댐퍼 내부","차대","로어암"],other:"기타 (직접 입력)",shots:1,photoReq:{unlessKey:"bumpPosR",unless:"댐퍼 내부"}},
  {id:"S031",st:2,kind:"measure",title:"리어 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼 끝에서 맞닿는 면까지.",onlyIf:{key:"bumpPosR",not:"댐퍼 내부"},cell:"I10",shots:1,photoReq:true},
@@ -168,6 +168,7 @@ const TASKS=[
  {id:"S116",st:3,car:"droop",kind:"measure",optional:true,fig:"mount",title:"프론트 쇽 장착부 주변 간섭",tip:"쇽업소버 장착부(상단·하단 체결부) 둘레에서 가장 가까운 부품까지 거리를 잽니다. 닿을 것 같은 곳이 있으면 사진으로 함께 남깁니다. 간섭될 부품이 없으면 「해당 없음」.",cell:"D30",shots:1,photoOpt:true},
  {id:"S117",st:3,car:"droop",kind:"measure",fig:"cv",laterSkip:"등속조인트 없음",laterNote:"등속조인트가 없으면 아래 버튼을 누릅니다.",title:"프론트 쇽 몸통 ↔ 등속조인트",tip:"쇽업소버 몸통에서 등속조인트(드라이브 샤프트 끝 고무 부트)까지 가장 가까운 곳을 잽니다.",cell:"D32",shots:1,photoOpt:true},
  {id:"S118",st:3,car:"droop",kind:"measure",optional:true,fig:"stab",title:"프론트 스테빌 브래킷 ↔ 휠하우스",tip:"쇽업소버에 달린 스테빌라이저 링크 브래킷에서 휠하우스 안쪽 면까지 가장 가까운 곳을 잽니다. 쇽에 스테빌 브래킷이 없으면 「해당 없음」.",cell:"D34",shots:1,photoOpt:true},
+ {id:"S137",skipIf:[{key:"suspF",is:"판스프링"}],st:3,car:"droop",kind:"measure",title:"프론트 스프링 ↔ 주변 여유 · 탈거 전 (순정 스프링 달린 상태)",tip:"쇽업소버를 떼기 전에, 원래 달려 있는 스프링 바깥에서 가장 가까운 부품(스트럿 타워 안쪽·휠하우스·암·브레이크 호스·배선)까지 거리를 잽니다. 스프링 외경·스프링 시트를 키울 여유와 간섭을 보는 값입니다. 분리형이면 스프링 기준으로 잽니다. 무엇까지 쟀는지 보이게 찍으세요 (2026-11-17 유지호: 탈거 전에 순정 스프링과 주변 간섭을 본다).",cell:null,shots:1,photoReq:true,laterSkip:"가까운 부품 없음"},
  {id:"S046",datum:["R","car"],st:3,car:"droop",kind:"measure",title:"리어 댐퍼 체결부 기준 전장 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"G12",ref:"mS028",shots:1},
  {id:"S047",skipIf:[{key:"suspR",is:"판스프링"}],st:3,car:"droop",kind:"measure",title:"리어 스프링 양끝 길이 · 드룹",tip:"분리형이면 이 값이 스프링 조립 상태 길이입니다 — 스프링을 빼고 나면 다시 못 잽니다. 정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"H12",ref:"mS029",coilSkip:"springR",shots:1},
  {id:"S049",st:3,car:"droop",kind:"measure",title:"리어 범프스토퍼 끝 ↔ 차대 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"I12",ref:"mS031",onlyIf:{key:"bumpPosR",not:"댐퍼 내부"},shots:1,photoReq:true},
@@ -177,19 +178,20 @@ const TASKS=[
  {id:"S119",st:3,car:"droop",kind:"measure",optional:true,fig:"mount",title:"리어 쇽 장착부 주변 간섭",tip:"쇽업소버 장착부(상단·하단 체결부) 둘레에서 가장 가까운 부품까지 거리를 잽니다. 닿을 것 같은 곳이 있으면 사진으로 함께 남깁니다. 간섭될 부품이 없으면 「해당 없음」.",cell:"F30",shots:1,photoOpt:true},
  {id:"S120",st:3,car:"droop",kind:"measure",fig:"cv",laterSkip:"등속조인트 없음",laterNote:"등속조인트가 없으면 아래 버튼을 누릅니다.",title:"리어 쇽 몸통 ↔ 등속조인트",tip:"쇽업소버 몸통에서 등속조인트(드라이브 샤프트 끝 고무 부트)까지 가장 가까운 곳을 잽니다.",cell:"F32",shots:1,photoOpt:true},
  {id:"S121",st:3,car:"droop",kind:"measure",optional:true,fig:"stab",title:"리어 스테빌 브래킷 ↔ 휠하우스",tip:"쇽업소버에 달린 스테빌라이저 링크 브래킷에서 휠하우스 안쪽 면까지 가장 가까운 곳을 잽니다. 쇽에 스테빌 브래킷이 없으면 「해당 없음」.",cell:"F34",shots:1,photoOpt:true},
+ {id:"S140",skipIf:[{key:"suspR",is:"판스프링"}],st:3,car:"droop",kind:"measure",title:"리어 스프링 ↔ 주변 여유 · 탈거 전 (순정 스프링 달린 상태)",tip:"쇽업소버를 떼기 전에, 원래 달려 있는 스프링 바깥에서 가장 가까운 부품(스트럿 타워 안쪽·휠하우스·암·브레이크 호스·배선)까지 거리를 잽니다. 스프링 외경·스프링 시트를 키울 여유와 간섭을 보는 값입니다. 분리형이면 스프링 기준으로 잽니다. 무엇까지 쟀는지 보이게 찍으세요 (2026-11-17 유지호: 탈거 전에 순정 스프링과 주변 간섭을 본다).",cell:null,shots:1,photoReq:true,laterSkip:"가까운 부품 없음"},
  {id:"S059",st:4,car:"off",kind:"info",showMissing:true,warn:[{ids:["S024","S041","S029","S047"],pre:"코일오버",text:"⚠ 코일오버라 스프링 길이를 건너뛰었습니다. 탈거한 뒤 분해하기 전에 조립 상태 스프링 길이를 반드시 재세요 — 분해하면 모션비를 제대로 계산할 수 없습니다."}],title:"쇽업소버 탈거",tip:"앞의 측정에 빈칸이 없는지 확인한 뒤 측정하는 쪽 프론트·리어 쇽업소버를 탈거합니다. 다 됐으면 「확인 · 다음」.",items:["빈 단계가 없는지 (아래 목록)","피치게이지 · 버니어 캘리퍼스를 챙겼는지 (스테빌 링크 · 마운트 볼트 측정용, 필수)","프론트 쇽업소버를 뗐는지","리어 쇽업소버를 뗐는지","뗀 볼트·너트를 한곳에 모아 두었는지"]},
  {id:"S104",st:4,car:"off",kind:"measure",title:"프론트 차대 마운트 통과 구멍 내경 · 탈거 후",tip:"처음에 「나중에 측정」을 고른 값입니다. 쇽을 뗀 자리에서 차대 쪽 마운트 구멍의 안지름을 버니어 캘리퍼스로 잽니다. 눈금과 구멍이 함께 보이게 찍으세요.",cell:"D29",onlyIf:{skipped:"S060"},shots:1,photoReq:true},
  {id:"S105",st:4,car:"off",kind:"measure",title:"리어 차대 마운트 통과 구멍 내경 · 탈거 후",tip:"처음에 「나중에 측정」을 고른 값입니다. 쇽을 뗀 자리에서 차대 쪽 마운트 구멍의 안지름을 버니어 캘리퍼스로 잽니다. 눈금과 구멍이 함께 보이게 찍으세요.",cell:"F29",onlyIf:{skipped:"S061"},shots:1,photoReq:true},
  {id:"S135",topIn:["F",["plate","rod"]],st:4,car:"off",kind:"measure",title:"프론트 마운트 안착면 둘레 여유 · 탈거 후",tip:"쇽을 뗀 자리에서 차대 쪽 상단 마운트 안착면 끝 ↔ 주변 벽·용접 비드·브래킷까지 가장 좁은 곳을 잽니다 (측정시트에는 없고 기록에만 남음). 우리 캠버·필로우볼 마운트가 순정보다 넓을 때 들어가는지 보는 값입니다. 자와 틈이 함께 보이게 찍으세요.",cell:null,shots:1,photoReq:true,laterSkip:"막힌 곳 없음"},
  {id:"S136",topIn:["F",["plate","rod"]],st:4,car:"off",kind:"measure",title:"프론트 안착면 위 공간 높이 · 탈거 후",tip:"차대 마운트 안착면 ↔ 그 위에서 처음 막히는 것(엔진룸 부품·트렁크 내장재·스트럿바 자리)까지 높이를 잽니다. 로드 끝·감쇠력 조절 노브가 위로 나올 여유입니다. 위가 트여 있으면 아래 버튼.",cell:null,shots:1,photoReq:true,laterSkip:"위가 트여 있음"},
- {id:"S137",skipIf:[{key:"suspF",is:"판스프링"},{key:"springF",is:"분리형"}],st:4,car:"off",kind:"measure",title:"프론트 스프링 자리 차대 여유 · 탈거 후",tip:"스프링이 있던 높이에서 차대 벽(스트럿 타워 안쪽·휠하우스)까지 가장 가까운 거리를 잽니다. 스프링 외경·스프링 시트를 키울 수 있는지 보는 값입니다. 쇽 축 중심에서 벽까지 재도 되며, 어디서 재었는지 보이게 찍으세요.",cell:null,shots:1,photoReq:true,laterSkip:"가까운 벽 없음"},
  {id:"S138",topIn:["R",["plate","rod"]],st:4,car:"off",kind:"measure",title:"리어 마운트 안착면 둘레 여유 · 탈거 후",tip:"쇽을 뗀 자리에서 차대 쪽 상단 마운트 안착면 끝 ↔ 주변 벽·용접 비드·브래킷까지 가장 좁은 곳을 잽니다 (측정시트에는 없고 기록에만 남음). 우리 캠버·필로우볼 마운트가 순정보다 넓을 때 들어가는지 보는 값입니다. 자와 틈이 함께 보이게 찍으세요.",cell:null,shots:1,photoReq:true,laterSkip:"막힌 곳 없음"},
  {id:"S139",topIn:["R",["plate","rod"]],st:4,car:"off",kind:"measure",title:"리어 안착면 위 공간 높이 · 탈거 후",tip:"차대 마운트 안착면 ↔ 그 위에서 처음 막히는 것(엔진룸 부품·트렁크 내장재·스트럿바 자리)까지 높이를 잽니다. 로드 끝·감쇠력 조절 노브가 위로 나올 여유입니다. 위가 트여 있으면 아래 버튼.",cell:null,shots:1,photoReq:true,laterSkip:"위가 트여 있음"},
- {id:"S140",skipIf:[{key:"suspR",is:"판스프링"},{key:"springR",is:"분리형"}],st:4,car:"off",kind:"measure",title:"리어 스프링 자리 차대 여유 · 탈거 후",tip:"스프링이 있던 높이에서 차대 벽(스트럿 타워 안쪽·휠하우스)까지 가장 가까운 거리를 잽니다. 스프링 외경·스프링 시트를 키울 수 있는지 보는 값입니다. 쇽 축 중심에서 벽까지 재도 되며, 어디서 재었는지 보이게 찍으세요.",cell:null,shots:1,photoReq:true,laterSkip:"가까운 벽 없음"},
  {id:"S108",st:4,car:"off",kind:"photo",title:"프론트 쇽 탈거 자리 상세 사진",tip:"쇽업소버가 있던 자리를 다시 자세히 찍어 둡니다 (남정우 수석 피드백 — 탈거 후 구조 기록이 중요). 쇽이 빠져 안쪽까지 보이니 가려졌던 부품·브래킷·배선을 가까이.",shots:3,slots:["① 상단 마운트 자리 (휠하우스 위쪽)","② 하단 체결부 자리 (너클·로어암)","③ 쇽이 있던 공간 전체"]},
  {id:"S109",st:4,car:"off",kind:"photo",title:"리어 쇽 탈거 자리 상세 사진",tip:"쇽업소버가 있던 자리를 다시 자세히 찍어 둡니다 (남정우 수석 피드백 — 탈거 후 구조 기록이 중요). 쇽이 빠져 안쪽까지 보이니 가려졌던 부품·브래킷·배선을 가까이.",shots:3,slots:["① 상단 마운트 자리 (휠하우스 위쪽)","② 하단 체결부 자리 (너클·로어암·액슬)","③ 쇽이 있던 공간 전체"]},
  {id:"S110",st:4,car:"off",kind:"form",title:"프론트 스테빌라이저 링크 치수",tip:"필요 공구: 피치게이지(필수) · 버니어 캘리퍼스. 링크 볼트에 피치게이지를 대고 피치를 확인하고, 링크 길이는 볼 중심 ↔ 볼 중심으로 잽니다. 피치게이지를 댄 모습이 보이게 찍으세요.",na:"해당없음 (스테빌라이저 없음)",fields:[["stabMF","링크 볼트 규격","D27","pick:M10,M12,M14"],["stabPF","볼트 피치 (mm)",null,"pick:1.25,1.5,1.75"],["stabLF","링크 길이 (볼 ↔ 볼)","E27","mm"]],shots:2,slots:["① 피치게이지를 댄 볼트","② 링크 전체 (길이 측정)"]},
+ {id:"S195",lowIn:["F",["mclevis"]],st:4,car:"off",kind:"measure",title:"프론트 차량 너클 장착부 폭 (클레비스에 끼는 너클 두께)",tip:"쇽을 뗀 뒤 차에 남은 너클의, 클레비스 두 판 사이에 끼는 부분 두께를 버니어 캘리퍼스로 잽니다. 상대물(너클)이 가공품이라 클레비스 안쪽 폭보다 정확합니다 — 상대물이 있으면 항상 가공품 쪽을 잽니다 (2026-11-17 유지호). 눈금이 보이게 찍으세요.",cell:null,shots:1,photoReq:true},
  {id:"S111",st:4,car:"off",kind:"form",title:"리어 스테빌라이저 링크 치수",tip:"필요 공구: 피치게이지(필수) · 버니어 캘리퍼스. 링크 볼트에 피치게이지를 대고 피치를 확인하고, 링크 길이는 볼 중심 ↔ 볼 중심으로 잽니다. 피치게이지를 댄 모습이 보이게 찍으세요.",na:"해당없음 (스테빌라이저 없음)",fields:[["stabMR","링크 볼트 규격","F27","pick:M10,M12,M14"],["stabPR","볼트 피치 (mm)",null,"pick:1.25,1.5,1.75"],["stabLR","링크 길이 (볼 ↔ 볼)","G27","mm"]],shots:2,photoOpt:true,slots:["① 피치게이지를 댄 볼트","② 링크 전체 (길이 측정)"]},
+ {id:"S196",lowIn:["R",["mclevis"]],st:4,car:"off",kind:"measure",title:"리어 차량 너클 장착부 폭 (클레비스에 끼는 너클 두께)",tip:"쇽을 뗀 뒤 차에 남은 너클의, 클레비스 두 판 사이에 끼는 부분 두께를 버니어 캘리퍼스로 잽니다. 상대물(너클)이 가공품이라 클레비스 안쪽 폭보다 정확합니다 — 상대물이 있으면 항상 가공품 쪽을 잽니다 (2026-11-17 유지호). 눈금이 보이게 찍으세요.",cell:null,shots:1,photoReq:true},
  {id:"S093",st:4,car:"off",kind:"photo",title:"프론트 차대 쪽 스프링 안착부 (분리형)",tip:"분리형이라 차대 쪽 스프링 안착부를 재서 SPRING-SEPARATE 도면에 채우고 찍습니다 (측정시트 NOTE 8). 차고 브래킷·스프링 하단 고무 호환 여부는 특이사항에.",onlyIf:{key:"springF",is:"분리형"},shots:1},
  {id:"S094",st:4,car:"off",kind:"photo",title:"리어 차대 쪽 스프링 안착부 (분리형)",tip:"분리형이라 차대 쪽 스프링 안착부를 재서 SPRING-SEPARATE 도면에 채우고 찍습니다 (측정시트 NOTE 8). 차고 브래킷·스프링 하단 고무 호환 여부는 특이사항에.",onlyIf:{key:"springR",is:"분리형"},shots:1},
  {id:"S106",st:4,car:"off",kind:"shape",axle:"F",recheck:true,title:"프론트 쇽업소버 체결 타입 확인 · 탈거 후",tip:"차 밑에서 처음 고른 상단·하단 체결 타입이 그대로 눌려 있습니다. 뗀 실물과 같으면 그대로 「확인 · 다음」, 다르면 고쳐 누르세요."},
@@ -206,7 +208,7 @@ const TASKS=[
  {id:"S070",st:4,car:"off",kind:"form",title:"리어 고무패드 (분리형)",tip:"분리형 스프링의 고무패드 두께를 재고, 다시 쓸지 정합니다.",fields:[["padR","리어 고무패드 두께","G16","mm"],["padUseR","리어 고무 제거 여부","H16","pick:제거,재사용"]],onlyIf:{key:"springR",is:"분리형"},shots:1},
  {id:"S071",st:4,car:"off",kind:"photo",title:"프론트 쇽업소버 분해 전 사진",tip:"가까이서 찍으면 원근이 생기므로 멀리서 줌으로 찍습니다. 스태빌 브래킷·솔레노이드처럼 특징이 있는 방향은 모두.",shots:5,slots:["① 전체 측면 (특징 방향 모두)","② 하단면","③ 상단면 (마운트 형상)","④ 상단마운트 측면 (돌출 깊이)","⑤ 라벨 · 순정 품번 (사진 리스트 11번)"]},
  {id:"S072",st:4,car:"off",kind:"photo",title:"리어 쇽업소버 분해 전 사진",tip:"가까이서 찍으면 원근이 생기므로 멀리서 줌으로 찍습니다. 특징이 있는 방향은 모두.",shots:5,slots:["① 전체 측면 (특징 방향 모두)","② 하단면","③ 상단면 (마운트 형상)","④ 상단마운트 측면 (돌출 깊이)","⑤ 라벨 · 순정 품번 (사진 리스트 11번)"]},
- {id:"S073",st:4,car:"off",kind:"info",title:"3D 스캔 (분해 전)",tip:"앞뒤 쇽업소버 어셈블리를 분해 전에 스캔합니다. 현장에서는 스캔하고 저장만 합니다 — 스캔으로 재는 값(쇽 전장·몸통 두께)은 출고 뒤 「자리 업무」에서 넣습니다. 다 됐으면 「확인 · 다음」.",warn:[{ids:["S063","S066"],pre:"3D 스캔에서 측정",text:"⚠ 쇽 전장을 「3D 스캔에서 측정」으로 넘겼습니다. 체결부 기준점(상단 마운트 차대 닿는 면 · 하단 체결 볼트 중심)이 스캔에 잘 잡히게 찍으세요 — 분해하면 다시 못 잽니다."}],items:["더스트 커버를 고정해 댐퍼 가이드 끝이 보이게 했는지 (리바운드 스트로크 확인용)","댐퍼마다 앞면·뒷면 두 번 스캔했는지","마운트 상면 같은 치수 기준 부위를 충분히 스캔했는지 (다관절이면 프로브로)","잘 안 읽히는 부위는 수기 측정으로 채웠는지"]},
+ {id:"S073",st:4,car:"off",kind:"info",title:"3D 스캔 (분해 전)",tip:"앞뒤 쇽업소버 어셈블리를 분해 전에 스캔합니다. 현장에서는 스캔하고 저장만 합니다 — 스캔으로 재는 값(쇽 전장·몸통 두께)은 출고 뒤 「자리 업무」에서 넣습니다. 다 됐으면 「확인 · 다음」.",warn:[{ids:["S063","S066"],pre:"3D 스캔에서 측정",text:"⚠ 쇽 전장을 「3D 스캔에서 측정」으로 넘겼습니다. 체결부 기준점(상단 마운트 차대 닿는 면 · 하단 체결 볼트 중심)이 스캔에 잘 잡히게 찍으세요 — 분해하면 다시 못 잽니다."}],items:["더스트 커버를 올려 고정해 댐퍼 가이드 끝(몸통 윗면)이 보이게 했는지 — 몸통 윗면 위치·노출 로드 길이를 스캔에서 재려고 (회사 측정 순서 2-4)","댐퍼마다 앞면·뒷면 두 번 스캔했는지","마운트 상면 같은 치수 기준 부위를 충분히 스캔했는지 (다관절이면 프로브로)","잘 안 읽히는 부위는 수기 측정으로 채웠는지"]},
  {id:"S074",st:5,car:"off",kind:"info",title:"쇽업소버 분해",tip:"스프링 탈착기로 프론트·리어 쇽업소버를 분해합니다. 다 됐으면 「확인 · 다음」.",items:["스프링 탈착기에 바르게 물렸는지 (스프링이 튀지 않게)","프론트·리어를 분해했는지","부품을 앞뒤 섞이지 않게 나눠 두었는지"]},
  {id:"S076",st:5,car:"off",kind:"photo",title:"프론트 분해 후 사진 (댐퍼·스프링·마운트)",tip:"분해한 댐퍼 · 스프링 · 상단 마운트가 서로 떨어진 모습을 찍고, 이어서 로드 끝과 마운트 체결부를 가까이 찍습니다. 순정 품번은 분해 전 사진(⑤ 라벨)에서 찍었으니 여기서는 안 찍습니다.",shots:4,slots:["① 분해한 부품 전체 (댐퍼 · 스프링 · 상단 마운트를 따로 놓고)","② 로드 끝 측면","③ 마운트의 로드 체결부 (밑에서 위로)","④ 마운트의 스프링 체결부 (밑에서 위로)"]},
  {"id":"S157","st":5,"car":"off","kind":"measure","topIn":["F",["plate","rod"]],"datum":["F","mount"],"cell":null,"shots":1,"laterSkip":"3D 스캔에서 측정","laterNote":"뎁스 바로 재기 어려우면 아래 버튼 — 분해 후 3D 스캔에 마운트 양면을 꼭 담고, 출고 뒤 「자리 업무」에서 넣습니다.","title":"프론트 마운트 오프셋 h (안착면 ↔ 로드 체결 자리면)","tip":"차에서 잰 장착 길이(안착면 기준)를 댐퍼 길이(로드 체결 자리면 기준)로 바꾸는 값입니다. 마운트가 위아래로 빠진 만큼 실제 스트로크가 달라집니다. 분해한 상단 마운트를 안착면(차대에 닿던 면)이 바닥에 닿게 엎고, 버니어 깊이 바로 바닥 ↔ 로드 체결 자리면(로드 너트 아래 와셔가 로드 어깨에 물리는 면)을 잽니다. 자리면이 안착면보다 아래(스프링 쪽)면 + 값, 위면 앞에 −를 붙입니다."},
@@ -215,6 +217,7 @@ const TASKS=[
  {"id":"S163","st":5,"car":"off","kind":"form","topIn":["F",["plate"]],"fields":[["thMtF","마운트 볼트 나사 (M × 피치)",null,"thread"]],"shots":1,"slots":["① 피치게이지를 댄 볼트"],"title":"프론트 마운트 볼트 나사 규격","tip":"필요 공구: 피치게이지(필수) · 버니어. 3D 스캔으로는 피치를 못 잽니다. 버니어로 나사 바깥지름 → M, 게이지로 피치."},
  {"id":"S165","st":5,"car":"off","kind":"form","topIn":["F",["plate","rod"]],"fields":[["thRodF","로드 끝 나사 (M × 피치)",null,"thread"]],"shots":1,"slots":["① 피치게이지를 댄 로드 끝 나사"],"title":"프론트 로드 끝 나사 규격","tip":"로드 너트·우리 마운트 구멍에 맞추는 값입니다. 필요 공구: 피치게이지(필수) · 버니어."},
  {"id":"S167","st":5,"car":"off","kind":"form","topIn":["F",["eye"]],"fields":[["thTeF","상단 아이 볼트 나사 (M × 피치)",null,"thread"]],"shots":1,"slots":["① 피치게이지를 댄 볼트"],"title":"프론트 상단 아이 볼트 나사 규격","tip":"상단이 아이일 때 차대 쪽 체결 볼트. 필요 공구: 피치게이지(필수) · 버니어."},
+ {id:"S226",topIn:["F",["eye"]],st:5,car:"off",kind:"measure",title:"프론트 상단 아이 부시 속관 길이 (양 끝면 사이)",tip:"아이 가운데 고무 부시를 지나는 쇠 속관(볼트가 지나가는 관)의 양 끝면 사이 거리를 버니어 캘리퍼스로 잽니다. 우리 제품이 차 브래킷 사이에 물리는 폭이라 정확해야 합니다 (2026-11-17 유지호). 속관이 고무보다 튀어나온 끝면끼리 잽니다.",cell:null,shots:1,photoReq:true},
  {"id":"S169","st":5,"car":"off","kind":"measure","must":true,"datum":["F","damper"],"cell":null,"shots":1,"title":"프론트 최대 압축 길이 (R ↔ K, 끝까지 누름)","tip":"정하중에서 남은 압축 스트로크 = 정하중 댐퍼 길이 − 이 값. 3D 스캔으로는 잴 수 없는 값입니다(눌러야 함). 스프링·범프스토퍼·더스트 커버를 뺀 댐퍼를 세워 로드를 끝까지 눌러 넣고, 로드 체결 자리면(R) ↔ 하단 체결 기준(K)을 잽니다. 범프스토퍼는 무시한 값입니다."},
  {"id":"S171","st":5,"car":"off","kind":"measure","datum":["F","damper"],"cell":null,"shots":1,"title":"프론트 최대 신장 길이 (R ↔ K, 다 늘어남)","tip":"로드가 다 늘어난 상태(가스압으로 저절로 나오거나 손으로 끝까지 당김)에서 R ↔ K. 남은 신장 스트로크와 마운트 오프셋 검산(탈거 전장 − 이 값 = h)에 씁니다. 비우면 탈거 전장 − h로 계산합니다."},
  {"id":"S173","st":5,"car":"off","kind":"measure","datum":["F","damper"],"cell":null,"shots":1,"title":"프론트 몸통 상단 ↔ 하단 기준 (T ↔ K)","tip":"실린더(몸통) 윗면 ↔ 하단 체결 기준(K). 우리 몸통이 들어갈 길이이고, 순정도면 「몸통 상단 ↔ 하단 체결」 치수입니다 (예: 350·355 — 순정도면 판독, 미검증)."},
@@ -222,10 +225,11 @@ const TASKS=[
  {"id":"S177","st":5,"car":"off","kind":"measure","skipIf":[{"key":"suspF","is":"판스프링"},{"key":"springF","is":"분리형"}],"datum":["F","damper"],"cell":null,"shots":1,"title":"프론트 아래 스프링 시트 위치 (시트 면 ↔ K)","tip":"코일오버의 아래 스프링 시트가 스프링을 받는 면 ↔ 하단 체결 기준(K). 차고 조절 범위의 시작점이고, 스프링 장착 길이 검산에 씁니다."},
  {"id":"S179","st":5,"car":"off","kind":"measure","skipIf":[{"key":"suspF","is":"판스프링"},{"key":"springF","is":"분리형"}],"cell":null,"shots":1,"title":"프론트 아래 스프링 시트 외경","tip":"아래 스프링 시트 바깥지름(버니어). 우리 스프링 내경·시트 크기를 정합니다."},
  {"id":"S181","st":5,"car":"off","kind":"form","lowIn":["F",["mclevis","eye","fork","fork4","eclevis"]],"fields":[["thLowF","하단 체결 볼트 나사 (M × 피치)",null,"thread"]],"shots":1,"slots":["① 피치게이지를 댄 볼트"],"title":"프론트 하단 체결 볼트 나사 규격","tip":"필요 공구: 피치게이지(필수) · 버니어. 클레비스 위·아래 볼트가 다르면 위쪽 볼트를 넣고 아래쪽은 특이사항에 적습니다."},
+ {id:"S224",lowIn:["F",["eye"]],st:5,car:"off",kind:"measure",title:"프론트 하단 아이 부시 속관 길이 (양 끝면 사이)",tip:"아이 가운데 고무 부시를 지나는 쇠 속관(볼트가 지나가는 관)의 양 끝면 사이 거리를 버니어 캘리퍼스로 잽니다. 우리 제품이 차 브래킷 사이에 물리는 폭이라 정확해야 합니다 (2026-11-17 유지호). 속관이 고무보다 튀어나온 끝면끼리 잽니다.",cell:null,shots:1,photoReq:true},
  {"id":"S183","st":5,"car":"off","kind":"form","lowIn":["F",["stud"]],"fields":[["thLstF","하단 스터드 나사 (M × 피치)",null,"thread"]],"shots":1,"slots":["① 피치게이지를 댄 스터드"],"title":"프론트 하단 스터드 나사 규격","tip":"필요 공구: 피치게이지(필수) · 버니어."},
  {id:"S077",skipIf:[{key:"suspF",is:"판스프링"}],st:5,car:"off",kind:"photo",title:"프론트 스프링 사진",tip:"코일 끝 형상이 보이게 찍습니다.",shots:3,slots:["① 스프링 전체 측면","② 상단면 (코일 끝)","③ 하단면 (코일 끝)"]},
  {id:"S078",st:5,car:"off",kind:"photo",title:"프론트 EDC 커넥터 사진",tip:"순정 댐퍼가 전자식(EDC)일 때만 나옵니다. 분해한 뒤 커넥터를 찍습니다. 측정시트 39행. 좌우가 다를 수 있으니 반대편 커넥터도 확인합니다. 기존 부품과 같으면 특이사항에 호환 차종을 적습니다.",onlyIf:{key:"edc",is:"EDC"},shots:3,slots:["① 품번","② 단면 형상","③ 측면 형상"]},
- {id:"S079",st:5,car:"off",kind:"measure",title:"프론트 스트로크 (회사 기준)",tip:"회사 기준 쇽 스트로크 = 상단 마운트의 스프링시트 안쪽 면(로드를 끝까지 눌렀을 때 실린더가 닿는 면) ↔ 실린더 몸통 윗면 사이 거리. 로드를 다 늘린 상태로 잽니다. 범프스토퍼는 무시합니다 — 실제로는 범프스토퍼가 먼저 닿지만 회사 기준에서는 빼고 봅니다. 측정 도면에 어느 칸으로 옮길지는 확인 필요.",cell:null,shots:1},
+ {id:"S079",st:5,car:"off",kind:"measure",title:"프론트 스트로크 (회사 기준)",tip:"⚠ 그림과 설명이 맞지 않아 다시 정의할 예정 (2026-11-17 유지호가 도면에 표시해 알려 주기로 함) — 그때까지 지금 하던 방식대로 잽니다. 회사 기준 쇽 스트로크 = 상단 마운트의 스프링시트 안쪽 면(로드를 끝까지 눌렀을 때 실린더가 닿는 면) ↔ 실린더 몸통 윗면 사이 거리. 로드를 다 늘린 상태로 잽니다. 범프스토퍼는 무시합니다 — 실제로는 범프스토퍼가 먼저 닿지만 회사 기준에서는 빼고 봅니다. 측정 도면에 어느 칸으로 옮길지는 확인 필요.",cell:null,shots:1},
  {id:"S080",st:5,car:"off",kind:"measure",title:"프론트 범프스토퍼 고무 길이 · 분해 후 (댐퍼 내부형)",tip:"범프스토퍼가 댐퍼 내부형이라 분해한 지금 잽니다 (앞에서 「댐퍼 내부」를 골라 자동으로 나온 화면).",cell:"E14",onlyIf:{key:"bumpPosF",is:"댐퍼 내부"},shots:1},
  {id:"S081",st:5,car:"off",kind:"form",title:"프론트 EDC 저항값",tip:"멀티미터는 부정확하므로 저항 전용 측정기로 잽니다. 시간이 지나면 값이 변하므로 빨리 잽니다.",fields:[["edcOhmF","프론트 저항값 (Ω)","D38"]],onlyIf:{key:"edc",is:"EDC"},shots:1},
  {id:"S082",st:5,car:"off",kind:"photo",title:"리어 분해 후 사진 (댐퍼·스프링·마운트)",tip:"분해한 댐퍼 · 스프링 · 상단 마운트가 서로 떨어진 모습을 찍고, 이어서 로드 끝과 마운트 체결부를 가까이 찍습니다. 순정 품번은 분해 전 사진(⑤ 라벨)에서 찍었으니 여기서는 안 찍습니다.",shots:4,slots:["① 분해한 부품 전체 (댐퍼 · 스프링 · 상단 마운트를 따로 놓고)","② 로드 끝 측면","③ 마운트의 로드 체결부 (밑에서 위로)","④ 마운트의 스프링 체결부 (밑에서 위로)"]},
@@ -235,6 +239,7 @@ const TASKS=[
  {"id":"S164","st":5,"car":"off","kind":"form","topIn":["R",["plate"]],"fields":[["thMtR","마운트 볼트 나사 (M × 피치)",null,"thread"]],"shots":1,"slots":["① 피치게이지를 댄 볼트"],"title":"리어 마운트 볼트 나사 규격","tip":"필요 공구: 피치게이지(필수) · 버니어. 3D 스캔으로는 피치를 못 잽니다. 버니어로 나사 바깥지름 → M, 게이지로 피치."},
  {"id":"S166","st":5,"car":"off","kind":"form","topIn":["R",["plate","rod"]],"fields":[["thRodR","로드 끝 나사 (M × 피치)",null,"thread"]],"shots":1,"slots":["① 피치게이지를 댄 로드 끝 나사"],"title":"리어 로드 끝 나사 규격","tip":"로드 너트·우리 마운트 구멍에 맞추는 값입니다. 필요 공구: 피치게이지(필수) · 버니어."},
  {"id":"S168","st":5,"car":"off","kind":"form","topIn":["R",["eye"]],"fields":[["thTeR","상단 아이 볼트 나사 (M × 피치)",null,"thread"]],"shots":1,"slots":["① 피치게이지를 댄 볼트"],"title":"리어 상단 아이 볼트 나사 규격","tip":"상단이 아이일 때 차대 쪽 체결 볼트. 필요 공구: 피치게이지(필수) · 버니어."},
+ {id:"S227",topIn:["R",["eye"]],st:5,car:"off",kind:"measure",title:"리어 상단 아이 부시 속관 길이 (양 끝면 사이)",tip:"아이 가운데 고무 부시를 지나는 쇠 속관(볼트가 지나가는 관)의 양 끝면 사이 거리를 버니어 캘리퍼스로 잽니다. 우리 제품이 차 브래킷 사이에 물리는 폭이라 정확해야 합니다 (2026-11-17 유지호). 속관이 고무보다 튀어나온 끝면끼리 잽니다.",cell:null,shots:1,photoReq:true},
  {"id":"S170","st":5,"car":"off","kind":"measure","must":true,"datum":["R","damper"],"cell":null,"shots":1,"title":"리어 최대 압축 길이 (R ↔ K, 끝까지 누름)","tip":"정하중에서 남은 압축 스트로크 = 정하중 댐퍼 길이 − 이 값. 3D 스캔으로는 잴 수 없는 값입니다(눌러야 함). 스프링·범프스토퍼·더스트 커버를 뺀 댐퍼를 세워 로드를 끝까지 눌러 넣고, 로드 체결 자리면(R) ↔ 하단 체결 기준(K)을 잽니다. 범프스토퍼는 무시한 값입니다."},
  {"id":"S172","st":5,"car":"off","kind":"measure","datum":["R","damper"],"cell":null,"shots":1,"title":"리어 최대 신장 길이 (R ↔ K, 다 늘어남)","tip":"로드가 다 늘어난 상태(가스압으로 저절로 나오거나 손으로 끝까지 당김)에서 R ↔ K. 남은 신장 스트로크와 마운트 오프셋 검산(탈거 전장 − 이 값 = h)에 씁니다. 비우면 탈거 전장 − h로 계산합니다."},
  {"id":"S174","st":5,"car":"off","kind":"measure","datum":["R","damper"],"cell":null,"shots":1,"title":"리어 몸통 상단 ↔ 하단 기준 (T ↔ K)","tip":"실린더(몸통) 윗면 ↔ 하단 체결 기준(K). 우리 몸통이 들어갈 길이이고, 순정도면 「몸통 상단 ↔ 하단 체결」 치수입니다 (예: 350·355 — 순정도면 판독, 미검증)."},
@@ -242,10 +247,11 @@ const TASKS=[
  {"id":"S178","st":5,"car":"off","kind":"measure","skipIf":[{"key":"suspR","is":"판스프링"},{"key":"springR","is":"분리형"}],"datum":["R","damper"],"cell":null,"shots":1,"title":"리어 아래 스프링 시트 위치 (시트 면 ↔ K)","tip":"코일오버의 아래 스프링 시트가 스프링을 받는 면 ↔ 하단 체결 기준(K). 차고 조절 범위의 시작점이고, 스프링 장착 길이 검산에 씁니다."},
  {"id":"S180","st":5,"car":"off","kind":"measure","skipIf":[{"key":"suspR","is":"판스프링"},{"key":"springR","is":"분리형"}],"cell":null,"shots":1,"title":"리어 아래 스프링 시트 외경","tip":"아래 스프링 시트 바깥지름(버니어). 우리 스프링 내경·시트 크기를 정합니다."},
  {"id":"S182","st":5,"car":"off","kind":"form","lowIn":["R",["mclevis","eye","fork","fork4","eclevis"]],"fields":[["thLowR","하단 체결 볼트 나사 (M × 피치)",null,"thread"]],"shots":1,"slots":["① 피치게이지를 댄 볼트"],"title":"리어 하단 체결 볼트 나사 규격","tip":"필요 공구: 피치게이지(필수) · 버니어. 클레비스 위·아래 볼트가 다르면 위쪽 볼트를 넣고 아래쪽은 특이사항에 적습니다."},
+ {id:"S225",lowIn:["R",["eye"]],st:5,car:"off",kind:"measure",title:"리어 하단 아이 부시 속관 길이 (양 끝면 사이)",tip:"아이 가운데 고무 부시를 지나는 쇠 속관(볼트가 지나가는 관)의 양 끝면 사이 거리를 버니어 캘리퍼스로 잽니다. 우리 제품이 차 브래킷 사이에 물리는 폭이라 정확해야 합니다 (2026-11-17 유지호). 속관이 고무보다 튀어나온 끝면끼리 잽니다.",cell:null,shots:1,photoReq:true},
  {"id":"S184","st":5,"car":"off","kind":"form","lowIn":["R",["stud"]],"fields":[["thLstR","하단 스터드 나사 (M × 피치)",null,"thread"]],"shots":1,"slots":["① 피치게이지를 댄 스터드"],"title":"리어 하단 스터드 나사 규격","tip":"필요 공구: 피치게이지(필수) · 버니어."},
  {id:"S083",skipIf:[{key:"suspR",is:"판스프링"}],st:5,car:"off",kind:"photo",title:"리어 스프링 사진",tip:"코일 끝 형상이 보이게 찍습니다.",shots:3,slots:["① 스프링 전체 측면","② 상단면 (코일 끝)","③ 하단면 (코일 끝)"]},
  {id:"S084",st:5,car:"off",kind:"photo",title:"리어 EDC 커넥터 사진",tip:"순정 댐퍼가 전자식(EDC)일 때만 나옵니다. 분해한 뒤 커넥터를 찍습니다. 측정시트 39행. 좌우가 다를 수 있으니 반대편 커넥터도 확인합니다.",onlyIf:{key:"edc",is:"EDC"},shots:3,slots:["① 품번","② 단면 형상","③ 측면 형상"]},
- {id:"S085",st:5,car:"off",kind:"measure",title:"리어 스트로크 (회사 기준)",tip:"회사 기준 쇽 스트로크 = 상단 마운트의 스프링시트 안쪽 면(로드를 끝까지 눌렀을 때 실린더가 닿는 면) ↔ 실린더 몸통 윗면 사이 거리. 로드를 다 늘린 상태로 잽니다. 범프스토퍼는 무시합니다 — 실제로는 범프스토퍼가 먼저 닿지만 회사 기준에서는 빼고 봅니다. 측정 도면에 어느 칸으로 옮길지는 확인 필요.",cell:null,shots:1},
+ {id:"S085",st:5,car:"off",kind:"measure",title:"리어 스트로크 (회사 기준)",tip:"⚠ 그림과 설명이 맞지 않아 다시 정의할 예정 (2026-11-17 유지호가 도면에 표시해 알려 주기로 함) — 그때까지 지금 하던 방식대로 잽니다. 회사 기준 쇽 스트로크 = 상단 마운트의 스프링시트 안쪽 면(로드를 끝까지 눌렀을 때 실린더가 닿는 면) ↔ 실린더 몸통 윗면 사이 거리. 로드를 다 늘린 상태로 잽니다. 범프스토퍼는 무시합니다 — 실제로는 범프스토퍼가 먼저 닿지만 회사 기준에서는 빼고 봅니다. 측정 도면에 어느 칸으로 옮길지는 확인 필요.",cell:null,shots:1},
  {id:"S086",st:5,car:"off",kind:"measure",title:"리어 범프스토퍼 고무 길이 · 분해 후 (댐퍼 내부형)",tip:"범프스토퍼가 댐퍼 내부형이라 분해한 지금 잽니다 (앞에서 「댐퍼 내부」를 골라 자동으로 나온 화면).",cell:"I14",onlyIf:{key:"bumpPosR",is:"댐퍼 내부"},shots:1},
  {id:"S087",st:5,car:"off",kind:"form",title:"리어 EDC 저항값",tip:"멀티미터는 부정확하므로 저항 전용 측정기로 잽니다. 시간이 지나면 값이 변하므로 빨리 잽니다.",fields:[["edcOhmR","리어 저항값 (Ω)","F38"]],onlyIf:{key:"edc",is:"EDC"},shots:1},
  {id:"S088",st:5,car:"off",kind:"info",title:"3D 스캔 (분해 후)",tip:"단품을 스캔합니다. 현장에서는 스캔하고 저장만 합니다. 다 됐으면 「확인 · 다음」.",items:["프론트·리어 마운트 상면·하면 (마운트 볼트, 브래킷 형상과 위치)","리어 스프링 상단 패드·하단 패드","측정 도면의 분해 후 칸을 다 채웠는지 (도면은 부록 A에서 고른 것)"]},
@@ -269,7 +275,6 @@ const TASKS=[
  {"id":"S189","st":8,"kind":"measure","optional":true,"cell":null,"title":"프론트 클레비스 구멍 간격","tip":"두 볼트 구멍 중심 사이 (순정도면 예 80 — 판독, 미검증). 순정도면 원점(아래 구멍) 변환에도 씁니다. 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","lowIn":["F",["mclevis"]]},
  {"id":"S191","st":8,"kind":"measure","optional":true,"cell":null,"title":"프론트 클레비스 구멍 중심 ↔ 쇽 축","tip":"볼트 구멍 중심에서 쇽 축까지 수평 거리 (순정도면 예 48·45.15 — 판독, 미검증). 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","lowIn":["F",["mclevis"]]},
  {"id":"S193","st":8,"kind":"measure","optional":true,"cell":null,"title":"프론트 클레비스 볼트 구멍 지름","tip":" 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","lowIn":["F",["mclevis"]]},
- {"id":"S195","st":8,"kind":"measure","optional":true,"cell":null,"title":"프론트 클레비스 너클 끼는 폭","tip":"브래킷 두 판 사이 안쪽 폭. 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","lowIn":["F",["mclevis"]]},
  {"id":"S197","st":8,"kind":"measure","optional":true,"cell":null,"title":"프론트 하단 아이 안지름 (볼트 구멍)","tip":" 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","lowIn":["F",["eye","eclevis"]]},
  {"id":"S199","st":8,"kind":"measure","optional":true,"cell":null,"title":"프론트 하단 아이 바깥지름","tip":" 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","lowIn":["F",["eye","eclevis"]]},
  {"id":"S201","st":8,"kind":"measure","optional":true,"cell":null,"title":"프론트 하단 아이 폭 (축 방향)","tip":" 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","lowIn":["F",["eye","eclevis"]]},
@@ -281,14 +286,15 @@ const TASKS=[
  {"id":"S213","st":8,"kind":"measure","optional":true,"cell":null,"title":"프론트 포크 구멍 중심 ↔ 몸통 끝","tip":" 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","lowIn":["F",["fork","fork4"]]},
  {"id":"S215","st":8,"kind":"measure","optional":true,"cell":null,"title":"프론트 상단 아이 안지름 (볼트 구멍)","tip":" 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","topIn":["F",["eye"]]},
  {"id":"S217","st":8,"kind":"measure","optional":true,"cell":null,"title":"프론트 상단 아이 폭 (축 방향)","tip":" 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","topIn":["F",["eye"]]},
- {"id":"S219","st":8,"kind":"measure","optional":true,"cell":null,"title":"프론트 스테빌 링크 브래킷 구멍 ↔ 하단 기준","tip":"우리 몸통에 브래킷을 붙일 높이 (순정도면 예 128·57 — 판독, 미검증). 브래킷이 없으면 「해당 없음」. 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","datum":["F","damper"]},
+ {"id":"S219","st":8,"kind":"measure","optional":true,"cell":null,"title":"프론트 스테빌 브래킷 구멍 높이 (K ↔ 구멍 중심, 축 방향)","tip":"3차원 위치 값 3개 중 ①. 우리 몸통에 브래킷을 붙일 높이 (순정도면 예 128·57 — 판독, 미검증). 브래킷이 없으면 「해당 없음」. 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","datum":["F","damper"]},
+ {"id":"S228","st":8,"kind":"measure","optional":true,"cell":null,"title":"프론트 스테빌 브래킷 구멍 ↔ 쇽 축 거리 (위에서 봄)","tip":"3차원 위치 값 3개 중 ②. 쇽 축 중심에서 브래킷 구멍 중심까지, 축에 직각인 면에서 잰 거리. 높이·각도와 함께 있어야 브래킷이 제자리에 옵니다 (2026-11-17 유지호). 출고 뒤 3D 스캔 파일에서 잽니다. 브래킷이 없으면 「해당 없음」."},
+ {"id":"S230","st":8,"kind":"form","optional":true,"cell":null,"title":"프론트 스테빌 브래킷 판 각도 (위에서 봄)","tip":"3차원 위치 값 3개 중 ③. 위에서 볼 때 하단 체결 볼트 축에서 브래킷 판(구멍 쪽)까지 돈 각도. 기준 방향은 볼트 축(볼트가 없는 인서트형은 차 앞 방향 — 추정, 확인 필요). 출고 뒤 3D 스캔 파일에서 잽니다.","na":"해당 없음 (브래킷 없음)","fields":[["stabAngF","판 각도",null,"deg"]]},
  {"id":"S223","st":8,"kind":"measure","must":true,"topIn":["R",["plate","rod"]],"onlyIf":{"skipped":"S158","as":"3D 스캔에서 측정"},"datum":["R","mount"],"cell":null,"title":"⚠ 리어 마운트 오프셋 h · 3D 스캔","tip":"현장에서 「3D 스캔에서 측정」으로 넘긴 값입니다. 마운트 스캔에서 안착면(차대에 닿는 면) ↔ 로드 체결 자리면. 자리면이 아래면 +. 비워 두면 넘어갈 수 없습니다 (실제 스트로크 계산에 꼭 필요)."},
  {"id":"S186","st":8,"kind":"measure","optional":true,"cell":null,"title":"리어 마운트 윗면 높이 (안착면 ↔ 가장 높은 곳)","tip":"스터드·로드 끝 등 마운트에서 가장 높은 곳까지. 안착면 위 공간 높이와 빼서 위 여유를 봅니다. 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","topIn":["R",["plate","rod"]]},
  {"id":"S188","st":8,"kind":"measure","optional":true,"cell":null,"title":"리어 위 스프링 시트 오프셋 (안착면 ↔ 위 시트 면)","tip":"스프링 장착 길이 검산과 우리 위 시트 높이에 씁니다. 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","topIn":["R",["plate","rod"]],"skipIf":[{"key":"suspR","is":"판스프링"},{"key":"springR","is":"분리형"}]},
  {"id":"S190","st":8,"kind":"measure","optional":true,"cell":null,"title":"리어 클레비스 구멍 간격","tip":"두 볼트 구멍 중심 사이 (순정도면 예 80 — 판독, 미검증). 순정도면 원점(아래 구멍) 변환에도 씁니다. 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","lowIn":["R",["mclevis"]]},
  {"id":"S192","st":8,"kind":"measure","optional":true,"cell":null,"title":"리어 클레비스 구멍 중심 ↔ 쇽 축","tip":"볼트 구멍 중심에서 쇽 축까지 수평 거리 (순정도면 예 48·45.15 — 판독, 미검증). 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","lowIn":["R",["mclevis"]]},
  {"id":"S194","st":8,"kind":"measure","optional":true,"cell":null,"title":"리어 클레비스 볼트 구멍 지름","tip":" 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","lowIn":["R",["mclevis"]]},
- {"id":"S196","st":8,"kind":"measure","optional":true,"cell":null,"title":"리어 클레비스 너클 끼는 폭","tip":"브래킷 두 판 사이 안쪽 폭. 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","lowIn":["R",["mclevis"]]},
  {"id":"S198","st":8,"kind":"measure","optional":true,"cell":null,"title":"리어 하단 아이 안지름 (볼트 구멍)","tip":" 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","lowIn":["R",["eye","eclevis"]]},
  {"id":"S200","st":8,"kind":"measure","optional":true,"cell":null,"title":"리어 하단 아이 바깥지름","tip":" 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","lowIn":["R",["eye","eclevis"]]},
  {"id":"S202","st":8,"kind":"measure","optional":true,"cell":null,"title":"리어 하단 아이 폭 (축 방향)","tip":" 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","lowIn":["R",["eye","eclevis"]]},
@@ -300,7 +306,9 @@ const TASKS=[
  {"id":"S214","st":8,"kind":"measure","optional":true,"cell":null,"title":"리어 포크 구멍 중심 ↔ 몸통 끝","tip":" 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","lowIn":["R",["fork","fork4"]]},
  {"id":"S216","st":8,"kind":"measure","optional":true,"cell":null,"title":"리어 상단 아이 안지름 (볼트 구멍)","tip":" 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","topIn":["R",["eye"]]},
  {"id":"S218","st":8,"kind":"measure","optional":true,"cell":null,"title":"리어 상단 아이 폭 (축 방향)","tip":" 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","topIn":["R",["eye"]]},
- {"id":"S220","st":8,"kind":"measure","optional":true,"cell":null,"title":"리어 스테빌 링크 브래킷 구멍 ↔ 하단 기준","tip":"우리 몸통에 브래킷을 붙일 높이 (순정도면 예 128·57 — 판독, 미검증). 브래킷이 없으면 「해당 없음」. 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","datum":["R","damper"]},
+ {"id":"S220","st":8,"kind":"measure","optional":true,"cell":null,"title":"리어 스테빌 브래킷 구멍 높이 (K ↔ 구멍 중심, 축 방향)","tip":"3차원 위치 값 3개 중 ①. 우리 몸통에 브래킷을 붙일 높이 (순정도면 예 128·57 — 판독, 미검증). 브래킷이 없으면 「해당 없음」. 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","datum":["R","damper"]},
+ {"id":"S229","st":8,"kind":"measure","optional":true,"cell":null,"title":"리어 스테빌 브래킷 구멍 ↔ 쇽 축 거리 (위에서 봄)","tip":"3차원 위치 값 3개 중 ②. 쇽 축 중심에서 브래킷 구멍 중심까지, 축에 직각인 면에서 잰 거리. 높이·각도와 함께 있어야 브래킷이 제자리에 옵니다 (2026-11-17 유지호). 출고 뒤 3D 스캔 파일에서 잽니다. 브래킷이 없으면 「해당 없음」."},
+ {"id":"S231","st":8,"kind":"form","optional":true,"cell":null,"title":"리어 스테빌 브래킷 판 각도 (위에서 봄)","tip":"3차원 위치 값 3개 중 ③. 위에서 볼 때 하단 체결 볼트 축에서 브래킷 판(구멍 쪽)까지 돈 각도. 기준 방향은 볼트 축(볼트가 없는 인서트형은 차 앞 방향 — 추정, 확인 필요). 출고 뒤 3D 스캔 파일에서 잽니다.","na":"해당 없음 (브래킷 없음)","fields":[["stabAngR","판 각도",null,"deg"]]},
  {"id":"S221","st":8,"kind":"info","derived":true,"title":"계산값 확인 (자동)","tip":"기준면 사슬로 계산한 값입니다 (식은 각 줄 아래). ⚠ 표시는 측정 기준점을 다시 볼 값입니다. 다 봤으면 「확인 · 다음」.","items":["정하중에서 남은 압축 스트로크 = (장착 길이 − 마운트 오프셋) − 최대 압축 길이","값은 모두 AI도출-미검증 — 설계에 쓰기 전 확인"]},
  {id:"S127",st:8,kind:"measure",must:true,fig:"body",onlyIf:{skipped:"S122",as:"3D 스캔 값 사용"},title:"프론트 쇽 몸통 두께 · 3D 스캔",tip:"현장에서 「3D 스캔 값 사용」으로 넘긴 값입니다. 몸통에서 가장 굵은 곳의 바깥지름을 잽니다.",cell:"D31"},
  {id:"S128",st:8,kind:"measure",must:true,fig:"body",onlyIf:{skipped:"S123",as:"3D 스캔 값 사용"},title:"리어 쇽 몸통 두께 · 3D 스캔",tip:"현장에서 「3D 스캔 값 사용」으로 넘긴 값입니다. 몸통에서 가장 굵은 곳의 바깥지름을 잽니다.",cell:"F31"},
@@ -564,8 +572,16 @@ const SCREEN_IDS=[
  ["S221","","2026-11-17","사용","계산값 확인 (자동)"],
  ["S222","","2026-11-17","사용","⚠ 프론트 마운트 오프셋 h · 3D 스캔"],
  ["S223","","2026-11-17","사용","⚠ 리어 마운트 오프셋 h · 3D 스캔"],
+ ["S224","","2026-11-17","사용","프론트 하단 아이 부시 속관 길이"],
+ ["S225","","2026-11-17","사용","리어 하단 아이 부시 속관 길이"],
+ ["S226","","2026-11-17","사용","프론트 상단 아이 부시 속관 길이"],
+ ["S227","","2026-11-17","사용","리어 상단 아이 부시 속관 길이"],
+ ["S228","","2026-11-17","사용","프론트 스테빌 브래킷 구멍 ↔ 쇽 축 거리"],
+ ["S229","","2026-11-17","사용","리어 스테빌 브래킷 구멍 ↔ 쇽 축 거리"],
+ ["S230","","2026-11-17","사용","프론트 스테빌 브래킷 판 각도"],
+ ["S231","","2026-11-17","사용","리어 스테빌 브래킷 판 각도"],
 ];
-const SCREEN_NEXT="S224";
+const SCREEN_NEXT="S232";
 const STAGES=["형태 고르기","사진·기본정보","줄자 측정 (내렸을 때)","드룹 (들었을 때)","탈거 (분해 전)","분해","스프링 측정","재조립 · 출고","자리 업무 (출고 후)"];
 // 지금 차 상태: 단계에 car:"droop"|"off"를 주면 그 상태로 표시한다. 없으면 정하중.
 const CARSTATES=[["static","정하중"],["droop","드룹"],["off","탈거"]];
@@ -805,7 +821,7 @@ const FIGMAP={S009:"wheel_fender_gap",S012:"wheel_fender_gap",S010:"wheel_rim_od
  S063:"off_damper_len",S066:"off_damper_len",S064:"off_spring_len",S067:"off_spring_len",
  S065:"off_bump_len",S068:"off_bump_len",S080:"off_bump_len",S086:"off_bump_len",S079:"off_max_comp",S085:"off_max_comp",
  S122:"off_body_dia",S123:"off_body_dia",S110:"stab_link",S111:"stab_link",
- S095:"fork_datum_chain",S135:"clr_seat_side",S136:"clr_seat_head",S137:"clr_spring_wall",S138:"clr_seat_side",S139:"clr_seat_head",S140:"clr_spring_wall",S157:"fork_mount_offset",S158:"fork_mount_offset",S163:"fork_thread",S164:"fork_thread",S165:"fork_thread",S166:"fork_thread",S167:"fork_thread",S168:"fork_thread",S169:"fork_damper_min",S170:"fork_damper_min",S171:"fork_damper_max",S172:"fork_damper_max",S173:"fork_body_top",S174:"fork_body_top",S175:"fork_rod_dia",S176:"fork_rod_dia",S177:"fork_seat_low_pos",S178:"fork_seat_low_pos",S179:"fork_seat_low_od",S180:"fork_seat_low_od",S181:"fork_thread",S182:"fork_thread",S183:"fork_thread",S184:"fork_thread",S185:"fork_mount_top",S186:"fork_mount_top",S187:"fork_seat_up_off",S188:"fork_seat_up_off",S189:"fork_clevis_pitch",S190:"fork_clevis_pitch",S191:"fork_clevis_off",S192:"fork_clevis_off",S193:"fork_clevis_hole",S194:"fork_clevis_hole",S195:"fork_clevis_gap",S196:"fork_clevis_gap",S197:"fork_eye_id",S198:"fork_eye_id",S199:"fork_eye_od",S200:"fork_eye_od",S201:"fork_eye_w",S202:"fork_eye_w",S203:"fork_insert_od",S204:"fork_insert_od",S205:"fork_insert_len",S206:"fork_insert_len",S207:"fork_insert_tab",S208:"fork_insert_tab",S209:"fork_fork_gap",S210:"fork_fork_gap",S211:"fork_fork_hole",S212:"fork_fork_hole",S213:"fork_fork_body",S214:"fork_fork_body",S215:"fork_eye_id",S216:"fork_eye_id",S217:"fork_eye_w",S218:"fork_eye_w",S219:"fork_stab_brk",S220:"fork_stab_brk",S221:"fork_datum_chain",S222:"fork_mount_offset",S223:"fork_mount_offset"};
+ S095:"fork_datum_chain",S135:"clr_seat_side",S136:"clr_seat_head",S137:"clr_spring_installed",S138:"clr_seat_side",S139:"clr_seat_head",S140:"clr_spring_installed",S157:"fork_mount_offset",S158:"fork_mount_offset",S163:"fork_thread",S164:"fork_thread",S165:"fork_thread",S166:"fork_thread",S167:"fork_thread",S168:"fork_thread",S169:"fork_damper_min",S170:"fork_damper_min",S171:"fork_damper_max",S172:"fork_damper_max",S173:"fork_body_top",S174:"fork_body_top",S175:"fork_rod_dia",S176:"fork_rod_dia",S177:"fork_seat_low_pos",S178:"fork_seat_low_pos",S179:"fork_seat_low_od",S180:"fork_seat_low_od",S181:"fork_thread",S182:"fork_thread",S183:"fork_thread",S184:"fork_thread",S185:"fork_mount_top",S186:"fork_mount_top",S187:"fork_seat_up_off",S188:"fork_seat_up_off",S189:"fork_clevis_pitch",S190:"fork_clevis_pitch",S191:"fork_clevis_off",S192:"fork_clevis_off",S193:"fork_clevis_hole",S194:"fork_clevis_hole",S195:"knuckle_width",S196:"knuckle_width",S197:"fork_eye_id",S198:"fork_eye_id",S199:"fork_eye_od",S200:"fork_eye_od",S201:"fork_eye_w",S202:"fork_eye_w",S203:"fork_insert_od",S204:"fork_insert_od",S205:"fork_insert_len",S206:"fork_insert_len",S207:"fork_insert_tab",S208:"fork_insert_tab",S209:"fork_fork_gap",S210:"fork_fork_gap",S211:"fork_fork_hole",S212:"fork_fork_hole",S213:"fork_fork_body",S214:"fork_fork_body",S215:"fork_eye_id",S216:"fork_eye_id",S217:"fork_eye_w",S218:"fork_eye_w",S219:"fork_stab_brk",S220:"fork_stab_brk",S228:"fork_stab_dist",S229:"fork_stab_dist",S230:"fork_stab_ang",S231:"fork_stab_ang",S224:"fork_eye_sleeve",S225:"fork_eye_sleeve",S226:"fork_eye_sleeve",S227:"fork_eye_sleeve",S221:"fork_datum_chain",S222:"fork_mount_offset",S223:"fork_mount_offset"};
 function figFor(t){const m=FIGMAP[t.id];if(!m)return null;if(typeof m==="string")return m;const v=run.values.springR;return v&&v.v==="분리형"?m[1]:m[0]}
 const FIG={
  tire:'<rect x="20" y="20" width="40" height="120" rx="8" style="fill:none;stroke:var(--icon);stroke-width:3"/><rect x="120" y="30" width="22" height="100" rx="4" style="fill:none;stroke:var(--icon);stroke-width:3"/><line x1="64" y1="80" x2="116" y2="80" style="stroke:var(--accent);stroke-width:3" marker-start="url(#ar)" marker-end="url(#ar)"/><text x="40" y="155" text-anchor="middle">타이어</text><text x="131" y="145" text-anchor="middle">쇽 몸통</text>',
@@ -899,9 +915,9 @@ function fieldInput(key,label,cell,unit){
   }
   const inp=el("input");inp.id="f-"+key;
   if(unit==="date"){inp.type="date";inp.value=(pv&&pv.v)||today()}
-  else if(unit==="mm"){inp.type="number";inp.inputMode="decimal";inp.step="0.5";inp.value=pv?(pv.raw!=null?pv.raw:pv.v):""}
+  else if(unit==="mm"||unit==="deg"){inp.type="number";inp.inputMode="decimal";inp.step="0.5";inp.value=pv?(pv.raw!=null?pv.raw:pv.v):""}
   else{inp.type="text";inp.value=pv?pv.v:""}
-  if(unit==="mm"){const u=el("div","unit");u.appendChild(inp);u.appendChild(el("span",null,"mm"));lab.appendChild(u)}else lab.appendChild(inp);
+  if(unit==="mm"||unit==="deg"){const u=el("div","unit");u.appendChild(inp);u.appendChild(el("span",null,unit==="deg"?"°":"mm"));lab.appendChild(u)}else lab.appendChild(inp);
   return [lab,inp];
 }
 function formUI(t,c){
@@ -909,7 +925,7 @@ function formUI(t,c){
   t.fields.forEach(([key,label,cell,unit])=>{const [lab,inp]=fieldInput(key,label,cell,unit);g.appendChild(lab);ins.push([key,label,cell,unit,inp])});c.appendChild(g);
   if(t.raw)c.appendChild(rawBox(t));
   let na=null;if(t.na){const ck=el("label","check");na=el("input");na.type="checkbox";na.id="na-"+t.id;na.checked=run.skipped[t.id]===t.na;ck.appendChild(na);ck.appendChild(document.createTextNode(t.na));c.appendChild(ck)}
-  collect=()=>{if(na){if(na.checked){run.skipped[t.id]=t.na;ins.forEach(([key])=>delete run.values[key]);return}if(run.skipped[t.id]===t.na)delete run.skipped[t.id]}ins.forEach(([key,label,cell,unit,inp])=>{const val=inp.value.trim();if(val==="")delete run.values[key];else run.values[key]={v:unit==="mm"?Number(val):val,cell,label,unit:unit==="mm"?"mm":undefined,task:t.id}})};
+  collect=()=>{if(na){if(na.checked){run.skipped[t.id]=t.na;ins.forEach(([key])=>delete run.values[key]);return}if(run.skipped[t.id]===t.na)delete run.skipped[t.id]}ins.forEach(([key,label,cell,unit,inp])=>{const val=inp.value.trim();if(val==="")delete run.values[key];else run.values[key]={v:(unit==="mm"||unit==="deg")?Number(val):val,cell,label,unit:unit==="mm"?"mm":unit==="deg"?"°":undefined,task:t.id}})};
 }
 // 로우데이터 파일(다이노 CSV 등) — 사진 저장소에 화면아이디_raw로 넣고 원래 파일 이름을 같이 둔다
 function rawBox(t){const box=el("div","card");box.style.background="var(--bg)";const k=t.id+"_raw";
@@ -972,14 +988,14 @@ function measureUI(t,c){
 // B 차대 안착면 · R 로드 체결 자리면 · T 몸통 상단 · K 하단 체결 기준. 위치 u는 K에서 축 방향 위로 +.
 const FX={
  F:{LIs:"S023",LId:"S040",LA:"S063",LAs:"S125",h:"S157",hs:"S222",Lmin:"S169",Lmax:"S171",T:"S173",rod:"S175",seatPos:"S177",seatOd:"S179",mtTop:"S185",seatUp:"S187",
-  cPitch:"S189",cOff:"S191",cHole:"S193",cGap:"S195",eId:"S197",eOd:"S199",eW:"S201",iOd:"S203",iLen:"S205",iTab:"S207",fGap:"S209",fHole:"S211",fBody:"S213",teId:"S215",teW:"S217",stab:"S219",
+  cPitch:"S189",cOff:"S191",cHole:"S193",eId:"S197",eOd:"S199",eW:"S201",iOd:"S203",iLen:"S205",iTab:"S207",fGap:"S209",fHole:"S211",fBody:"S213",teId:"S215",teW:"S217",stab:"S219",stabR:"S228",eSl:"S224",teSl:"S226",knW:"S195",
   hubS:"S015",hubD:"S034",spS:"S024",spAsm:"S064",body:"S122",bodyS:"S127",side:"S135",head:"S136",wall:"S137",bumpOut:"S065",bumpIn:"S080",susp:"suspF",spring:"springF"},
  R:{LIs:"S028",LId:"S046",LA:"S066",LAs:"S126",h:"S158",hs:"S223",Lmin:"S170",Lmax:"S172",T:"S174",rod:"S176",seatPos:"S178",seatOd:"S180",mtTop:"S186",seatUp:"S188",
-  cPitch:"S190",cOff:"S192",cHole:"S194",cGap:"S196",eId:"S198",eOd:"S200",eW:"S202",iOd:"S204",iLen:"S206",iTab:"S208",fGap:"S210",fHole:"S212",fBody:"S214",teId:"S216",teW:"S218",stab:"S220",
+  cPitch:"S190",cOff:"S192",cHole:"S194",eId:"S198",eOd:"S200",eW:"S202",iOd:"S204",iLen:"S206",iTab:"S208",fGap:"S210",fHole:"S212",fBody:"S214",teId:"S216",teW:"S218",stab:"S220",stabR:"S229",eSl:"S225",teSl:"S227",knW:"S196",
   hubS:"S016",hubD:"S035",spS:"S029",spAsm:"S067",body:"S123",bodyS:"S128",side:"S138",head:"S139",wall:"S140",bumpOut:"S068",bumpIn:"S086",susp:"suspR",spring:"springR"}};
 const DATUM_TOP={plate:"마운트 판이 차대에 닿는 면 (안착면)",rod:"차대 자리면 — 부싱 와셔가 차대에 닿는 면 (추정 — 확인 필요)",eye:"상단 아이 볼트 중심"};
-const DATUM_LOW={mclevis:"클레비스 위쪽 볼트 중심",eye:"하단 볼트 중심",eclevis:"하단 볼트 중심",fork:"하단 볼트 중심",fork4:"하단 볼트 중심",
- minsert:"몸통 하단 끝 (추정 — 확인 필요)",tab:"몸통 하단 끝 (추정 — 확인 필요)",stud:"스터드 자리면 (추정 — 확인 필요)",other:"하단 체결 중심 (특이사항에 어디인지 적기)"};
+const DATUM_LOW={mclevis:"클레비스 아래쪽 볼트 중심 (볼트 2개 중 지면에 가까운 쪽)",eye:"하단 볼트 중심",eclevis:"하단 볼트 중심",fork:"하단 볼트 중심",fork4:"하단 볼트 중심",
+ minsert:"몸통 하단 끝 (추정 — 확인 필요)",tab:"몸통 하단 끝 (추정 — 확인 필요)",stud:"스터드 자리면 (추정 — 확인 필요)",other:"하단 체결 볼트 중심 — 볼트가 여럿이면 지면에 가장 가까운 것 (특이사항에 어디인지 적기)"};
 function datumOf(shape,a){const s=(shape&&shape[a])||{};const top=s.top||"plate";
   return {top,low:s.low||"",B:DATUM_TOP[top]||DATUM_TOP.plate,K:DATUM_LOW[s.low]||"하단 체결 타입을 아직 안 고름 — 하단 체결 중심",
     R:top==="eye"?"상단 아이 중심 (= B, h = 0)":"로드 체결 자리면 — 로드 너트 아래 와셔가 로드 어깨에 물리는 면"}}
@@ -1019,7 +1035,7 @@ function derive(values,shape,skipped){
     const su=num(I.seatUp),sp=num(I.seatPos),spS=num(I.spS);
     const sc=has(LIs,su,sp)?LIs-su-sp:null;
     put("spring_len_check","스프링 장착 길이 검산 (정하중)",sc,"L_I(정하중) − 위 시트 오프셋 − u_S↓",{L_I:LIs,seat_up_offset:su,u_seat_low:sp,measured:spS},has(sc,spS)&&Math.abs(sc-spS)>5?"잰 값 "+spS+" mm와 "+r1(Math.abs(sc-spS))+" mm 차이":null);
-    const pitch=d.low==="mclevis"?num(I.cPitch):null;
+    const pitch=null; // rev 82: K = 클레비스 아래 볼트 = 순정도면 원점(아래 구멍)이라 변환 불필요 (유지호 2026-11-17)
     const st={K:0,seat_low:sp,body_top:T,rod_seat_min:Lmin,rod_seat_max:r1(LDmax),mount_face_max:has(LDmax,h)?r1(LDmax+h):null,
       mount_top_max:has(LDmax,h,mt)?r1(LDmax+h+mt):null,stab_bracket:num(I.stab)};
     const stOE={};if(pitch!=null)Object.entries(st).forEach(([k,v])=>stOE[k]=v==null?null:r1(v+pitch));
@@ -1030,10 +1046,10 @@ function derive(values,shape,skipped){
       spring_installed_static:spS,spring_installed_offcar:num(I.spAsm),
       thread:{mount:txt("thMt"+a),rod:txt("thRod"+a),top_eye:txt("thTe"+a),lower:txt("thLow"+a),lower_stud:txt("thLst"+a)},
       mount_bolt_count:txt("mtCount"+a),mount_fix:txt("mtFix"+a),
-      lower:{clevis_pitch:num(I.cPitch),clevis_off:num(I.cOff),clevis_hole:num(I.cHole),clevis_gap:num(I.cGap),eye_id:num(I.eId),eye_od:num(I.eOd),eye_w:num(I.eW),
+      lower:{clevis_pitch:num(I.cPitch),clevis_off:num(I.cOff),clevis_hole:num(I.cHole),knuckle_w:num(I.knW),eye_id:num(I.eId),eye_od:num(I.eOd),eye_w:num(I.eW),eye_sleeve_len:num(I.eSl),
         insert_od:num(I.iOd),insert_len:num(I.iLen),insert_tab:num(I.iTab),fork_gap:num(I.fGap),fork_hole:num(I.fHole),fork_body:num(I.fBody)},
-      top_eye:{id:num(I.teId),w:num(I.teW)},u_stab_bracket:num(I.stab),clr:{seat_side:num(I.side),headroom:hd,spring_wall:num(I.wall)},
-      stations:st,stations_oe:pitch!=null?stOE:null,stations_note:"u = K(하단 체결 기준)에서 축 방향 위로 mm. stations_oe = 순정도면 원점(클레비스 아래 구멍) 기준 = u + 구멍 간격"}}});
+      top_eye:{id:num(I.teId),w:num(I.teW),sleeve_len:num(I.teSl)},u_stab_bracket:num(I.stab),stab_bracket:{u:num(I.stab),r:num(I.stabR),ang:(()=>{const x=values["stabAng"+a];return x&&x.v!==""&&isFinite(Number(x.v))?Number(x.v):null})()},clr:{seat_side:num(I.side),headroom:hd,spring_wall:num(I.wall)},
+      stations:st,stations_oe:pitch!=null?stOE:null,stations_note:"u = K(하단 체결 볼트 중심, 볼트가 여럿이면 지면에 가장 가까운 것)에서 축 방향 위로 mm. 클레비스도 아래 구멍이 K라 순정도면 원점과 같음 (rev 82)"}}});
   return out}
 /*DERIVE-END*/
 function datumBox(a,kind){const d=datumOf(run.shape,a);const b=el("div","card small");b.style.background="var(--bg)";
@@ -1313,7 +1329,8 @@ const CHANGELOG=[
  [78,"2026-11-17 20:00","상단 체결 타입별 화면: 마운트 판이면 S112·S113(볼트 개수 칸 추가), 아이면 S131·S132(아이 치수), 로드·스터드면 S133·S134(로드 끝 치수). 항목은 측정 도면 판독 추정 — 확인 필요"],
  [79,"2026-11-17 21:00","차대 쪽 여유 화면 추가(S135~S140, 탈거 후 통과 구멍 다음, 프론트·리어): 마운트 안착면 둘레 여유 · 안착면 위 공간 높이 · 스프링 자리 차대 여유 — 측정시트 칸 없음(기록만), 사진 필수, 막힘 없으면 버튼으로 넘김. 근거: 순정도면 기준 필수 치수 정리(2026-11-17 유지호 기준: 차대 쪽 여유가 중요)"],
  [80,"2026-11-17 22:00","하단 체결 타입별 화면 S141~S156 (맥퍼슨 인서트·클레비스·아이·포크·4WD 포크·너클 탭 인서트·기타·스터드, 프론트·리어). 항목은 측정 도면 판독 추정 — 확인 필요"],
- [81,"2026-11-17 15:50","엔지니어 관점 재설계(2026-11-17 포크에서 시험 후 정식 반영): 기준면 체계(B 차대 안착면 · R 로드 체결 자리면 · K 하단 체결 기준) — 마운트 오프셋 h·최대 압축/신장 길이·몸통 상단·로드 지름·스프링 시트(S157~S180)로 정하중에서 남은 압축·신장 스트로크 자동 계산(S221·S095) · 나사는 「M×피치」 한 값(S163~S168·S181~S184, 하단 볼트 피치 누락 해결) · 형상 치수는 자리 업무에서 스캔으로 화면 하나에 값 하나(S185~S220) · rev 78~80 여러 값 화면 22개 숨김(보류) · 차대 여유 화면 진입 조건(S135~S140) · 하단 「아이 투 클레비스」 추가 · rev 79 쉼표 버그 수정 · record.json에 datum·derived·drawing(자동 작도 입력, u 좌표) — 설계 노트 DESIGN.md"]
+ [81,"2026-11-17 15:50","엔지니어 관점 재설계(2026-11-17 포크에서 시험 후 정식 반영): 기준면 체계(B 차대 안착면 · R 로드 체결 자리면 · K 하단 체결 기준) — 마운트 오프셋 h·최대 압축/신장 길이·몸통 상단·로드 지름·스프링 시트(S157~S180)로 정하중에서 남은 압축·신장 스트로크 자동 계산(S221·S095) · 나사는 「M×피치」 한 값(S163~S168·S181~S184, 하단 볼트 피치 누락 해결) · 형상 치수는 자리 업무에서 스캔으로 화면 하나에 값 하나(S185~S220) · rev 78~80 여러 값 화면 22개 숨김(보류) · 차대 여유 화면 진입 조건(S135~S140) · 하단 「아이 투 클레비스」 추가 · rev 79 쉼표 버그 수정 · record.json에 datum·derived·drawing(자동 작도 입력, u 좌표) — 설계 노트 DESIGN.md"],
+ [82,"2026-11-17 18:30","유지호 rev 81 검토 반영(포크판을 정식판으로 올림): 휀더 아치 그림이 타이어에 붙던 것 고침(휀더·허브 그림 4장) · 하단 타입 「아이 투 클레비스」 뺌(상단·하단을 따로 고르니 아이·클레비스로 충분) · 하단 기준 K = 볼트 중심, 볼트가 여럿이면 지면에 가장 가까운 것(클레비스는 아래 볼트 — 그림·자동 계산 같이) · 스프링 ↔ 주변 여유를 탈거 전 순정 스프링 달린 상태로(S137·S140, 분리형도) · 3D 스캔 안내의 「리바운드 스트로크 확인용」 문구 바로잡음 · 회사 기준 스트로크(S079·S085) 재정의 예정 표시 · 클레비스 너클 폭은 차량 너클(가공품)을 탈거 후 잼(S195·S196) · 아이 부시 속관 양 끝면 길이 추가(하단 S224·S225, 상단 S226·S227) · 스테빌 브래킷 위치를 높이·축↔구멍 거리(S228·S229)·판 각도(S230·S231) 3값으로"]
 ];
 // 지금은 베타: 숫자 번호는 「베타 rev N」으로 보인다. 정식 v1이 되면 그때부터 번호를 문자열("1","2"…)로 적어 「rev 1」부터 센다 (유지호 2026-10-22).
 if(!CHANGELOG.every(Array.isArray))setTimeout(()=>status("변경 로그 줄 끝 쉼표 확인 필요",true),600);
