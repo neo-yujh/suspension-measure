@@ -142,12 +142,14 @@ const TASKS=[
  {id:"S024",skipIf:[{key:"suspF",is:"판스프링"}],st:2,kind:"measure",title:"프론트 스프링 양끝 길이",tip:"상단 패드 ↔ 하단 패드. 잰 점을 표시해 두세요.",cell:"D10",coilSkip:"springF",shots:1},
  {id:"S025",st:2,kind:"choice",key:"bumpPosF",title:"프론트 범프스토퍼 위치",tip:"범프스토퍼가 보이게 사진을 찍으세요. 댐퍼 내부를 고르면 사진 칸이 사라지고 다음 측정도 건너뜁니다 (나중에 분해 후 자유장 측정).",cell:"E16",options:["댐퍼 내부","차대","로어암"],other:"기타 (직접 입력)",shots:1,photoReq:{unlessKey:"bumpPosF",unless:"댐퍼 내부"}},
  {id:"S026",st:2,kind:"measure",title:"프론트 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼 끝에서 맞닿는 면까지.",onlyIf:{key:"bumpPosF",not:"댐퍼 내부"},cell:"E10",shots:1,photoReq:true},
- {id:"S027",st:2,kind:"photo",title:"프론트 서스펜션 구조 상세 사진",tip:"서스펜션 구조를 부품 하나하나 가까이 찍습니다 (예: 스테빌라이저 바 마운트·링크, 암 체결부, 너클). 간섭이 우려되는 부분은 줄자를 대거나 손가락 몇 개가 들어가는지 함께 찍어, 여유 거리를 가늠할 수 있게 합니다. 권장 장수·찍을 부품 목록은 남정우 수석 피드백 받아 확정 예정 — 지금은 임시 1장.",shots:1,photoOpt:true},
+ {id:"S027",st:2,kind:"photo",title:"프론트 서스펜션 구조 상세 사진",tip:"서스펜션 구조를 부품 하나하나 가까이 찍습니다 (예: 암 체결부, 너클). 간섭이 우려되는 부분은 줄자를 대거나 손가락 몇 개가 들어가는지 함께 찍어, 여유 거리를 가늠할 수 있게 합니다. 권장 장수·찍을 부품 목록은 남정우 수석 피드백 받아 확정 예정 — 지금은 임시 1장.",shots:1,photoOpt:true},
+ {id:"S114",st:2,kind:"measure",optional:true,fig:"tire",title:"프론트 쇽 몸통 ↔ 타이어 거리",tip:"손가락으로 측정해도 됩니다. 쇽업소버 몸통에서 타이어 안쪽 면까지 가장 가까운 곳을 잽니다. 몸통이 타이어 옆에 없으면 「해당 없음」.",cell:"D33",shots:1},
  {id:"S028",st:2,kind:"measure",title:"리어 댐퍼 체결부 기준 전장",tip:"분리형이면 댐퍼만.",cell:"G10",shots:1},
  {id:"S029",skipIf:[{key:"suspR",is:"판스프링"}],st:2,kind:"measure",title:"리어 스프링 양끝 길이",tip:"분리형이면 스프링만 따로.",cell:"H10",coilSkip:"springR",shots:1},
  {id:"S030",st:2,kind:"choice",key:"bumpPosR",title:"리어 범프스토퍼 위치",tip:"범프스토퍼가 보이게 사진을 찍으세요. 댐퍼 내부를 고르면 사진 칸이 사라지고 다음 측정도 건너뜁니다 (나중에 분해 후 자유장 측정).",cell:"I16",options:["댐퍼 내부","차대","로어암"],other:"기타 (직접 입력)",shots:1,photoReq:{unlessKey:"bumpPosR",unless:"댐퍼 내부"}},
  {id:"S031",st:2,kind:"measure",title:"리어 범프스토퍼 끝 ↔ 차대",tip:"범프스토퍼 끝에서 맞닿는 면까지.",onlyIf:{key:"bumpPosR",not:"댐퍼 내부"},cell:"I10",shots:1,photoReq:true},
- {id:"S032",st:2,kind:"photo",title:"리어 서스펜션 구조 상세 사진",tip:"서스펜션 구조를 부품 하나하나 가까이 찍습니다 (예: 스테빌라이저 바 마운트·링크, 암 체결부, 너클). 간섭이 우려되는 부분은 줄자를 대거나 손가락 몇 개가 들어가는지 함께 찍어, 여유 거리를 가늠할 수 있게 합니다. 권장 장수·찍을 부품 목록은 남정우 수석 피드백 받아 확정 예정 — 지금은 임시 1장.",shots:1,photoOpt:true},
+ {id:"S032",st:2,kind:"photo",title:"리어 서스펜션 구조 상세 사진",tip:"서스펜션 구조를 부품 하나하나 가까이 찍습니다 (예: 암 체결부, 너클). 간섭이 우려되는 부분은 줄자를 대거나 손가락 몇 개가 들어가는지 함께 찍어, 여유 거리를 가늠할 수 있게 합니다. 권장 장수·찍을 부품 목록은 남정우 수석 피드백 받아 확정 예정 — 지금은 임시 1장.",shots:1,photoOpt:true},
+ {id:"S115",st:2,kind:"measure",optional:true,fig:"tire",title:"리어 쇽 몸통 ↔ 타이어 거리",tip:"손가락으로 측정해도 됩니다. 쇽업소버 몸통에서 타이어 안쪽 면까지 가장 가까운 곳을 잽니다. 몸통이 타이어 옆에 없으면 「해당 없음」.",cell:"F33",shots:1},
  {id:"S033",st:3,car:"droop",kind:"info",title:"차 띄우기 (드룹 상태로)",tip:"소형 리프트를 잭포인트나 멤버에 고무를 받치고 들어 올려, 바퀴가 완전히 늘어지게 합니다. 다 됐으면 「확인 · 다음」.",items:["소형 리프트를 잭포인트 또는 멤버에 대고, 사이에 고무를 받쳤는지","바퀴가 바닥이나 발판에서 떨어져 완전히 늘어졌는지","정하중 때 표시해 둔 측정점이 그대로 보이는지"]},
  {id:"S034",st:3,car:"droop",kind:"hub",title:"프론트 타이어 (허브 센터 ↔ 휀더) · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"B12",rimKey:"rimF",ref:"mS015",shots:1},
  {id:"S035",st:3,car:"droop",kind:"hub",title:"리어 타이어 (허브 센터 ↔ 휀더) · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"F12",rimKey:"rimR",ref:"mS016",shots:1},
@@ -161,12 +163,18 @@ const TASKS=[
  {id:"S044",st:3,car:"droop",kind:"info",title:"프론트 범프스토퍼 · 드룹",tip:"범프스토퍼가 댐퍼 내부라 지금은 재지 않습니다. 확인했으면 「확인 · 다음」.",items:["추후 댐퍼 분해 후 범프스토퍼 자유장을 측정합니다"],onlyIf:{key:"bumpPosF",is:"댐퍼 내부"}},
  {id:"S045",st:3,car:"droop",kind:"form",title:"프론트 차고파이프 장착부 · 드룹",tip:"분리형이라 스프링 시트에 차고조절 파이프(차고파이프)를 달 자리를 봅니다. 장착부가 어떻게 생겼는지 적고, 주변이 다 보이게 찍습니다.",fields:[["pipeF","프론트 차고파이프 장착부 위치 (기타는 「직접 입력」)","B16","pick:상단,하단"]],onlyIf:{key:"springF",is:"분리형"},shots:1},
  {id:"S042",st:3,car:"droop",kind:"photo",title:"프론트 상단 체결부 형상 사진 (차 밑 · 휠하우스)",tip:"바퀴를 뗀 프론트 휠하우스 안쪽에서 위로 쇽업소버 상단 체결부를 찍습니다. 형태·볼트 위치·각도가 보이게.",shots:1},
+ {id:"S116",st:3,car:"droop",kind:"measure",optional:true,fig:"mount",title:"프론트 쇽 장착부 주변 간섭",tip:"쇽업소버 장착부(상단·하단 체결부) 둘레에서 가장 가까운 부품까지 거리를 잽니다. 닿을 것 같은 곳이 있으면 사진으로 함께 남깁니다. 간섭될 부품이 없으면 「해당 없음」.",cell:"D30",shots:1,photoOpt:true},
+ {id:"S117",st:3,car:"droop",kind:"measure",fig:"cv",laterSkip:"등속조인트 없음",laterNote:"등속조인트가 없으면 아래 버튼을 누릅니다.",title:"프론트 쇽 몸통 ↔ 등속조인트",tip:"쇽업소버 몸통에서 등속조인트(드라이브 샤프트 끝 고무 부트)까지 가장 가까운 곳을 잽니다.",cell:"D32",shots:1,photoOpt:true},
+ {id:"S118",st:3,car:"droop",kind:"measure",optional:true,fig:"stab",title:"프론트 스테빌 브래킷 ↔ 휠하우스",tip:"쇽업소버에 달린 스테빌라이저 링크 브래킷에서 휠하우스 안쪽 면까지 가장 가까운 곳을 잽니다. 쇽에 스테빌 브래킷이 없으면 「해당 없음」.",cell:"D34",shots:1,photoOpt:true},
  {id:"S046",st:3,car:"droop",kind:"measure",title:"리어 댐퍼 체결부 기준 전장 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"G12",ref:"mS028",shots:1},
  {id:"S047",skipIf:[{key:"suspR",is:"판스프링"}],st:3,car:"droop",kind:"measure",title:"리어 스프링 양끝 길이 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"H12",ref:"mS029",coilSkip:"springR",shots:1},
  {id:"S049",st:3,car:"droop",kind:"measure",title:"리어 범프스토퍼 끝 ↔ 차대 · 드룹",tip:"정하중 때 표시한 같은 점에서 잽니다. 줄자가 기울지 않게.",cell:"I12",ref:"mS031",onlyIf:{key:"bumpPosR",not:"댐퍼 내부"},shots:1,photoReq:true},
  {id:"S050",st:3,car:"droop",kind:"info",title:"리어 범프스토퍼 · 드룹",tip:"범프스토퍼가 댐퍼 내부라 지금은 재지 않습니다. 확인했으면 「확인 · 다음」.",items:["추후 댐퍼 분해 후 범프스토퍼 자유장을 측정합니다"],onlyIf:{key:"bumpPosR",is:"댐퍼 내부"}},
  {id:"S051",st:3,car:"droop",kind:"form",title:"리어 차고파이프 장착부 · 드룹",tip:"분리형이라 스프링 시트에 차고조절 파이프(차고파이프)를 달 자리를 봅니다. 장착부가 어떻게 생겼는지 적고, 주변이 다 보이게 찍습니다.",fields:[["pipeR","리어 차고파이프 장착부 위치 (기타는 「직접 입력」)","F16","pick:상단,하단"]],onlyIf:{key:"springR",is:"분리형"},shots:1},
  {id:"S048",st:3,car:"droop",kind:"photo",title:"리어 상단 체결부 형상 사진 (차 밑 · 휠하우스)",tip:"바퀴를 뗀 리어 휠하우스 안쪽에서 위로 쇽업소버 상단 체결부를 찍습니다. 형태·볼트 위치·각도가 보이게.",shots:1},
+ {id:"S119",st:3,car:"droop",kind:"measure",optional:true,fig:"mount",title:"리어 쇽 장착부 주변 간섭",tip:"쇽업소버 장착부(상단·하단 체결부) 둘레에서 가장 가까운 부품까지 거리를 잽니다. 닿을 것 같은 곳이 있으면 사진으로 함께 남깁니다. 간섭될 부품이 없으면 「해당 없음」.",cell:"F30",shots:1,photoOpt:true},
+ {id:"S120",st:3,car:"droop",kind:"measure",fig:"cv",laterSkip:"등속조인트 없음",laterNote:"등속조인트가 없으면 아래 버튼을 누릅니다.",title:"리어 쇽 몸통 ↔ 등속조인트",tip:"쇽업소버 몸통에서 등속조인트(드라이브 샤프트 끝 고무 부트)까지 가장 가까운 곳을 잽니다.",cell:"F32",shots:1,photoOpt:true},
+ {id:"S121",st:3,car:"droop",kind:"measure",optional:true,fig:"stab",title:"리어 스테빌 브래킷 ↔ 휠하우스",tip:"쇽업소버에 달린 스테빌라이저 링크 브래킷에서 휠하우스 안쪽 면까지 가장 가까운 곳을 잽니다. 쇽에 스테빌 브래킷이 없으면 「해당 없음」.",cell:"F34",shots:1,photoOpt:true},
  {id:"S059",st:4,car:"off",kind:"info",showMissing:true,title:"쇽업소버 탈거",tip:"앞의 측정에 빈칸이 없는지 확인한 뒤 측정하는 쪽 프론트·리어 쇽업소버를 탈거합니다. 다 됐으면 「확인 · 다음」.",items:["빈 단계가 없는지 (아래 목록)","피치게이지 · 버니어 캘리퍼스를 챙겼는지 (스테빌 링크 · 마운트 볼트 측정용, 필수)","프론트 쇽업소버를 뗐는지","리어 쇽업소버를 뗐는지","뗀 볼트·너트를 한곳에 모아 두었는지"]},
  {id:"S104",st:4,car:"off",kind:"measure",title:"프론트 차대 마운트 통과 구멍 내경 · 탈거 후",tip:"처음에 「나중에 측정」을 고른 값입니다. 쇽을 뗀 자리에서 차대 쪽 마운트 구멍의 안지름을 버니어 캘리퍼스로 잽니다. 눈금과 구멍이 함께 보이게 찍으세요.",cell:"D29",onlyIf:{skipped:"S060"},shots:1,photoReq:true},
  {id:"S105",st:4,car:"off",kind:"measure",title:"리어 차대 마운트 통과 구멍 내경 · 탈거 후",tip:"처음에 「나중에 측정」을 고른 값입니다. 쇽을 뗀 자리에서 차대 쪽 마운트 구멍의 안지름을 버니어 캘리퍼스로 잽니다. 눈금과 구멍이 함께 보이게 찍으세요.",cell:"F29",onlyIf:{skipped:"S061"},shots:1,photoReq:true},
@@ -180,9 +188,11 @@ const TASKS=[
  {id:"S106",st:4,car:"off",kind:"shape",axle:"F",recheck:true,title:"프론트 쇽업소버 체결 타입 확인 · 탈거 후",tip:"차 밑에서 처음 고른 상단·하단 체결 타입이 그대로 눌려 있습니다. 뗀 실물과 같으면 그대로 「확인 · 다음」, 다르면 고쳐 누르세요."},
  {id:"S107",st:4,car:"off",kind:"shape",axle:"R",recheck:true,title:"리어 쇽업소버 체결 타입 확인 · 탈거 후",tip:"차 밑에서 처음 고른 상단·하단 체결 타입이 그대로 눌려 있습니다. 뗀 실물과 같으면 그대로 「확인 · 다음」, 다르면 고쳐 누르세요."},
  {id:"S063",st:4,car:"off",kind:"measure",must:true,title:"⚠ 프론트 쇽 전장 · 분해 전 (가장 중요)",tip:"분해 전 가장 중요한 값입니다 — 분해하면 다시 못 잽니다. 차에 달려 있을 때와 같은 기준점(체결부)에서 잽니다. 비워 두면 넘어갈 수 없습니다.",cell:"C14",ref:"mS040",refName:"드룹",refRule:"탈거한 쇽은 드룹 때보다 같거나 길어야 합니다",shots:1,photoReq:true},
+ {id:"S122",st:4,car:"off",kind:"measure",fig:"body",laterSkip:"3D 스캔 값 사용",laterNote:"3D 스캔에서 잴 거면 아래 버튼을 누릅니다.",tip:"버니어 캘리퍼스로 쇽업소버 몸통(가장 굵은 곳)의 바깥지름을 잽니다. 3D 스캔으로 재도 됩니다.",shots:1,title:"프론트 쇽 몸통 두께",cell:"D31"},
  {id:"S064",skipIf:[{key:"suspF",is:"판스프링"}],st:4,car:"off",kind:"measure",title:"프론트 스프링 양끝 길이 (조립 상태)",tip:"분해하면 다시 못 잽니다. 상단 패드 ↔ 하단 패드. 수기로 꼭 재고, 3D 스캔에서도 한 번 더 잽니다 (스캔이 안 되면 못 채우므로 수기 측정이 기본). 측정시트가 프리로드를 이 값 − 드룹 값으로 계산합니다.",cell:"D14",ref:"mS041",refName:"드룹",refRule:"탈거한 조립 상태는 드룹 때보다 같거나 길어야 합니다",shots:1},
  {id:"S065",st:4,car:"off",kind:"measure",title:"프론트 범프스토퍼 고무 길이 · 분해 전",tip:"범프스토퍼가 댐퍼 밖(차대·로어암 등 분리형)이라 쇽을 뗀 지금, 분해 전에 잽니다. 댐퍼 내부형이면 이 화면은 나오지 않고 분해 후에 잽니다.",cell:"E14",onlyIf:{key:"bumpPosF",not:"댐퍼 내부"},shots:1},
  {id:"S066",st:4,car:"off",kind:"measure",must:true,title:"⚠ 리어 쇽 전장 · 분해 전 (가장 중요)",tip:"분해 전 가장 중요한 값입니다 — 분해하면 다시 못 잽니다. 차에 달려 있을 때와 같은 기준점(체결부)에서 잽니다. 비워 두면 넘어갈 수 없습니다.",cell:"G14",ref:"mS046",refName:"드룹",refRule:"탈거한 쇽은 드룹 때보다 같거나 길어야 합니다",shots:1,photoReq:true},
+ {id:"S123",st:4,car:"off",kind:"measure",fig:"body",laterSkip:"3D 스캔 값 사용",laterNote:"3D 스캔에서 잴 거면 아래 버튼을 누릅니다.",tip:"버니어 캘리퍼스로 쇽업소버 몸통(가장 굵은 곳)의 바깥지름을 잽니다. 3D 스캔으로 재도 됩니다.",shots:1,title:"리어 쇽 몸통 두께",cell:"F31"},
  {id:"S067",skipIf:[{key:"suspR",is:"판스프링"}],st:4,car:"off",kind:"measure",title:"리어 스프링 양끝 길이 (조립 상태)",tip:"분해하면 다시 못 잽니다. 상단 패드 ↔ 하단 패드. 수기로 꼭 재고, 3D 스캔에서도 한 번 더 잽니다 (스캔이 안 되면 못 채우므로 수기 측정이 기본). 측정시트가 프리로드를 이 값 − 드룹 값으로 계산합니다.",cell:"H14",ref:"mS047",refName:"드룹",refRule:"탈거한 조립 상태는 드룹 때보다 같거나 길어야 합니다",shots:1},
  {id:"S068",st:4,car:"off",kind:"measure",title:"리어 범프스토퍼 고무 길이 · 분해 전",tip:"범프스토퍼가 댐퍼 밖(차대·로어암 등 분리형)이라 쇽을 뗀 지금, 분해 전에 잽니다. 댐퍼 내부형이면 이 화면은 나오지 않고 분해 후에 잽니다.",cell:"I14",onlyIf:{key:"bumpPosR",not:"댐퍼 내부"},shots:1},
  {id:"S069",st:4,car:"off",kind:"form",title:"프론트 고무패드 (분리형)",tip:"분리형 스프링의 고무패드 두께를 재고, 다시 쓸지 정합니다.",fields:[["padF","프론트 고무패드 두께","C16","mm"],["padUseF","프론트 고무 제거 여부","D16","pick:제거,재사용"]],onlyIf:{key:"springF",is:"분리형"},shots:1},
@@ -340,9 +350,19 @@ const SCREEN_IDS=[
  ["S110","","2026-11-16","사용","프론트 스테빌라이저 링크 치수"],
  ["S111","","2026-11-16","사용","리어 스테빌라이저 링크 치수"],
  ["S112","","2026-11-16","사용","프론트 순정 상단 마운트 볼트"],
- ["S113","","2026-11-16","사용","리어 순정 상단 마운트 볼트"]
+ ["S113","","2026-11-16","사용","리어 순정 상단 마운트 볼트"],
+ ["S114","","2026-11-17","사용","프론트 쇽 몸통 ↔ 타이어 거리"],
+ ["S115","","2026-11-17","사용","리어 쇽 몸통 ↔ 타이어 거리"],
+ ["S116","","2026-11-17","사용","프론트 쇽 장착부 주변 간섭"],
+ ["S117","","2026-11-17","사용","프론트 쇽 몸통 ↔ 등속조인트"],
+ ["S118","","2026-11-17","사용","프론트 스테빌 브래킷 ↔ 휠하우스"],
+ ["S119","","2026-11-17","사용","리어 쇽 장착부 주변 간섭"],
+ ["S120","","2026-11-17","사용","리어 쇽 몸통 ↔ 등속조인트"],
+ ["S121","","2026-11-17","사용","리어 스테빌 브래킷 ↔ 휠하우스"],
+ ["S122","","2026-11-17","사용","프론트 쇽 몸통 두께"],
+ ["S123","","2026-11-17","사용","리어 쇽 몸통 두께"]
 ];
-const SCREEN_NEXT="S114";
+const SCREEN_NEXT="S124";
 const STAGES=["형태 고르기","사진·기본정보","줄자 측정 (내렸을 때)","드룹 (들었을 때)","탈거 (분해 전)","분해","스프링 측정","재조립 · 출고"];
 // 지금 차 상태: 단계에 car:"droop"|"off"를 주면 그 상태로 표시한다. 없으면 정하중.
 const CARSTATES=[["static","정하중"],["droop","드룹"],["off","탈거"]];
@@ -541,6 +561,7 @@ function showTask(){
   const c=el("div","card");const h=el("h2");h.appendChild(el("span","mono muted",(TASKS.indexOf(t)+1)+". ")); /* 화면 번호는 지금 순서대로 자동으로 매긴다. 단계 id(t.id)는 저장 기록용이라 바꾸지 않는다 */h.appendChild(document.createTextNode(t.title));c.appendChild(h);
   if(t.tip)c.appendChild(el("p","small muted",t.tip));
   if(t.view)c.appendChild(carView(t.view));
+  if(t.fig)c.appendChild(figView(t.fig));
   if(t.kind==="info"&&t.items){const ul=el("ul","small");t.items.forEach(x=>ul.appendChild(el("li",null,x)));c.appendChild(ul)}
   // 중간 점검 화면: 지금까지(이 화면 앞) 빈 단계를 바로 보여 준다
   if(t.showMissing){const empty=TASKS.slice(0,idx).filter(missing);const box=el("div","card small");box.style.background="var(--bg)";
@@ -564,6 +585,15 @@ function showTask(){
   const back=el("button","btn","측정 목록으로");back.type="button";back.onclick=async()=>{if(collect)collect();commitEdits();await save();showList()};v.appendChild(back);
   $("#prev").disabled=idx===0;$("#next").textContent=idx===TASKS.length-1?"확인 · 끝":"확인 · 다음";window.scrollTo(0,0);
 }
+// 간섭검사 도식 (단순 선 그림, 재는 곳을 화살표 하나로)
+const FIG={
+ tire:'<rect x="20" y="20" width="40" height="120" rx="8" style="fill:none;stroke:var(--icon);stroke-width:3"/><rect x="120" y="30" width="22" height="100" rx="4" style="fill:none;stroke:var(--icon);stroke-width:3"/><line x1="64" y1="80" x2="116" y2="80" style="stroke:var(--accent);stroke-width:3" marker-start="url(#ar)" marker-end="url(#ar)"/><text x="40" y="155" text-anchor="middle">타이어</text><text x="131" y="145" text-anchor="middle">쇽 몸통</text>',
+ mount:'<rect x="80" y="40" width="24" height="90" rx="4" style="fill:none;stroke:var(--icon);stroke-width:3"/><rect x="66" y="22" width="52" height="18" style="fill:none;stroke:var(--icon);stroke-width:3"/><rect x="150" y="10" width="40" height="40" style="fill:none;stroke:var(--icon);stroke-width:3"/><line x1="122" y1="30" x2="146" y2="30" style="stroke:var(--accent);stroke-width:3" marker-start="url(#ar)" marker-end="url(#ar)"/><text x="92" y="150" text-anchor="middle">쇽 장착부</text><text x="170" y="65" text-anchor="middle">주변 부품</text>',
+ cv:'<rect x="40" y="20" width="24" height="120" rx="4" style="fill:none;stroke:var(--icon);stroke-width:3"/><path d="M110 70l20-12 20 12-20 12z" style="fill:none;stroke:var(--icon);stroke-width:3"/><line x1="150" y1="70" x2="195" y2="70" style="fill:none;stroke:var(--icon);stroke-width:3"/><line x1="68" y1="70" x2="106" y2="70" style="stroke:var(--accent);stroke-width:3" marker-start="url(#ar)" marker-end="url(#ar)"/><text x="52" y="155" text-anchor="middle">쇽 몸통</text><text x="140" y="105" text-anchor="middle">등속조인트</text>',
+ stab:'<path d="M20 20h170" style="fill:none;stroke:var(--icon);stroke-width:3"/><rect x="60" y="40" width="24" height="110" rx="4" style="fill:none;stroke:var(--icon);stroke-width:3"/><rect x="84" y="80" width="26" height="10" style="fill:none;stroke:var(--icon);stroke-width:3"/><line x1="97" y1="76" x2="97" y2="24" style="stroke:var(--accent);stroke-width:3" marker-start="url(#ar)" marker-end="url(#ar)"/><text x="140" y="16" text-anchor="middle">휠하우스</text><text x="130" y="100">스테빌 브래킷</text>',
+ body:'<rect x="80" y="20" width="40" height="120" rx="6" style="fill:none;stroke:var(--icon);stroke-width:3"/><line x1="76" y1="80" x2="124" y2="80" style="stroke:var(--accent);stroke-width:3" marker-start="url(#ar)" marker-end="url(#ar)"/><text x="100" y="155" text-anchor="middle">몸통 바깥지름</text>'};
+function figView(k){const d=document.createElement("div");d.style.cssText="max-width:260px;margin:8px auto";
+  d.innerHTML='<svg viewBox="0 0 210 165" style="display:block;width:100%;height:auto;font-size:12px;fill:var(--muted)" role="img"><defs><marker id="ar" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:var(--accent)"/></marker></defs>'+(FIG[k]||"")+'</svg>';return d}
 // 차량 사진 방향 그림 (위에서 본 차, FRT 위쪽). 찍을 쪽을 진하게, 카메라 자리를 화살표로.
 function carView(side){
   const on=k=>k===side?'style="fill:var(--accent)" font-weight="700"':'style="fill:var(--muted)"';
@@ -929,7 +959,8 @@ const CHANGELOG=[
  [68,"2026-11-16 10:00","자가 검토 반영: 버그 ① 칸별 사진을 다 찍어도 빈 단계로 잡히던 것 고침 ② 입력 칸 화면에서 칸이 하나라도 비면 경고·끝 화면 빈 단계에 나옴 ③ 림 외경 없이 「림 하단부터 쟀음」이면 다음으로 못 넘어감(뒤로 가서 비워 두면 기록에 「빼지 않음」 표시). 칸 위치: 차대 마운트 구멍 직경 D29·F29, 스프링 끝 형상 E21·E22·G21·G22(앞 칸 내경·뒤 칸 형상). 새 화면: 측정할 쪽 고르기(S101, 제원표 다음) · 좌우 대칭성 D36·F36(S102, 상단 마운트 사진 다음) · EDC 캔슬러 부착 위치 사진(S103, EDC일 때만·선택)"],
  [69,"2026-11-16 10:40","자가 검토 순서 제안 O1~O5 반영: ① 엔진룸·트렁크 상단 마운트 사진과 좌우 대칭성을 리프트 올리기 전(측정할 쪽 고르기 다음)으로 ② 정하중 바퀴 측정을 프론트 4개(휀더 갭·림 외경·타이어 스펙·허브 센터) → 리어 4개 순서로 ③ EDC 고르기와 캔슬러 사진을 정하중 차 밑(유형 고르기 다음)으로 — 커넥터 사진·저항은 분해 후 그대로 ④ 분리형 차대 쪽 스프링 안착부를 탈거 단계(차대 마운트 구멍 직경 다음)로 ⑤ 쇽업소버 탈거·재조립 전 확인 화면에 지금까지 빈 단계 목록(누르면 그 화면으로)"],
  [70,"2026-11-16 13:49","유지호 rev 69 검토 반영(16건): 차량 사진 4방향에 FRT·RR·LH·RH 차 그림 · 제원표 화면에 공차중량 칸 · 좌우 대칭성에 「해당없음」 · 타이어 스펙을 폭/편평비/구조(R 기본)/림 칸으로 나누고 표기 미리보기 · 쇽 체결 타입 고르기를 서스펜션 유형 바로 뒤로(탈거 후엔 확인 화면 S106·S107) · 차대 마운트 통과 직경을 상단 마운트 사진 다음으로, 「나중에 측정」이면 탈거 후 내경 화면(S104·S105) · 드룹에서 상단 체결부 사진을 범프스토퍼 다음으로 · 탈거 후 쇽 자리 상세 사진(S108·S109) · 스테빌 링크 규격·피치·길이(S110·S111, 피치게이지 필수) · 분해 전 쇽 전장은 비우면 못 넘어가고 드룹 값과 비교 · 조립 상태 스프링 길이 「3D로만」 건너뛰기 삭제(수기+3D 둘 다) · 범프스토퍼 고무 길이: 분리형은 탈거 후 분해 전, 댐퍼 내부형은 분해 후 자동 · 분해 후 순정 상단 마운트 볼트(체결 방식 스터드형/별도 볼트형 · 규격 · 피치 · 길이, S112·S113). 간섭검사 부위 세분화는 유지호 확인 후"],
- [71,"2026-11-17 08:20","버그: 타이어 스펙 입력 칸 4개가 너무 좁아 숫자가 안 보이던 것 — 한 줄 전체 폭으로"]
+ [71,"2026-11-17 08:20","버그: 타이어 스펙 입력 칸 4개가 너무 좁아 숫자가 안 보이던 것 — 한 줄 전체 폭으로"],
+ [72,"2026-11-17 10:30","간섭검사 화면 추가(유지호 결정): 정하중 휠 달린 상태에 몸통↔타이어(S114·S115, 33행) · 드룹 휠 탈거 후 장착부 주변 간섭(S116·S119, 30행) · 몸통↔등속조인트(S117·S120, 32행, 도식 + 「등속조인트 없음」 버튼) · 스테빌 브래킷↔휠하우스(S118·S121, 34행) · 탈거 후 몸통 두께(S122·S123, 31행, 버니어 또는 3D 스캔). 각 화면에 도식. 구조 상세 사진 안내에서 스테빌 링크 예시 삭제"]
 ];
 // 지금은 베타: 숫자 번호는 「베타 rev N」으로 보인다. 정식 v1이 되면 그때부터 번호를 문자열("1","2"…)로 적어 「rev 1」부터 센다 (유지호 2026-10-22).
 const revName=n=>typeof n==="string"?"rev "+n:"베타 rev "+n;
