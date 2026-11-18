@@ -1014,29 +1014,29 @@ function derive(values,shape,skipped){
     const LDmax=LmaxM!=null?LmaxM:(LA!=null&&h!=null?LA-h:null);
     const has=(...x)=>x.every(v=>v!=null);
     const LDs=has(LIs,h)?LIs-h:null,LDd=has(LId,h)?LId-h:null;
-    put("LD_static","정하중 댐퍼 길이 (R↔K)",LDs,"L_I(정하중) − h",{L_I:LIs,h});
-    put("LD_droop","드룹 댐퍼 길이 (R↔K)",LDd,"L_I(드룹) − h",{L_I:LId,h});
-    put("LD_max","최대 신장 길이 (R↔K)",LDmax,LmaxM!=null?"직접 잰 값":"L_A,max − h",{L_D_max:LmaxM,L_A_max:LA,h});
+    put("LD_static","Lstatic · 정하중 댐퍼 길이",LDs,"장착 길이(정하중) − 마운트 오프셋",{L_I:LIs,h});
+    put("LD_droop","드룹 댐퍼 길이",LDd,"장착 길이(드룹) − 마운트 오프셋",{L_I:LId,h});
+    put("LD_max","Lmax · 전장 (최대 신장)",LDmax,LmaxM!=null?"직접 잰 값":"탈거 어셈블리 전장 − 마운트 오프셋",{L_D_max:LmaxM,L_A_max:LA,h});
     const bt=has(LDs,Lmin)?LDs-Lmin:null;
-    put("bump_travel","정하중에서 남은 압축 스트로크",bt,"LD(정하중) − L_D,min",{LD_static:r1(LDs),L_D_min:Lmin},bt!=null&&bt<0?"음수 — L_I·h·최대 압축 길이 기준점 확인":null);
+    put("bump_travel","범프 스트로크 (정하중에서 남은 압축)",bt,"Lstatic − Lmin",{LD_static:r1(LDs),L_D_min:Lmin},bt!=null&&bt<0?"음수 — 장착 길이·마운트 오프셋·Lmin 기준점 확인":null);
     const rb=has(LDmax,LDs)?LDmax-LDs:null;
-    put("rebound_travel","정하중에서 남은 신장 스트로크",rb,"LD,max − LD(정하중)",{LD_max:r1(LDmax),LD_static:r1(LDs)},rb!=null&&rb<0?"음수 — 측정점 확인":null);
+    put("rebound_travel","리바운드 스트로크 (정하중에서 남은 신장)",rb,"Lmax − Lstatic",{LD_max:r1(LDmax),LD_static:r1(LDs)},rb!=null&&rb<0?"음수 — 측정점 확인":null);
     const dm=has(LDmax,LDd)?LDmax-LDd:null;
-    put("droop_margin","드룹 여유 (0 근처면 댐퍼가 드룹을 막음)",dm,"LD,max − LD(드룹)",{LD_max:r1(LDmax),LD_droop:r1(LDd)},dm!=null&&dm<-2?"드룹 길이가 최대 신장보다 김 — 측정점·h 확인":null);
-    put("full_stroke","댐퍼 전체 스트로크",has(LDmax,Lmin)?LDmax-Lmin:null,"LD,max − L_D,min",{LD_max:r1(LDmax),L_D_min:Lmin});
+    put("droop_margin","드룹 여유 (0 근처면 댐퍼가 드룹을 막음)",dm,"Lmax − 드룹 댐퍼 길이",{LD_max:r1(LDmax),LD_droop:r1(LDd)},dm!=null&&dm<-2?"드룹 길이가 최대 신장보다 김 — 측정점·마운트 오프셋 확인":null);
+    put("full_stroke","Stroke · 댐퍼 전체 스트로크",has(LDmax,Lmin)?LDmax-Lmin:null,"Lmax − Lmin",{LD_max:r1(LDmax),L_D_min:Lmin});
     const hc=has(LA,LmaxM)?LA-LmaxM:null;
-    put("h_check","h 검산 (탈거 전장 − 최대 신장)",hc,"L_A,max − L_D,max",{L_A_max:LA,L_D_max:LmaxM},hc!=null&&h!=null&&d.top!=="eye"&&Math.abs(hc-h)>3?"잰 h "+h+" mm와 "+r1(Math.abs(hc-h))+" mm 차이 — 기준면 확인":null);
+    put("h_check","마운트 오프셋 검산",hc,"탈거 어셈블리 전장 − Lmax(직접 잰 값)",{L_A_max:LA,L_D_max:LmaxM},hc!=null&&h!=null&&d.top!=="eye"&&Math.abs(hc-h)>3?"잰 마운트 오프셋 "+h+" mm와 "+r1(Math.abs(hc-h))+" mm 차이 — 기준면 확인":null);
     const hubS=num(I.hubS),hubD=num(I.hubD);const dh=has(hubS,hubD)?hubD-hubS:null;
     const mr=has(LIs,LId,dh)&&dh!==0?(LId-LIs)/dh:null;
-    items.push({k:"mr_damper",name:"댐퍼 모션비 (두 점 직선 근사 — 추정)",v:mr==null?null:Math.round(mr*1000)/1000,f:"(L_I(드룹) − L_I(정하중)) ÷ (허브(드룹) − 허브(정하중))",in:{L_I_droop:LId,L_I_static:LIs,hub_droop:hubD,hub_static:hubS},warn:mr!=null&&(mr<0.3||mr>1.1)?"0.3~1.1 밖 — 측정값 확인 (범위는 추정)":null});
+    items.push({k:"mr_damper",name:"댐퍼 모션비 (두 점 직선 근사 — 추정)",v:mr==null?null:Math.round(mr*1000)/1000,f:"(장착 길이(드룹) − 장착 길이(정하중)) ÷ (허브 높이(드룹) − 허브 높이(정하중))",in:{L_I_droop:LId,L_I_static:LIs,hub_droop:hubD,hub_static:hubS},warn:mr!=null&&(mr<0.3||mr>1.1)?"0.3~1.1 밖 — 측정값 확인 (범위는 추정)":null});
     if(mr!=null&&(mr<0.3||mr>1.1))warn.push("댐퍼 모션비: 범위 밖");
-    put("wheel_bump_travel","바퀴 기준 남은 범프 (추정)",has(bt,mr)&&mr>0?bt/mr:null,"남은 압축 스트로크 ÷ 모션비",{bump_travel:r1(bt),mr:mr==null?null:Math.round(mr*1000)/1000});
-    put("rod_exposed_max","다 늘었을 때 몸통 밖 로드",has(LDmax,T)?LDmax-T:null,"LD,max − u_T",{LD_max:r1(LDmax),u_body_top:T});
+    put("wheel_bump_travel","바퀴 기준 남은 범프 (추정 — 휀더 갭과 비교)",has(bt,mr)&&mr>0?bt/mr:null,"범프 스트로크 ÷ 댐퍼 모션비",{bump_travel:r1(bt),mr:mr==null?null:Math.round(mr*1000)/1000});
+    put("rod_exposed_max","최대 신장 시 노출 로드 길이",has(LDmax,T)?LDmax-T:null,"Lmax − 몸통 상단 위치",{LD_max:r1(LDmax),u_body_top:T});
     const mt=num(I.mtTop),hd=num(I.head);
     put("top_headroom_margin","마운트 위 공간 여유",has(mt,hd)?hd-mt:null,"안착면 위 공간 높이 − 마운트 윗면 높이",{headroom:hd,mount_top:mt},has(mt,hd)&&hd-mt<0?"음수 — 순정 마운트도 안 들어가는 값, 측정 확인":null);
     const su=num(I.seatUp),sp=num(I.seatPos),spS=num(I.spS);
     const sc=has(LIs,su,sp)?LIs-su-sp:null;
-    put("spring_len_check","스프링 장착 길이 검산 (정하중)",sc,"L_I(정하중) − 위 시트 오프셋 − u_S↓",{L_I:LIs,seat_up_offset:su,u_seat_low:sp,measured:spS},has(sc,spS)&&Math.abs(sc-spS)>5?"잰 값 "+spS+" mm와 "+r1(Math.abs(sc-spS))+" mm 차이":null);
+    put("spring_len_check","스프링 장착 길이 검산 (정하중)",sc,"장착 길이(정하중) − 위 스프링 시트 오프셋 − 아래 스프링 시트 위치",{L_I:LIs,seat_up_offset:su,u_seat_low:sp,measured:spS},has(sc,spS)&&Math.abs(sc-spS)>5?"잰 값 "+spS+" mm와 "+r1(Math.abs(sc-spS))+" mm 차이":null);
     const pitch=null; // rev 82: K = 클레비스 아래 볼트 = 순정도면 원점(아래 구멍)이라 변환 불필요 (유지호 2026-11-17)
     const st={K:0,seat_low:sp,body_top:T,rod_seat_min:Lmin,rod_seat_max:r1(LDmax),mount_face_max:has(LDmax,h)?r1(LDmax+h):null,
       mount_top_max:has(LDmax,h,mt)?r1(LDmax+h+mt):null,stab_bracket:num(I.stab)};
@@ -1335,7 +1335,8 @@ const CHANGELOG=[
  [80,"2026-11-17 22:00","하단 체결 타입별 화면 S141~S156 (맥퍼슨 인서트·클레비스·아이·포크·4WD 포크·너클 탭 인서트·기타·스터드, 프론트·리어). 항목은 측정 도면 판독 추정 — 확인 필요"],
  [81,"2026-11-17 15:50","엔지니어 관점 재설계(2026-11-17 포크에서 시험 후 정식 반영): 기준면 체계(B 차대 안착면 · R 로드 체결 자리면 · K 하단 체결 기준) — 마운트 오프셋 h·최대 압축/신장 길이·몸통 상단·로드 지름·스프링 시트(S157~S180)로 정하중에서 남은 압축·신장 스트로크 자동 계산(S221·S095) · 나사는 「M×피치」 한 값(S163~S168·S181~S184, 하단 볼트 피치 누락 해결) · 형상 치수는 자리 업무에서 스캔으로 화면 하나에 값 하나(S185~S220) · rev 78~80 여러 값 화면 22개 숨김(보류) · 차대 여유 화면 진입 조건(S135~S140) · 하단 「아이 투 클레비스」 추가 · rev 79 쉼표 버그 수정 · record.json에 datum·derived·drawing(자동 작도 입력, u 좌표) — 설계 노트 DESIGN.md"],
  [82,"2026-11-17 18:30","유지호 rev 81 검토 반영(포크판을 정식판으로 올림): 휀더 아치 그림이 타이어에 붙던 것 고침(휀더·허브 그림 4장) · 하단 타입 「아이 투 클레비스」 뺌(상단·하단을 따로 고르니 아이·클레비스로 충분) · 하단 기준 K = 볼트 중심, 볼트가 여럿이면 지면에 가장 가까운 것(클레비스는 아래 볼트 — 그림·자동 계산 같이) · 스프링 ↔ 주변 여유를 탈거 전 순정 스프링 달린 상태로(S137·S140, 분리형도) · 3D 스캔 안내의 「리바운드 스트로크 확인용」 문구 바로잡음 · 회사 기준 스트로크(S079·S085) 재정의 예정 표시 · 클레비스 너클 폭은 차량 너클(가공품)을 탈거 후 잼(S195·S196) · 아이 부시 속관 양 끝면 길이 추가(하단 S224·S225, 상단 S226·S227) · 스테빌 브래킷 위치를 높이·축↔구멍 거리(S228·S229)·판 각도(S230·S231) 3값으로"],
- [83,"2026-11-19 10:00","개발용 이동(유지호 요청): 「개발용 건너뛰기」 옆에 번호(화면 위 n/전체) 또는 S아이디를 넣고 「이동」 — 검토할 때 일일이 넘기지 않게. 사진·빈칸 검사 없음"]
+ [83,"2026-11-19 10:00","개발용 이동(유지호 요청): 「개발용 건너뛰기」 옆에 번호(화면 위 n/전체) 또는 S아이디를 넣고 「이동」 — 검토할 때 일일이 넘기지 않게. 사진·빈칸 검사 없음"],
+ [84,"2026-11-19 11:00","계산값 이름을 사내 설계 매뉴얼 기호로(유지호 결정): Lmax·Lmin·Lstatic·Stroke, 범프·리바운드 스트로크. 매뉴얼에 없는 기호(LD·L_I·h·u_T·u_S)는 한글 이름으로. record.json 키는 그대로"]
 ];
 // 지금은 베타: 숫자 번호는 「베타 rev N」으로 보인다. 정식 v1이 되면 그때부터 번호를 문자열("1","2"…)로 적어 「rev 1」부터 센다 (유지호 2026-10-22).
 if(!CHANGELOG.every(Array.isArray))setTimeout(()=>status("변경 로그 줄 끝 쉼표 확인 필요",true),600);
