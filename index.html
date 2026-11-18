@@ -59,6 +59,7 @@ label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mu
 .carstate .cs.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
 .carstate .arrow{color:var(--muted);font-size:12px}
 .hidden{display:none!important}
+body:not(.dev) [data-dev]{display:none!important} /* rev 85: 개발용 버튼은 「개발용」 탭에서 켤 때만 (2026-11-19 유지호) */
 /* 화면 안 카메라 */
 .cam{position:fixed;inset:0;background:#000;z-index:30;display:flex;flex-direction:column}
 .cam video{flex:1;width:100%;min-height:0;object-fit:contain;background:#000}
@@ -77,9 +78,9 @@ label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mu
 <div class="footer hidden" id="footer"><div class="in">
   <button type="button" class="btn" id="prev">이전</button>
   <button type="button" class="btn primary" id="next">확인 · 다음</button>
-  <button type="button" class="btn" id="devskip" style="flex:none;border-style:dashed;font-size:12px;opacity:.7">개발용 건너뛰기</button>
-  <input id="devjump" inputmode="numeric" placeholder="번호·S아이디" style="flex:none;width:92px;font-size:12px;border:1px dashed var(--line);border-radius:6px;padding:4px;opacity:.7">
-  <button type="button" class="btn" id="devjumpgo" style="flex:none;border-style:dashed;font-size:12px;opacity:.7">이동</button>
+  <button type="button" class="btn" id="devskip" data-dev="1" style="flex:none;border-style:dashed;font-size:12px;opacity:.7">개발용 건너뛰기</button>
+  <input id="devjump" data-dev="1" inputmode="numeric" placeholder="번호·S아이디" style="flex:none;width:92px;font-size:12px;border:1px dashed var(--line);border-radius:6px;padding:4px;opacity:.7">
+  <button type="button" class="btn" id="devjumpgo" data-dev="1" style="flex:none;border-style:dashed;font-size:12px;opacity:.7">이동</button>
 </div></div>
 <input type="file" id="rawpick" class="hidden">
 <input type="file" id="filepick" accept="image/*" capture="environment" class="hidden">
@@ -190,10 +191,22 @@ const TASKS=[
  {id:"S139",topIn:["R",["plate","rod"]],st:4,car:"off",kind:"measure",title:"리어 안착면 위 공간 높이 · 탈거 후",tip:"차대 마운트 안착면 ↔ 그 위에서 처음 막히는 것(엔진룸 부품·트렁크 내장재·스트럿바 자리)까지 높이를 잽니다. 로드 끝·감쇠력 조절 노브가 위로 나올 여유입니다. 위가 트여 있으면 아래 버튼.",cell:null,shots:1,photoReq:true,laterSkip:"위가 트여 있음"},
  {id:"S108",st:4,car:"off",kind:"photo",title:"프론트 쇽 탈거 자리 상세 사진",tip:"쇽업소버가 있던 자리를 다시 자세히 찍어 둡니다 (남정우 수석 피드백 — 탈거 후 구조 기록이 중요). 쇽이 빠져 안쪽까지 보이니 가려졌던 부품·브래킷·배선을 가까이.",shots:3,slots:["① 상단 마운트 자리 (휠하우스 위쪽)","② 하단 체결부 자리 (너클·로어암)","③ 쇽이 있던 공간 전체"]},
  {id:"S109",st:4,car:"off",kind:"photo",title:"리어 쇽 탈거 자리 상세 사진",tip:"쇽업소버가 있던 자리를 다시 자세히 찍어 둡니다 (남정우 수석 피드백 — 탈거 후 구조 기록이 중요). 쇽이 빠져 안쪽까지 보이니 가려졌던 부품·브래킷·배선을 가까이.",shots:3,slots:["① 상단 마운트 자리 (휠하우스 위쪽)","② 하단 체결부 자리 (너클·로어암·액슬)","③ 쇽이 있던 공간 전체"]},
+ {id:"S232",st:4,car:"off",kind:"photo",photoOpt:true,title:"프론트 브레이크 호스 · ABS 배선 브래킷 사진 · 휠 탈거 후",tip:"휠과 쇽을 뗀 지금 호스·ABS 배선이 어디에 고정돼 있는지 찍습니다. 우리 쇽에 같은 브래킷을 달아야 하는지 판단하는 자료입니다 (2026-11-19 유지호). 브래킷이 없으면 특이사항에 「없음」을 적고 넘어가도 됩니다.",shots:2,slots:["① 브레이크 호스 고정 브래킷","② ABS 센서 배선 고정 브래킷"]},
+ {id:"S234",st:4,car:"off",kind:"choice",key:"hoseF",title:"프론트 호스 · ABS 브래킷이 달린 곳",tip:"순정 쇽 몸통에 붙어 있었으면 「댐퍼 몸통」 — 출고 뒤 자리 업무에서 3D 스캔으로 높이를 잽니다.",cell:null,options:["댐퍼 몸통","너클 · 차체 (댐퍼 밖)","없음"],noOther:true},
+ {id:"S233",st:4,car:"off",kind:"photo",photoOpt:true,title:"리어 브레이크 호스 · ABS 배선 브래킷 사진 · 휠 탈거 후",tip:"휠과 쇽을 뗀 지금 호스·ABS 배선이 어디에 고정돼 있는지 찍습니다. 우리 쇽에 같은 브래킷을 달아야 하는지 판단하는 자료입니다 (2026-11-19 유지호). 브래킷이 없으면 특이사항에 「없음」을 적고 넘어가도 됩니다.",shots:2,slots:["① 브레이크 호스 고정 브래킷","② ABS 센서 배선 고정 브래킷"]},
+ {id:"S235",st:4,car:"off",kind:"choice",key:"hoseR",title:"리어 호스 · ABS 브래킷이 달린 곳",tip:"순정 쇽 몸통에 붙어 있었으면 「댐퍼 몸통」 — 출고 뒤 자리 업무에서 3D 스캔으로 높이를 잽니다.",cell:null,options:["댐퍼 몸통","너클 · 차체 (댐퍼 밖)","없음"],noOther:true},
  {id:"S110",st:4,car:"off",kind:"form",title:"프론트 스테빌라이저 링크 치수",tip:"필요 공구: 피치게이지(필수) · 버니어 캘리퍼스. 링크 볼트에 피치게이지를 대고 피치를 확인하고, 링크 길이는 볼 중심 ↔ 볼 중심으로 잽니다. 피치게이지를 댄 모습이 보이게 찍으세요.",na:"해당없음 (스테빌라이저 없음)",fields:[["stabMF","링크 볼트 규격","D27","pick:M10,M12,M14"],["stabPF","볼트 피치 (mm)",null,"pick:1.25,1.5,1.75"],["stabLF","링크 길이 (볼 ↔ 볼)","E27","mm"]],shots:2,slots:["① 피치게이지를 댄 볼트","② 링크 전체 (길이 측정)"]},
- {id:"S195",lowIn:["F",["mclevis"]],st:4,car:"off",kind:"measure",title:"프론트 차량 너클 장착부 폭 (클레비스에 끼는 너클 두께)",tip:"쇽을 뗀 뒤 차에 남은 너클의, 클레비스 두 판 사이에 끼는 부분 두께를 버니어 캘리퍼스로 잽니다. 상대물(너클)이 가공품이라 클레비스 안쪽 폭보다 정확합니다 — 상대물이 있으면 항상 가공품 쪽을 잽니다 (2026-11-17 유지호). 눈금이 보이게 찍으세요.",cell:null,shots:1,photoReq:true},
+ {id:"S195",lowIn:["F",["mclevis"]],st:4,car:"off",kind:"measure",title:"프론트 하단 장착부 치수 · 너클 두께 (클레비스에 끼는 부분)",tip:"쇽을 뗀 뒤 차에 남은 너클의, 클레비스 두 판 사이에 끼는 부분 두께를 버니어 캘리퍼스로 잽니다. 상대물(너클)이 가공품이라 클레비스 안쪽 폭보다 정확합니다 — 상대물이 있으면 항상 가공품 쪽을 잽니다 (2026-11-17 유지호). 눈금이 보이게 찍으세요.",cell:null,shots:1,photoReq:true},
+ {id:"S236",lowIn:["F",["eye"]],st:4,car:"off",kind:"measure",title:"프론트 하단 장착부 치수 · 차량 브래킷 안쪽 폭 (아이가 끼는 폭)",tip:"쇽을 뗀 뒤 차에 남은 상대물을 잽니다 (상대물이 있으면 가공품 쪽 — 2026-11-17 유지호). 차에 남은 브래킷 두 판 사이 안쪽 폭을 버니어 캘리퍼스로 잽니다. 우리 아이 부시 속관 길이와 맞춰 보는 값입니다. 항목은 AI 제안(2026-11-19) — 확인 필요. 눈금이 보이게 찍으세요.",cell:null,shots:1,photoReq:true},
+ {id:"S237",lowIn:["F",["fork","fork4"]],st:4,car:"off",kind:"measure",title:"프론트 하단 장착부 치수 · 포크에 끼는 차량 부시 폭 (속관 양 끝면 사이)",tip:"쇽을 뗀 뒤 차에 남은 상대물을 잽니다 (상대물이 있으면 가공품 쪽 — 2026-11-17 유지호). 포크 두 다리 사이에 끼는 차량 쪽(로어암 등) 부시 속관 길이를 잽니다. 우리 포크 안쪽 폭을 정하는 값입니다. 항목은 AI 제안(2026-11-19) — 확인 필요. 눈금이 보이게 찍으세요.",cell:null,shots:1,photoReq:true},
+ {id:"S238",lowIn:["F",["minsert","tab"]],st:4,car:"off",kind:"measure",title:"프론트 하단 장착부 치수 · 너클 클램프 구멍 안지름",tip:"쇽을 뗀 뒤 차에 남은 상대물을 잽니다 (상대물이 있으면 가공품 쪽 — 2026-11-17 유지호). 쇽 하단이 꽂히던 너클 구멍의 안지름을 버니어 캘리퍼스 안쪽 날로 잽니다. 우리 삽입부 바깥지름을 정하는 값입니다. 항목은 AI 제안(2026-11-19) — 확인 필요. 눈금이 보이게 찍으세요.",cell:null,shots:1,photoReq:true},
+ {id:"S239",lowIn:["F",["stud"]],st:4,car:"off",kind:"measure",title:"프론트 하단 장착부 치수 · 차량 쪽 스터드 구멍 지름",tip:"쇽을 뗀 뒤 차에 남은 상대물을 잽니다 (상대물이 있으면 가공품 쪽 — 2026-11-17 유지호). 하단 스터드가 지나가던 차량 쪽 구멍 지름을 잽니다. 항목은 AI 제안(2026-11-19) — 확인 필요. 눈금이 보이게 찍으세요.",cell:null,shots:1,photoReq:true},
  {id:"S111",st:4,car:"off",kind:"form",title:"리어 스테빌라이저 링크 치수",tip:"필요 공구: 피치게이지(필수) · 버니어 캘리퍼스. 링크 볼트에 피치게이지를 대고 피치를 확인하고, 링크 길이는 볼 중심 ↔ 볼 중심으로 잽니다. 피치게이지를 댄 모습이 보이게 찍으세요.",na:"해당없음 (스테빌라이저 없음)",fields:[["stabMR","링크 볼트 규격","F27","pick:M10,M12,M14"],["stabPR","볼트 피치 (mm)",null,"pick:1.25,1.5,1.75"],["stabLR","링크 길이 (볼 ↔ 볼)","G27","mm"]],shots:2,photoOpt:true,slots:["① 피치게이지를 댄 볼트","② 링크 전체 (길이 측정)"]},
- {id:"S196",lowIn:["R",["mclevis"]],st:4,car:"off",kind:"measure",title:"리어 차량 너클 장착부 폭 (클레비스에 끼는 너클 두께)",tip:"쇽을 뗀 뒤 차에 남은 너클의, 클레비스 두 판 사이에 끼는 부분 두께를 버니어 캘리퍼스로 잽니다. 상대물(너클)이 가공품이라 클레비스 안쪽 폭보다 정확합니다 — 상대물이 있으면 항상 가공품 쪽을 잽니다 (2026-11-17 유지호). 눈금이 보이게 찍으세요.",cell:null,shots:1,photoReq:true},
+ {id:"S196",lowIn:["R",["mclevis"]],st:4,car:"off",kind:"measure",title:"리어 하단 장착부 치수 · 너클 두께 (클레비스에 끼는 부분)",tip:"쇽을 뗀 뒤 차에 남은 너클의, 클레비스 두 판 사이에 끼는 부분 두께를 버니어 캘리퍼스로 잽니다. 상대물(너클)이 가공품이라 클레비스 안쪽 폭보다 정확합니다 — 상대물이 있으면 항상 가공품 쪽을 잽니다 (2026-11-17 유지호). 눈금이 보이게 찍으세요.",cell:null,shots:1,photoReq:true},
+ {id:"S240",lowIn:["R",["eye"]],st:4,car:"off",kind:"measure",title:"리어 하단 장착부 치수 · 차량 브래킷 안쪽 폭 (아이가 끼는 폭)",tip:"쇽을 뗀 뒤 차에 남은 상대물을 잽니다 (상대물이 있으면 가공품 쪽 — 2026-11-17 유지호). 차에 남은 브래킷 두 판 사이 안쪽 폭을 버니어 캘리퍼스로 잽니다. 우리 아이 부시 속관 길이와 맞춰 보는 값입니다. 항목은 AI 제안(2026-11-19) — 확인 필요. 눈금이 보이게 찍으세요.",cell:null,shots:1,photoReq:true},
+ {id:"S241",lowIn:["R",["fork","fork4"]],st:4,car:"off",kind:"measure",title:"리어 하단 장착부 치수 · 포크에 끼는 차량 부시 폭 (속관 양 끝면 사이)",tip:"쇽을 뗀 뒤 차에 남은 상대물을 잽니다 (상대물이 있으면 가공품 쪽 — 2026-11-17 유지호). 포크 두 다리 사이에 끼는 차량 쪽(로어암 등) 부시 속관 길이를 잽니다. 우리 포크 안쪽 폭을 정하는 값입니다. 항목은 AI 제안(2026-11-19) — 확인 필요. 눈금이 보이게 찍으세요.",cell:null,shots:1,photoReq:true},
+ {id:"S242",lowIn:["R",["minsert","tab"]],st:4,car:"off",kind:"measure",title:"리어 하단 장착부 치수 · 너클 클램프 구멍 안지름",tip:"쇽을 뗀 뒤 차에 남은 상대물을 잽니다 (상대물이 있으면 가공품 쪽 — 2026-11-17 유지호). 쇽 하단이 꽂히던 너클 구멍의 안지름을 버니어 캘리퍼스 안쪽 날로 잽니다. 우리 삽입부 바깥지름을 정하는 값입니다. 항목은 AI 제안(2026-11-19) — 확인 필요. 눈금이 보이게 찍으세요.",cell:null,shots:1,photoReq:true},
+ {id:"S243",lowIn:["R",["stud"]],st:4,car:"off",kind:"measure",title:"리어 하단 장착부 치수 · 차량 쪽 스터드 구멍 지름",tip:"쇽을 뗀 뒤 차에 남은 상대물을 잽니다 (상대물이 있으면 가공품 쪽 — 2026-11-17 유지호). 하단 스터드가 지나가던 차량 쪽 구멍 지름을 잽니다. 항목은 AI 제안(2026-11-19) — 확인 필요. 눈금이 보이게 찍으세요.",cell:null,shots:1,photoReq:true},
  {id:"S093",st:4,car:"off",kind:"photo",title:"프론트 차대 쪽 스프링 안착부 (분리형)",tip:"분리형이라 차대 쪽 스프링 안착부를 재서 SPRING-SEPARATE 도면에 채우고 찍습니다 (측정시트 NOTE 8). 차고 브래킷·스프링 하단 고무 호환 여부는 특이사항에.",onlyIf:{key:"springF",is:"분리형"},shots:1},
  {id:"S094",st:4,car:"off",kind:"photo",title:"리어 차대 쪽 스프링 안착부 (분리형)",tip:"분리형이라 차대 쪽 스프링 안착부를 재서 SPRING-SEPARATE 도면에 채우고 찍습니다 (측정시트 NOTE 8). 차고 브래킷·스프링 하단 고무 호환 여부는 특이사항에.",onlyIf:{key:"springR",is:"분리형"},shots:1},
  {id:"S106",st:4,car:"off",kind:"shape",axle:"F",recheck:true,title:"프론트 쇽업소버 체결 타입 확인 · 탈거 후",tip:"차 밑에서 처음 고른 상단·하단 체결 타입이 그대로 눌려 있습니다. 뗀 실물과 같으면 그대로 「확인 · 다음」, 다르면 고쳐 누르세요."},
@@ -201,11 +214,11 @@ const TASKS=[
  {id:"S063",datum:["F","car"],st:4,car:"off",kind:"measure",must:true,laterSkip:"3D 스캔에서 측정",laterNote:"줄자로 재기 어려우면 아래 버튼 — 분해 전 3D 스캔을 꼭 하고, 출고 뒤 「자리 업무」에서 스캔으로 잰 값을 넣습니다.",title:"⚠ 프론트 쇽 전장 · 분해 전 (가장 중요)",tip:"분해 전 가장 중요한 값입니다 — 분해하면 다시 못 잽니다. 차에 달려 있을 때와 같은 기준점(체결부)에서 잽니다. 비워 두면 넘어갈 수 없습니다 (3D 스캔에서 잴 거면 아래 버튼).",cell:"C14",ref:"mS040",refName:"드룹",refRule:"탈거한 쇽은 드룹 때보다 같거나 길어야 합니다",shots:1,photoReq:true},
  {id:"S122",st:4,car:"off",kind:"measure",fig:"body",laterSkip:"3D 스캔 값 사용",laterNote:"3D 스캔에서 잴 거면 아래 버튼을 누릅니다.",tip:"버니어 캘리퍼스로 쇽업소버 몸통(가장 굵은 곳)의 바깥지름을 잽니다. 3D 스캔으로 재도 됩니다.",shots:1,title:"프론트 쇽 몸통 두께",cell:"D31"},
  {id:"S064",skipIf:[{key:"suspF",is:"판스프링"},{key:"springF",is:"분리형"}],st:4,car:"off",kind:"measure",coilMust:["S024","S041"],title:"프론트 스프링 양끝 길이 (조립 상태)",tip:"분해하면 다시 못 잽니다. 상단 패드 ↔ 하단 패드. 수기로 꼭 재고, 3D 스캔에서도 한 번 더 잽니다 (스캔이 안 되면 못 채우므로 수기 측정이 기본). 측정시트가 프리로드를 이 값 − 드룹 값으로 계산합니다.",cell:"D14",ref:"mS041",refName:"드룹",refRule:"탈거한 조립 상태는 드룹 때보다 같거나 길어야 합니다",shots:1},
- {id:"S065",st:4,car:"off",kind:"measure",title:"프론트 범프스토퍼 고무 길이 · 분해 전",tip:"범프스토퍼가 댐퍼 밖(차대·로어암 등 분리형)이라 쇽을 뗀 지금, 분해 전에 잽니다. 댐퍼 내부형이면 이 화면은 나오지 않고 분해 후에 잽니다.",cell:"E14",onlyIf:{key:"bumpPosF",not:"댐퍼 내부"},shots:1},
+ {id:"S065",st:4,car:"off",kind:"measure",title:"프론트 댐퍼 외부 범프스토퍼 고무 길이 · 분해 전",tip:"범프스토퍼가 댐퍼 밖(차대·로어암 등 분리형)이라 쇽을 뗀 지금, 분해 전에 잽니다. 댐퍼 내부형이면 이 화면은 나오지 않고 분해 후에 잽니다.",cell:"E14",onlyIf:{key:"bumpPosF",not:"댐퍼 내부"},shots:1},
  {id:"S066",datum:["R","car"],st:4,car:"off",kind:"measure",must:true,laterSkip:"3D 스캔에서 측정",laterNote:"줄자로 재기 어려우면 아래 버튼 — 분해 전 3D 스캔을 꼭 하고, 출고 뒤 「자리 업무」에서 스캔으로 잰 값을 넣습니다.",title:"⚠ 리어 쇽 전장 · 분해 전 (가장 중요)",tip:"분해 전 가장 중요한 값입니다 — 분해하면 다시 못 잽니다. 차에 달려 있을 때와 같은 기준점(체결부)에서 잽니다. 비워 두면 넘어갈 수 없습니다 (3D 스캔에서 잴 거면 아래 버튼).",cell:"G14",ref:"mS046",refName:"드룹",refRule:"탈거한 쇽은 드룹 때보다 같거나 길어야 합니다",shots:1,photoReq:true},
  {id:"S123",st:4,car:"off",kind:"measure",fig:"body",laterSkip:"3D 스캔 값 사용",laterNote:"3D 스캔에서 잴 거면 아래 버튼을 누릅니다.",tip:"버니어 캘리퍼스로 쇽업소버 몸통(가장 굵은 곳)의 바깥지름을 잽니다. 3D 스캔으로 재도 됩니다.",shots:1,title:"리어 쇽 몸통 두께",cell:"F31"},
  {id:"S067",skipIf:[{key:"suspR",is:"판스프링"},{key:"springR",is:"분리형"}],st:4,car:"off",kind:"measure",coilMust:["S029","S047"],title:"리어 스프링 양끝 길이 (조립 상태)",tip:"분해하면 다시 못 잽니다. 상단 패드 ↔ 하단 패드. 수기로 꼭 재고, 3D 스캔에서도 한 번 더 잽니다 (스캔이 안 되면 못 채우므로 수기 측정이 기본). 측정시트가 프리로드를 이 값 − 드룹 값으로 계산합니다.",cell:"H14",ref:"mS047",refName:"드룹",refRule:"탈거한 조립 상태는 드룹 때보다 같거나 길어야 합니다",shots:1},
- {id:"S068",st:4,car:"off",kind:"measure",title:"리어 범프스토퍼 고무 길이 · 분해 전",tip:"범프스토퍼가 댐퍼 밖(차대·로어암 등 분리형)이라 쇽을 뗀 지금, 분해 전에 잽니다. 댐퍼 내부형이면 이 화면은 나오지 않고 분해 후에 잽니다.",cell:"I14",onlyIf:{key:"bumpPosR",not:"댐퍼 내부"},shots:1},
+ {id:"S068",st:4,car:"off",kind:"measure",title:"리어 댐퍼 외부 범프스토퍼 고무 길이 · 분해 전",tip:"범프스토퍼가 댐퍼 밖(차대·로어암 등 분리형)이라 쇽을 뗀 지금, 분해 전에 잽니다. 댐퍼 내부형이면 이 화면은 나오지 않고 분해 후에 잽니다.",cell:"I14",onlyIf:{key:"bumpPosR",not:"댐퍼 내부"},shots:1},
  {id:"S069",st:4,car:"off",kind:"form",title:"프론트 고무패드 (분리형)",tip:"분리형 스프링의 고무패드 두께를 재고, 다시 쓸지 정합니다.",fields:[["padF","프론트 고무패드 두께","C16","mm"],["padUseF","프론트 고무 제거 여부","D16","pick:제거,재사용"]],onlyIf:{key:"springF",is:"분리형"},shots:1},
  {id:"S070",st:4,car:"off",kind:"form",title:"리어 고무패드 (분리형)",tip:"분리형 스프링의 고무패드 두께를 재고, 다시 쓸지 정합니다.",fields:[["padR","리어 고무패드 두께","G16","mm"],["padUseR","리어 고무 제거 여부","H16","pick:제거,재사용"]],onlyIf:{key:"springR",is:"분리형"},shots:1},
  {id:"S071",st:4,car:"off",kind:"photo",title:"프론트 쇽업소버 분해 전 사진",tip:"가까이서 찍으면 원근이 생기므로 멀리서 줌으로 찍습니다. 스태빌 브래킷·솔레노이드처럼 특징이 있는 방향은 모두.",shots:5,slots:["① 전체 측면 (특징 방향 모두)","② 하단면","③ 상단면 (마운트 형상)","④ 상단마운트 측면 (돌출 깊이)","⑤ 라벨 · 순정 품번 (사진 리스트 11번)"]},
@@ -273,6 +286,10 @@ const TASKS=[
  {id:"S130",st:8,kind:"measure",optional:true,onlyIf:{skipped:"S066",as:"3D 스캔에서 측정",negate:true},title:"리어 쇽 전장 · 3D 스캔 (확인용)",tip:"현장에서 줄자로 잰 쇽 전장을 분해 전 스캔으로 한 번 더 잽니다. 측정시트에는 줄자 값이 들어가고, 이 값은 기록에만 남습니다.",cell:null},
  {"id":"S222","st":8,"kind":"measure","must":true,"topIn":["F",["plate","rod"]],"onlyIf":{"skipped":"S157","as":"3D 스캔에서 측정"},"datum":["F","mount"],"cell":null,"title":"⚠ 프론트 마운트 오프셋 h · 3D 스캔","tip":"현장에서 「3D 스캔에서 측정」으로 넘긴 값입니다. 마운트 스캔에서 안착면(차대에 닿는 면) ↔ 로드 체결 자리면. 자리면이 아래면 +. 비워 두면 넘어갈 수 없습니다 (실제 스트로크 계산에 꼭 필요)."},
  {"id":"S185","st":8,"kind":"measure","optional":true,"cell":null,"title":"프론트 마운트 윗면 높이 (안착면 ↔ 가장 높은 곳)","tip":"스터드·로드 끝 등 마운트에서 가장 높은 곳까지. 안착면 위 공간 높이와 빼서 위 여유를 봅니다. 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","topIn":["F",["plate","rod"]]},
+ {"id":"S252","st":8,"kind":"measure","optional":true,"cell":null,"topIn":["F",["plate"]],"title":"프론트 상단 마운트 볼트 PCD (볼트 중심을 잇는 원 지름)","tip":"출고 뒤 3D 스캔 파일에서 잽니다 (2026-11-19 유지호). 볼트가 2개면 두 볼트 중심 거리. 스캔에 없으면 「해당 없음」."},
+ {"id":"S254","st":8,"kind":"form","optional":true,"cell":null,"topIn":["F",["plate"]],"title":"프론트 상단 마운트 볼트 배치 각도 (위에서 봄)","tip":"차 앞 방향에서 첫 번째 볼트까지 돈 각도. 기준 방향은 AI 제안 — 확인 필요. 출고 뒤 3D 스캔 파일에서 잽니다.","na":"해당 없음","fields":[["mtAngF","첫 볼트 각도",null,"deg"]]},
+ {"id":"S256","st":8,"kind":"measure","optional":true,"cell":null,"topIn":["F",["eye"]],"skipIf":[{"key":"springF","is":"분리형"}],"title":"프론트 상단 아이 위 스프링 시트 높이 (아이 구멍 중심 ↔ 위 시트 면)","tip":"우리 제품이면 바뀌는 부품이라 현장에서는 간섭만 보고, 다운스프링 판매 대비로 3D 스캔에서 잽니다 (2026-11-19 유지호). 스캔에 없으면 「해당 없음」."},
+ {"id":"S258","st":8,"kind":"measure","optional":true,"cell":null,"onlyIf":{"key":"hoseF","is":"댐퍼 몸통"},"datum":["F","damper"],"title":"프론트 호스 · ABS 브래킷 높이 (K ↔ 브래킷 구멍 중심, 축 방향)","tip":"현장에서 「댐퍼 몸통」을 고른 경우만 나옵니다. 브래킷이 여럿이면 호스 쪽을 넣고 나머지는 특이사항에. 출고 뒤 3D 스캔 파일에서 잽니다."},
  {"id":"S187","st":8,"kind":"measure","optional":true,"cell":null,"title":"프론트 위 스프링 시트 오프셋 (안착면 ↔ 위 시트 면)","tip":"스프링 장착 길이 검산과 우리 위 시트 높이에 씁니다. 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","topIn":["F",["plate","rod"]],"skipIf":[{"key":"suspF","is":"판스프링"},{"key":"springF","is":"분리형"}]},
  {"id":"S189","st":8,"kind":"measure","optional":true,"cell":null,"title":"프론트 클레비스 구멍 간격","tip":"두 볼트 구멍 중심 사이 (순정도면 예 80 — 판독, 미검증). 순정도면 원점(아래 구멍) 변환에도 씁니다. 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","lowIn":["F",["mclevis"]]},
  {"id":"S191","st":8,"kind":"measure","optional":true,"cell":null,"title":"프론트 클레비스 구멍 중심 ↔ 쇽 축","tip":"볼트 구멍 중심에서 쇽 축까지 수평 거리 (순정도면 예 48·45.15 — 판독, 미검증). 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","lowIn":["F",["mclevis"]]},
@@ -293,6 +310,10 @@ const TASKS=[
  {"id":"S230","st":8,"kind":"form","optional":true,"cell":null,"title":"프론트 스테빌 브래킷 판 각도 (위에서 봄)","tip":"3차원 위치 값 3개 중 ③. 위에서 볼 때 하단 체결 볼트 축에서 브래킷 판(구멍 쪽)까지 돈 각도. 기준 방향은 볼트 축(볼트가 없는 인서트형은 차 앞 방향 — 추정, 확인 필요). 출고 뒤 3D 스캔 파일에서 잽니다.","na":"해당 없음 (브래킷 없음)","fields":[["stabAngF","판 각도",null,"deg"]]},
  {"id":"S223","st":8,"kind":"measure","must":true,"topIn":["R",["plate","rod"]],"onlyIf":{"skipped":"S158","as":"3D 스캔에서 측정"},"datum":["R","mount"],"cell":null,"title":"⚠ 리어 마운트 오프셋 h · 3D 스캔","tip":"현장에서 「3D 스캔에서 측정」으로 넘긴 값입니다. 마운트 스캔에서 안착면(차대에 닿는 면) ↔ 로드 체결 자리면. 자리면이 아래면 +. 비워 두면 넘어갈 수 없습니다 (실제 스트로크 계산에 꼭 필요)."},
  {"id":"S186","st":8,"kind":"measure","optional":true,"cell":null,"title":"리어 마운트 윗면 높이 (안착면 ↔ 가장 높은 곳)","tip":"스터드·로드 끝 등 마운트에서 가장 높은 곳까지. 안착면 위 공간 높이와 빼서 위 여유를 봅니다. 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","topIn":["R",["plate","rod"]]},
+ {"id":"S253","st":8,"kind":"measure","optional":true,"cell":null,"topIn":["R",["plate"]],"title":"리어 상단 마운트 볼트 PCD (볼트 중심을 잇는 원 지름)","tip":"출고 뒤 3D 스캔 파일에서 잽니다 (2026-11-19 유지호). 볼트가 2개면 두 볼트 중심 거리. 스캔에 없으면 「해당 없음」."},
+ {"id":"S255","st":8,"kind":"form","optional":true,"cell":null,"topIn":["R",["plate"]],"title":"리어 상단 마운트 볼트 배치 각도 (위에서 봄)","tip":"차 앞 방향에서 첫 번째 볼트까지 돈 각도. 기준 방향은 AI 제안 — 확인 필요. 출고 뒤 3D 스캔 파일에서 잽니다.","na":"해당 없음","fields":[["mtAngR","첫 볼트 각도",null,"deg"]]},
+ {"id":"S257","st":8,"kind":"measure","optional":true,"cell":null,"topIn":["R",["eye"]],"skipIf":[{"key":"springR","is":"분리형"}],"title":"리어 상단 아이 위 스프링 시트 높이 (아이 구멍 중심 ↔ 위 시트 면)","tip":"우리 제품이면 바뀌는 부품이라 현장에서는 간섭만 보고, 다운스프링 판매 대비로 3D 스캔에서 잽니다 (2026-11-19 유지호). 스캔에 없으면 「해당 없음」."},
+ {"id":"S259","st":8,"kind":"measure","optional":true,"cell":null,"onlyIf":{"key":"hoseR","is":"댐퍼 몸통"},"datum":["R","damper"],"title":"리어 호스 · ABS 브래킷 높이 (K ↔ 브래킷 구멍 중심, 축 방향)","tip":"현장에서 「댐퍼 몸통」을 고른 경우만 나옵니다. 브래킷이 여럿이면 호스 쪽을 넣고 나머지는 특이사항에. 출고 뒤 3D 스캔 파일에서 잽니다."},
  {"id":"S188","st":8,"kind":"measure","optional":true,"cell":null,"title":"리어 위 스프링 시트 오프셋 (안착면 ↔ 위 시트 면)","tip":"스프링 장착 길이 검산과 우리 위 시트 높이에 씁니다. 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","topIn":["R",["plate","rod"]],"skipIf":[{"key":"suspR","is":"판스프링"},{"key":"springR","is":"분리형"}]},
  {"id":"S190","st":8,"kind":"measure","optional":true,"cell":null,"title":"리어 클레비스 구멍 간격","tip":"두 볼트 구멍 중심 사이 (순정도면 예 80 — 판독, 미검증). 순정도면 원점(아래 구멍) 변환에도 씁니다. 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","lowIn":["R",["mclevis"]]},
  {"id":"S192","st":8,"kind":"measure","optional":true,"cell":null,"title":"리어 클레비스 구멍 중심 ↔ 쇽 축","tip":"볼트 구멍 중심에서 쇽 축까지 수평 거리 (순정도면 예 48·45.15 — 판독, 미검증). 출고 뒤 3D 스캔 파일에서 잽니다. 스캔에 없으면 「해당 없음」.","lowIn":["R",["mclevis"]]},
@@ -415,10 +436,10 @@ const SCREEN_IDS=[
  ["S062","","2026-10-23","보류","탈거한 쇽업소버 어셈블리 사진"],
  ["S063","","2026-10-23","사용","프론트 체결부 기준 전장 · 탈거"],
  ["S064","","2026-10-23","사용","프론트 스프링 양끝 길이 (조립 상태)"],
- ["S065","","2026-10-23","사용","프론트 범프스토퍼 고무 길이"],
+ ["S065","","2026-10-23","사용","프론트 댐퍼 외부 범프스토퍼 고무 길이"],
  ["S066","","2026-10-23","사용","리어 체결부 기준 전장 · 탈거"],
  ["S067","","2026-10-23","사용","리어 스프링 양끝 길이 (조립 상태)"],
- ["S068","","2026-10-23","사용","리어 범프스토퍼 고무 길이"],
+ ["S068","","2026-10-23","사용","리어 댐퍼 외부 범프스토퍼 고무 길이"],
  ["S069","","2026-10-23","사용","프론트 고무패드 (분리형)"],
  ["S070","","2026-10-23","사용","리어 고무패드 (분리형)"],
  ["S071","","2026-10-23","사용","프론트 쇽업소버 분해 전 사진"],
@@ -545,8 +566,8 @@ const SCREEN_IDS=[
  ["S192","","2026-11-17","사용","리어 클레비스 구멍 중심 ↔ 쇽 축"],
  ["S193","","2026-11-17","사용","프론트 클레비스 볼트 구멍 지름"],
  ["S194","","2026-11-17","사용","리어 클레비스 볼트 구멍 지름"],
- ["S195","","2026-11-17","사용","프론트 클레비스 너클 끼는 폭"],
- ["S196","","2026-11-17","사용","리어 클레비스 너클 끼는 폭"],
+ ["S195","","2026-11-17","사용","프론트 하단 장착부 치수 · 너클 두께 (클레비스)"],
+ ["S196","","2026-11-17","사용","리어 하단 장착부 치수 · 너클 두께 (클레비스)"],
  ["S197","","2026-11-17","사용","프론트 하단 아이 안지름 (볼트 구멍)"],
  ["S198","","2026-11-17","사용","리어 하단 아이 안지름 (볼트 구멍)"],
  ["S199","","2026-11-17","사용","프론트 하단 아이 바깥지름"],
@@ -582,8 +603,28 @@ const SCREEN_IDS=[
  ["S229","","2026-11-17","사용","리어 스테빌 브래킷 구멍 ↔ 쇽 축 거리"],
  ["S230","","2026-11-17","사용","프론트 스테빌 브래킷 판 각도"],
  ["S231","","2026-11-17","사용","리어 스테빌 브래킷 판 각도"],
+ ["S232","","2026-11-19","사용","프론트 브레이크 호스 · ABS 배선 브래킷 사진"],
+ ["S233","","2026-11-19","사용","리어 브레이크 호스 · ABS 배선 브래킷 사진"],
+ ["S234","","2026-11-19","사용","프론트 호스 · ABS 브래킷이 달린 곳"],
+ ["S235","","2026-11-19","사용","리어 호스 · ABS 브래킷이 달린 곳"],
+ ["S236","","2026-11-19","사용","프론트 하단 장착부 치수 · 차량 브래킷 안쪽 폭 (아이가 끼는 폭)"],
+ ["S237","","2026-11-19","사용","프론트 하단 장착부 치수 · 포크에 끼는 차량 부시 폭 (속관 양 끝면 사이)"],
+ ["S238","","2026-11-19","사용","프론트 하단 장착부 치수 · 너클 클램프 구멍 안지름"],
+ ["S239","","2026-11-19","사용","프론트 하단 장착부 치수 · 차량 쪽 스터드 구멍 지름"],
+ ["S240","","2026-11-19","사용","리어 하단 장착부 치수 · 차량 브래킷 안쪽 폭 (아이가 끼는 폭)"],
+ ["S241","","2026-11-19","사용","리어 하단 장착부 치수 · 포크에 끼는 차량 부시 폭 (속관 양 끝면 사이)"],
+ ["S242","","2026-11-19","사용","리어 하단 장착부 치수 · 너클 클램프 구멍 안지름"],
+ ["S243","","2026-11-19","사용","리어 하단 장착부 치수 · 차량 쪽 스터드 구멍 지름"],
+ ["S252","","2026-11-19","사용","프론트 상단 마운트 볼트 PCD"],
+ ["S254","","2026-11-19","사용","프론트 상단 마운트 볼트 배치 각도"],
+ ["S256","","2026-11-19","사용","프론트 상단 아이 위 스프링 시트 높이"],
+ ["S258","","2026-11-19","사용","프론트 호스 · ABS 브래킷 높이"],
+ ["S253","","2026-11-19","사용","리어 상단 마운트 볼트 PCD"],
+ ["S255","","2026-11-19","사용","리어 상단 마운트 볼트 배치 각도"],
+ ["S257","","2026-11-19","사용","리어 상단 아이 위 스프링 시트 높이"],
+ ["S259","","2026-11-19","사용","리어 호스 · ABS 브래킷 높이"],
 ];
-const SCREEN_NEXT="S232";
+const SCREEN_NEXT="S260";
 const STAGES=["형태 고르기","사진·기본정보","줄자 측정 (내렸을 때)","드룹 (들었을 때)","탈거 (분해 전)","분해","스프링 측정","재조립 · 출고","자리 업무 (출고 후)"];
 // 지금 차 상태: 단계에 car:"droop"|"off"를 주면 그 상태로 표시한다. 없으면 정하중.
 const CARSTATES=[["static","정하중"],["droop","드룹"],["off","탈거"]];
@@ -683,6 +724,9 @@ async function lockRun(id){
 // 잠금을 잡은 뒤 저장소에서 최신 기록을 다시 읽는다 (목록을 띄운 뒤 다른 탭에서 저장했을 수 있어서)
 async function openRun(r){if(!await lockRun(r.id)){status(BUSY,true);return null}return (await getAll("runs")).find(x=>x.id===r.id)||null}
 function showDev(v){
+  {const c0=el("div","card");c0.appendChild(el("h2",null,"개발용 화면"));const on=document.body.classList.contains("dev");
+   c0.appendChild(el("p","small muted","켜면 측정 화면 아래에 「개발용 건너뛰기」·「번호·S아이디 이동」이 보입니다. 사진·빈칸 검사 없이 넘어가니 현장 측정 때는 끄세요. 이 휴대폰에만 적용."));
+   const b=el("button","btn",on?"개발용 화면 끄기":"개발용 화면 켜기");b.type="button";b.onclick=()=>{const x=!document.body.classList.contains("dev");document.body.classList.toggle("dev",x);try{localStorage.setItem("measure-dev",x?"1":"0")}catch(e){}showList()};c0.appendChild(b);v.appendChild(c0)}
   const c=el("div","card");c.appendChild(el("h2",null,"개발 기록"));const lg=readDevLog();
   if(!lg.length)c.appendChild(el("p","small muted","아직 없습니다."));
   lg.slice().reverse().forEach(([at,m])=>c.appendChild(el("div","small",at.slice(5)+" · "+m)));v.appendChild(c);
@@ -1221,7 +1265,8 @@ async function exportZip(){
     const st=TASKS.find(x=>x.id===s.base);const temp=!memo&&st&&!applies(st);
     if(p.fname){const nm="로우데이터/"+photoName(run,car,s.base,"raw",nn)+"_"+fsafe(p.fname);zip.file(nm,p.blob);(list[p.taskId]=list[p.taskId]||[]).push(nm);map.push([p.id,nm,s.base,s.no+"단계",s.title,"로우데이터",k,loc(p.at)]);return}
     const sl=(p.taskId.match(/_s(\d+)$/)||[])[1];const name="사진/"+(temp?"임시/":"")+photoName(run,car,s.base,memo?"메모":(sl?"s"+sl:""),nn)+".jpg";
-    zip.file(name,p.blob);(list[p.taskId]=list[p.taskId]||[]).push(name);
+    zip.file(name,p.blob);if(memo&&(run.notes||{})[s.base])zip.file(name.replace(/\.jpg$/,".txt"),"\ufeff"+run.notes[s.base]); // rev 85: 메모 달린 사진은 같은 이름 txt로 메모 함께 (2026-11-19 유지호)
+    (list[p.taskId]=list[p.taskId]||[]).push(name);
     map.push([p.id,name.slice(3),s.base,s.no?s.no+"단계":"보류",s.title,memo?"특이사항 메모사항 "+memoNo[s.base]+"번":temp?"임시 (조건 안 맞음)":(/_s\d+$/.test(p.taskId)?"칸 "+p.taskId.split("_s")[1]:"측정"),k,loc(p.at)])});
   zip.file("사진대조표.csv","﻿"+map.map(r=>r.map(csvCell).join(",")).join("\r\n"));
   zip.file("측정기록.csv",recordCsv(memoNo));
@@ -1245,6 +1290,7 @@ async function exportZip(){
   status("휴대폰 「다운로드」에 저장했습니다: "+fname+" · 구글 드라이브 앱에서 올리세요.");
 }
 
+try{if(localStorage.getItem("measure-dev")==="1")document.body.classList.add("dev")}catch(e){}
 $("#prev").onclick=()=>go(-1);$("#next").onclick=()=>go(1);let devSkip=false;$("#devskip").onclick=()=>{devSkip=true;go(1)};
 // rev 83 개발용 이동: 화면 위 「n/전체」의 번호 또는 S아이디로 바로 감 — 사진·빈칸 검사 없음, 조건 안 맞는 화면도 보여 줌 (실사용 전 버튼 제거)
 $("#devjumpgo").onclick=async()=>{const q=$("#devjump").value.trim().toUpperCase();let n=-1;if(/^S\d+$/.test(q))n=TASKS.findIndex(x=>x.id===q);else if(/^\d+$/.test(q))n=+q-1;if(n<0||n>=TASKS.length){status("없는 화면입니다: "+q+" (1~"+TASKS.length+" 또는 S아이디)",true);return}if(collect)collect();commitEdits();idx=n;await save();showTask();$("#devjump").value="";if(!applies(TASKS[n]))status("개발용 이동 — 지금 고른 조건에서는 안 나오는 화면입니다",true)};
@@ -1336,7 +1382,8 @@ const CHANGELOG=[
  [81,"2026-11-17 15:50","엔지니어 관점 재설계(2026-11-17 포크에서 시험 후 정식 반영): 기준면 체계(B 차대 안착면 · R 로드 체결 자리면 · K 하단 체결 기준) — 마운트 오프셋 h·최대 압축/신장 길이·몸통 상단·로드 지름·스프링 시트(S157~S180)로 정하중에서 남은 압축·신장 스트로크 자동 계산(S221·S095) · 나사는 「M×피치」 한 값(S163~S168·S181~S184, 하단 볼트 피치 누락 해결) · 형상 치수는 자리 업무에서 스캔으로 화면 하나에 값 하나(S185~S220) · rev 78~80 여러 값 화면 22개 숨김(보류) · 차대 여유 화면 진입 조건(S135~S140) · 하단 「아이 투 클레비스」 추가 · rev 79 쉼표 버그 수정 · record.json에 datum·derived·drawing(자동 작도 입력, u 좌표) — 설계 노트 DESIGN.md"],
  [82,"2026-11-17 18:30","유지호 rev 81 검토 반영(포크판을 정식판으로 올림): 휀더 아치 그림이 타이어에 붙던 것 고침(휀더·허브 그림 4장) · 하단 타입 「아이 투 클레비스」 뺌(상단·하단을 따로 고르니 아이·클레비스로 충분) · 하단 기준 K = 볼트 중심, 볼트가 여럿이면 지면에 가장 가까운 것(클레비스는 아래 볼트 — 그림·자동 계산 같이) · 스프링 ↔ 주변 여유를 탈거 전 순정 스프링 달린 상태로(S137·S140, 분리형도) · 3D 스캔 안내의 「리바운드 스트로크 확인용」 문구 바로잡음 · 회사 기준 스트로크(S079·S085) 재정의 예정 표시 · 클레비스 너클 폭은 차량 너클(가공품)을 탈거 후 잼(S195·S196) · 아이 부시 속관 양 끝면 길이 추가(하단 S224·S225, 상단 S226·S227) · 스테빌 브래킷 위치를 높이·축↔구멍 거리(S228·S229)·판 각도(S230·S231) 3값으로"],
  [83,"2026-11-19 10:00","개발용 이동(유지호 요청): 「개발용 건너뛰기」 옆에 번호(화면 위 n/전체) 또는 S아이디를 넣고 「이동」 — 검토할 때 일일이 넘기지 않게. 사진·빈칸 검사 없음"],
- [84,"2026-11-19 11:00","계산값 이름을 사내 설계 매뉴얼 기호로(유지호 결정): Lmax·Lmin·Lstatic·Stroke, 범프·리바운드 스트로크. 매뉴얼에 없는 기호(LD·L_I·h·u_T·u_S)는 한글 이름으로. record.json 키는 그대로"]
+ [84,"2026-11-19 11:00","계산값 이름을 사내 설계 매뉴얼 기호로(유지호 결정): Lmax·Lmin·Lstatic·Stroke, 범프·리바운드 스트로크. 매뉴얼에 없는 기호(LD·L_I·h·u_T·u_S)는 한글 이름으로. record.json 키는 그대로"],
+ [85,"2026-11-19 15:00","유지호 11-19 결정 반영: 개발용 버튼은 시작 화면 「개발용」 탭에서 켤 때만 보임 · 휠 탈거 뒤 호스·ABS 브래킷 사진과 달린 곳(댐퍼 몸통이면 자리 업무 3D 스캔 높이) · 하단 상대물은 「하단 장착부 치수」로 통일(현장, 하단 타입별 1값 — 항목은 AI 제안) · 상단 마운트 볼트 PCD·각도, 상단 아이 위 스프링 시트 높이(자리 업무 3D 스캔) · S065·S068 「댐퍼 외부 범프스토퍼」 · 메모 달린 사진은 같은 이름 txt"]
 ];
 // 지금은 베타: 숫자 번호는 「베타 rev N」으로 보인다. 정식 v1이 되면 그때부터 번호를 문자열("1","2"…)로 적어 「rev 1」부터 센다 (유지호 2026-10-22).
 if(!CHANGELOG.every(Array.isArray))setTimeout(()=>status("변경 로그 줄 끝 쉼표 확인 필요",true),600);
