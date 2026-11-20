@@ -712,11 +712,11 @@ async function takePhoto(task){
   const torch=el("button","side","플래시 끔");torch.type="button";const nat=el("button","side","기본 카메라 앱");nat.type="button";
   right.appendChild(torch);right.appendChild(nat);
   bar.appendChild(close);bar.appendChild(shut);bar.appendChild(right);box.appendChild(bar);document.body.appendChild(box);
-  let track=null,caps={},on=false,zoom=1,hw=false,dz=1; // hw: 카메라 자체 줌, dz: 디지털 줌 배율(화면 확대 + 잘라 저장)
-  const zr=()=>hw?caps.zoom:{min:1,max:5,step:0.1};
-  const applyZoom=async z=>{const r=zr();z=Math.min(r.max,Math.max(r.min,z));zoom=z;slider.value=z;zl.textContent=(Math.round(z*10)/10)+"×"+(hw?"":" (디지털)");
+  // rev 88: 디지털 줌 뺌 (2026-11-20 유지호 — 쓸모없음). 카메라 자체 줌(hw)이 없으면 줌 칸을 숨기고 「기본 카메라 앱」을 안내. dz는 1로 고정(찍을 때 자르지 않음)
+  let track=null,caps={},on=false,zoom=1,hw=false;const dz=1;
+  const applyZoom=async z=>{if(!hw)return;const r=caps.zoom;z=Math.min(r.max,Math.max(r.min,z));zoom=z;slider.value=z;zl.textContent=(Math.round(z*10)/10)+"×";
     zoomRow.querySelectorAll(".chip").forEach(b=>b.setAttribute("aria-pressed",Math.abs(+b.dataset.z-z)<0.05?"true":"false"));
-    if(hw){try{await track.applyConstraints({advanced:[{zoom:z}]})}catch(e){}}else{dz=z;v.style.transform=z>1?"scale("+z+")":""}};
+    try{await track.applyConstraints({advanced:[{zoom:z}]})}catch(e){}};
   // 수동 초점: 브라우저가 초점 거리(focusDistance)를 알려 줄 때만. 아이폰 사파리는 지원하지 않아 「눌러서 초점」·「3장 중 선명한 것」으로 대신
   let manual=false;
   const setFocus=async(m,d)=>{manual=m;focusRow.querySelectorAll(".chip").forEach(b=>b.setAttribute("aria-pressed",(b.dataset.f==="m")===m?"true":"false"));fslider.classList.toggle("hidden",!m);
@@ -725,14 +725,13 @@ async function takePhoto(task){
     v.srcObject=camStream;track=camStream.getVideoTracks()[0];caps=track.getCapabilities?track.getCapabilities():{};on=false;
     if(caps.torch){torch.disabled=false;torch.textContent="플래시 끔"}else{torch.disabled=true;torch.textContent="플래시 없음"}
     if(caps.focusMode&&caps.focusMode.includes("continuous")){try{await track.applyConstraints({advanced:[{focusMode:"continuous"}]})}catch(e){}}
-    zoomRow.textContent="";zl.textContent="";v.style.transform="";dz=1;
+    zoomRow.textContent="";zl.textContent="";
     hw=!!(caps.zoom&&caps.zoom.max>caps.zoom.min);
-    {const r=zr();const st=track.getSettings?track.getSettings():{};zoom=hw?(st.zoom||1):1;
-      slider.min=r.min;slider.max=r.max;slider.step=r.step||0.1;slider.value=zoom;
-      const pre=hw?[r.min<1?r.min:null,1,2,3,5,10]:[1,1.5,2,3,4,5];
-      pre.filter((z,i,a)=>z!=null&&z>=r.min&&z<=r.max&&a.indexOf(z)===i).forEach(z=>{const b=el("button","chip",(Math.round(z*10)/10)+"×");b.type="button";b.dataset.z=z;b.onclick=()=>applyZoom(z);zoomRow.appendChild(b)});
-      if(!hw)zoomRow.appendChild(el("span","small","디지털 줌 — 화면 확대 후 잘라 저장(해상도 줄어듦)"));
+    if(hw){const r=caps.zoom;const st=track.getSettings?track.getSettings():{};zoom=st.zoom||1;
+      slider.min=r.min;slider.max=r.max;slider.step=r.step||0.1;slider.value=zoom;slider.classList.remove("hidden");
+      [r.min<1?r.min:null,1,2,3,5,10].filter((z,i,a)=>z!=null&&z>=r.min&&z<=r.max&&a.indexOf(z)===i).forEach(z=>{const b=el("button","chip",(Math.round(z*10)/10)+"×");b.type="button";b.dataset.z=z;b.onclick=()=>applyZoom(z);zoomRow.appendChild(b)});
       applyZoom(zoom)}
+    else{slider.classList.add("hidden");zoomRow.appendChild(el("span","small","이 휴대폰 브라우저는 줌을 지원하지 않습니다 — 망원·줌은 「기본 카메라 앱」으로 찍으세요"))}
     focusRow.textContent="";fslider.classList.add("hidden");manual=false;
     if(caps.focusDistance&&(caps.focusMode||[]).includes("manual")){
       fslider.min=caps.focusDistance.min;fslider.max=caps.focusDistance.max;fslider.step=caps.focusDistance.step||((caps.focusDistance.max-caps.focusDistance.min)/100);
@@ -1633,7 +1632,8 @@ const CHANGELOG=[
  [84,"2026-11-19 11:00","계산값 이름을 사내 설계 매뉴얼 기호로(유지호 결정): Lmax·Lmin·Lstatic·Stroke, 범프·리바운드 스트로크. 매뉴얼에 없는 기호(LD·L_I·h·u_T·u_S)는 한글 이름으로. record.json 키는 그대로"],
  [85,"2026-11-19 15:00","유지호 11-19 결정 반영: 개발용 버튼은 시작 화면 「개발용」 탭에서 켤 때만 보임 · 휠 탈거 뒤 호스·ABS 브래킷 사진과 달린 곳(댐퍼 몸통이면 자리 업무 3D 스캔 높이) · 하단 상대물은 「하단 장착부 치수」로 통일(현장, 하단 타입별 1값 — 항목은 AI 제안) · 상단 마운트 볼트 PCD·각도, 상단 아이 위 스프링 시트 높이(자리 업무 3D 스캔) · S065·S068 「댐퍼 외부 범프스토퍼」 · 메모 달린 사진은 같은 이름 txt"],
  [86,"2026-11-20 14:00","유지호 11-20 요청(샤오미 15 울트라): ① 측정 ZIP 불러오기 — 값·사진·메모를 새 측정으로 넣고, 다른 판(rev)은 화면 아이디 기준으로 맞춤(빠진 화면 값은 보류로 보존, 측정 뒤 생긴 화면은 따로 표시) ② 측정 「보기」 — 화면 순서대로 값·건너뛴 이유·메모·사진, 「고치기」로 그 화면에 감, 전부/값 있는 것/빈칸만 ③ 하단 내비게이션 바 겹침 — viewport-fit=cover 뺌, 카메라 화면 높이를 보이는 화면에 맞추고 셔터 아래 여백 ④ 카메라 렌즈 고르기(브라우저가 알려 주는 후면·전면 카메라) · 줌 배율 버튼·밀대·두 손가락 줌 · 눌러서 초점 · 4:3 최대 해상도 요청 · 「기본 카메라 앱」 버튼"],
- [87,"2026-11-20 16:00","유지호 11-20 피드백(샤오미 15 울트라 줌 안 됨 · 아이폰 됨 · 초점 맞추기 어려움 · 사진 실수 삭제): ① 카메라 줌을 못 받는 휴대폰은 디지털 줌(화면 확대 후 그 범위만 잘라 저장, 1~5배) ② 수동 초점 — 브라우저가 초점 거리를 알려 주면 「자동/수동」+밀대(아이폰 사파리는 미지원) ③ 누른 자리 초점에 노란 동그라미 ④ 셔터 한 번에 3장을 보고 가장 선명한 것 저장 ⑤ 「카메라 정보」 버튼 — 렌즈·줌·초점 지원 여부를 화면에 (캡처해 보내기) ⑥ 사진은 눌러도(꾹 눌러도) 크게 보기만, 지우기·다른 칸으로 옮기기는 그 안의 버튼, 실행 뒤 7초 「되돌리기」 — 측정 화면·보기 화면 같음"]
+ [87,"2026-11-20 16:00","유지호 11-20 피드백(샤오미 15 울트라 줌 안 됨 · 아이폰 됨 · 초점 맞추기 어려움 · 사진 실수 삭제): ① 카메라 줌을 못 받는 휴대폰은 디지털 줌(화면 확대 후 그 범위만 잘라 저장, 1~5배) ② 수동 초점 — 브라우저가 초점 거리를 알려 주면 「자동/수동」+밀대(아이폰 사파리는 미지원) ③ 누른 자리 초점에 노란 동그라미 ④ 셔터 한 번에 3장을 보고 가장 선명한 것 저장 ⑤ 「카메라 정보」 버튼 — 렌즈·줌·초점 지원 여부를 화면에 (캡처해 보내기) ⑥ 사진은 눌러도(꾹 눌러도) 크게 보기만, 지우기·다른 칸으로 옮기기는 그 안의 버튼, 실행 뒤 7초 「되돌리기」 — 측정 화면·보기 화면 같음"],
+ [88,"2026-11-20 17:00","유지호 결정: 디지털 줌 뺌(쓸모없음) — 브라우저가 카메라 줌을 지원하지 않으면 줌 칸을 숨기고 「기본 카메라 앱」 안내"]
 ];
 // 지금은 베타: 숫자 번호는 「베타 rev N」으로 보인다. 정식 v1이 되면 그때부터 번호를 문자열("1","2"…)로 적어 「rev 1」부터 센다 (유지호 2026-10-22).
 if(!CHANGELOG.every(Array.isArray))setTimeout(()=>status("변경 로그 줄 끝 쉼표 확인 필요",true),600);
