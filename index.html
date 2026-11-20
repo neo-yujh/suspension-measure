@@ -2,28 +2,49 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><!-- rev 86: viewport-fit=cover 뺌 — 안드로이드에서 화면이 하단 내비게이션 바 밑까지 그려져 카메라 버튼이 겹치던 것 (2026-11-20 유지호, 샤오미 15 울트라) -->
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content"><!-- rev 86: viewport-fit=cover 뺌(하단 내비 바 밑까지 그려져 겹침) → rev 90: 다시 넣고 아래 고정 바·카메라 바에 max(20px, 14px + 안전 영역) 여백 + 설정의 「하단 여백 보정」(--padb)으로 막음 -->
 <meta name="robots" content="noindex,nofollow">
 <title>서스펜션 측정 실행</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<script>/* rev 90: 테마를 그리기 전에 정한다 (깜빡임 방지). 저장된 값 없으면 휴대폰 밝기 설정을 따름 */try{const k=localStorage.getItem("measure-theme");document.documentElement.dataset.theme=/^(light|dark|hybrid)$/.test(k)?k:(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");const pb=+localStorage.getItem("measure-padb")||0;if(pb)document.documentElement.style.setProperty("--padb",pb+"px")}catch(e){}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
+/* rev 90: D2Coding 고정폭 글꼴 (jsdelivr, 1.3.2 고정). 못 받으면 아래 대체 글꼴 */
+@font-face{font-family:'D2Coding';font-style:normal;font-weight:400;font-display:swap;src:local('D2Coding'),url(https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding@1.3.2/D2Coding.woff2) format('woff2'),url(https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding@1.3.2/D2Coding.woff) format('woff')}
+@font-face{font-family:'D2Coding';font-style:normal;font-weight:700;font-display:swap;src:local('D2Coding Bold'),local('D2CodingBold'),url(https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding@1.3.2/D2CodingBold.woff2) format('woff2'),url(https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding@1.3.2/D2CodingBold.woff) format('woff')}
 /* 휴대폰 한 손 조작: 위 진행 막대, 가운데 할 일 카드 하나, 아래 고정 버튼. 기록·사진은 이 휴대폰 브라우저 안(IndexedDB)에만 저장하고, 끝나면 ZIP 하나로 묶어 구글 드라이브에 올린다. */
-:root{
-  --bg:#f4f5f2; --card:#ffffff; --ink:#111a20; --muted:#45525a; --line:#a9b4b9;
-  --accent:#0e6b6f; --accent-ink:#ffffff; --hand:#9a520c; --hand-bg:#fbefe0;
-  --ok:#2f7a3a; --warn:#a2560c; --sel-bg:#e1f2f1; --icon:#1c2830;
-  --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
-  --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+/* rev 90: 테마 3종 (⚙️ 설정에서 바꿈, 이 휴대폰에 기억) — light · dark · hybrid(밝은 화면 + 수치 칸·자동 계산 칸만 어두운 바탕에 하늘색 숫자)
+   --input-bg 입력칸 바탕 · --num-bg/--num 수치 입력칸 · --calc-bg/--calc-ink 자동 계산 결과 칸 · --padb 하단 여백 보정(설정) */
+:root,:root[data-theme="light"]{
+  --bg:#EEF1F4; --card:#FFFFFF; --ink:#0F172A; --muted:#475569; --line:#CBD5E1;
+  --accent:#0F766E; --accent-ink:#FFFFFF; --hand:#9A3412; --hand-bg:#FFEDD5;
+  --ok:#15803D; --warn:#D97706; --sel-bg:#CCFBF1; --icon:#1E293B;
+  --input-bg:#F8FAFC; --num-bg:#F8FAFC; --num:#0F172A; --calc-bg:#F8FAFC; --calc-ink:#0F172A; --calc-muted:#475569;
   color-scheme:light;
 }
-@media (prefers-color-scheme: dark){:root{
-  --bg:#0f1518; --card:#1a2328; --ink:#f1f4f5; --muted:#b6c2c7; --line:#4d5c63;
-  --accent:#5cc4bf; --accent-ink:#0d1a1c; --hand:#f0b073; --hand-bg:#3a2a19;
-  --ok:#7ccf88; --warn:#f0b073; --sel-bg:#173634; --icon:#e4e9eb; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0B0F14; --card:#151C24; --ink:#F1F5F9; --muted:#94A3B8; --line:#2A3544;
+  --accent:#06B6D4; --accent-ink:#041014; --hand:#FDBA74; --hand-bg:#3B2612;
+  --ok:#4ADE80; --warn:#F59E0B; --sel-bg:#083344; --icon:#E2E8F0;
+  --input-bg:#090D12; --num-bg:#090D12; --num:#38BDF8; --calc-bg:#090D12; --calc-ink:#38BDF8; --calc-muted:#94A3B8;
+  color-scheme:dark;
+}
+:root[data-theme="hybrid"]{
+  --bg:#F1F5F9; --card:#FFFFFF; --ink:#0F172A; --muted:#475569; --line:#CBD5E1;
+  --accent:#1D4ED8; --accent-ink:#FFFFFF; --hand:#9A3412; --hand-bg:#FFEDD5;
+  --ok:#15803D; --warn:#EA580C; --sel-bg:#DBEAFE; --icon:#1E293B;
+  --input-bg:#F8FAFC; --num-bg:#0F172A; --num:#38BDF8; --calc-bg:#0F172A; --calc-ink:#38BDF8; --calc-muted:#94A3B8;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme]){
+  --bg:#0B0F14; --card:#151C24; --ink:#F1F5F9; --muted:#94A3B8; --line:#2A3544;
+  --accent:#06B6D4; --accent-ink:#041014; --hand:#FDBA74; --hand-bg:#3B2612;
+  --ok:#4ADE80; --warn:#F59E0B; --sel-bg:#083344; --icon:#E2E8F0;
+  --input-bg:#090D12; --num-bg:#090D12; --num:#38BDF8; --calc-bg:#090D12; --calc-ink:#38BDF8; --calc-muted:#94A3B8; color-scheme:dark}}
+:root{--f-body:'D2Coding','JetBrains Mono','Nanum Gothic Coding',monospace; --f-mono:'D2Coding','JetBrains Mono','Nanum Gothic Coding',monospace; --padb:0px; --fh:84px}
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
-body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;font-variant-numeric:tabular-nums slashed-zero}
+input,button,select,textarea{font-family:'D2Coding','JetBrains Mono','Nanum Gothic Coding',monospace;font-variant-numeric:tabular-nums slashed-zero}
 .app{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:calc(12px + env(safe-area-inset-top,0px));padding-bottom:calc(130px + env(safe-area-inset-bottom,0px));max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
 h1{font-size:19px;margin:0} h2{font-size:17px;margin:0}
 .muted{color:var(--muted);font-size:max(14px,1em)} .small{font-size:14px} /* rev 89: 보조 글자 14px 이상 */ .mono{font-family:var(--f-mono)}
@@ -32,11 +53,13 @@ h1{font-size:19px;margin:0} h2{font-size:17px;margin:0}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
 .btn:disabled{opacity:.45}
 .btn:focus-visible,input:focus-visible,.opt:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-input[type=text],input[type=number],input[type=date],select,textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px;width:100%;min-height:44px}
+input[type=text],input[type=number],input[type=date],select,textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--input-bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px;width:100%;min-height:44px}
 label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
 .fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
 /* rev 89: 측정값 칸 크게 — 야외·차량 하부에서 한눈에 */
-input[type=number]{font-size:22px;font-weight:700;min-height:54px}
+input[type=number]{font-size:24px;font-weight:700;min-height:54px;background:var(--num-bg);color:var(--num)} /* rev 90: 24px · 테마별 수치 칸 색 */
+.calc,.autocalc{background:var(--calc-bg);color:var(--calc-ink);border-radius:6px} .calc{padding:2px 6px} .autocalc .muted{color:var(--calc-muted)} .autocalc{border-color:var(--line)}
+.pm{flex:none;min-width:48px;min-height:54px;font-size:20px;font-weight:700;padding:0 8px} /* ± 부호 전환 */
 .unit{display:flex;align-items:center;gap:6px} .unit span{font-family:var(--f-mono);font-size:16px;font-weight:700;color:var(--ink)}
 .cell{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
 .progress{height:6px;background:var(--line);border-radius:3px;overflow:hidden} .progress>i{display:block;height:100%;background:var(--accent)}
@@ -49,14 +72,20 @@ input[type=number]{font-size:22px;font-weight:700;min-height:54px}
 .photos{display:flex;gap:8px;flex-wrap:wrap}
 .ph{width:88px;height:88px;border-radius:6px;border:1px solid var(--line);object-fit:cover}
 .phbtn{width:88px;height:88px;border-radius:6px;border:1px dashed var(--line);display:flex;align-items:center;justify-content:center;text-align:center;font-size:12px;color:var(--muted);cursor:pointer;background:var(--bg);font-family:inherit}
-.footer{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:10px max(16px,env(safe-area-inset-right,0px)) max(20px,calc(14px + env(safe-area-inset-bottom,0px))) max(16px,env(safe-area-inset-left,0px))}
-.footer .in{max-width:640px;margin:0 auto;display:flex;gap:8px} .footer .btn{flex:1;min-height:52px} .footer #next{flex:2.5} /* rev 89: 이전 : 다음 = 1 : 2.5 */
+.footer{position:fixed;left:0;right:0;bottom:0;z-index:15;background:var(--card);border-top:1px solid var(--line);padding:8px max(16px,env(safe-area-inset-right,0px)) calc(max(20px,calc(14px + env(safe-area-inset-bottom,0px))) + var(--padb)) max(16px,env(safe-area-inset-left,0px))}
+/* rev 90: 이전 1 : 📝 메모 1.1 : 🎙️ 1.1 : 확인·다음 2.2, 최소 52px. 개발용 버튼은 둘째 줄 */
+.footer .in{max-width:640px;margin:0 auto;display:flex;gap:6px} .footer .btn{flex:1 1 0;min-width:0;min-height:52px;padding:6px 4px;white-space:nowrap;position:relative}
+.footer #memo,.footer #mic{flex:1.1 1 0} .footer #next{flex:2.2 1 0}
+.footer .devrow{margin-top:6px} .footer .devrow .btn{flex:none;min-height:40px}
+#mic .lbl{font-size:20px} #mic.rec .lbl{font-size:14px} .footer .btn .lbl{pointer-events:none}
+.footer #mic.rec,[data-mic].rec{background:#DC2626;border-color:#DC2626;color:#fff;font-weight:700}
+.bdg{position:absolute;top:-7px;right:-5px;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:var(--warn);color:#fff;font-size:11px;line-height:18px;font-weight:700;text-align:center}
 .status{font-size:12px;color:var(--muted);min-height:1.5em;margin:0} .status.err{color:var(--warn)}
 .runrow{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;padding-bottom:8px;border-bottom:1px solid var(--line)} .grow{flex:1 1 auto;min-width:0}
 .runrow>.grow{flex-basis:100%} .runrow>.btn{flex:1 1 40%;white-space:nowrap;padding-inline:8px} /* rev 89: 두 개씩 두 줄 — 위 보기·이어서, 아래 ZIP·지우기 */
 .runrow>.btn.sub{min-height:40px;font-size:14px;background:transparent}
 .check{display:flex;gap:8px;align-items:center;font-size:14px} .check input{width:22px;height:22px}
-.calc{font-size:13px;color:var(--muted)}
+.calc{font-size:13px}
 .carstate{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .carstate .cs{font-size:13px;padding:3px 10px;border-radius:14px;border:1px solid var(--line);color:var(--muted);background:var(--card)}
 .carstate .cs.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
@@ -89,26 +118,125 @@ body:not(.dev) [data-dev]{display:none!important} /* rev 85: 개발용 버튼은
 .big .acts{display:flex;flex-direction:column;gap:10px;padding:10px 16px max(20px,calc(28px + env(safe-area-inset-bottom,0px)));background:#111;color:#fff}
 .big .acts .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center} .big .acts .btn{background:#222;color:#fff;border-color:#555;min-height:48px}
 .big .acts .del{margin-left:auto;color:#ff9b7a;border-color:#ff9b7a}
-.toast{position:fixed;left:16px;right:16px;bottom:calc(100px + env(safe-area-inset-bottom,0px));z-index:50;max-width:608px;margin:0 auto;background:#222;color:#fff;border-radius:10px;padding:8px 8px 8px 14px;display:flex;align-items:center;gap:10px;justify-content:space-between;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.toast{position:fixed;left:16px;right:16px;bottom:calc(var(--fh,100px) + 8px);z-index:50;max-width:608px;margin:0 auto;background:#222;color:#fff;border-radius:10px;padding:8px 8px 8px 14px;display:flex;align-items:center;gap:10px;justify-content:space-between;box-shadow:0 4px 16px rgba(0,0,0,.4)}
 .toast .btn{background:#fff;color:#000;font-weight:700;min-height:48px}
 .cam .shutter{width:72px;height:72px;border-radius:50%;border:4px solid #fff;background:#fff;box-shadow:inset 0 0 0 4px #000;cursor:pointer}
 .cam .side{min-width:88px;color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:8px 10px;font:inherit;font-size:13px;cursor:pointer}
 .cam .hint{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));left:0;right:0;text-align:center;color:#fff;font-size:14px;text-shadow:0 1px 3px #000;padding:0 16px}
+/* ===== rev 90: 한 손 조작 측정 화면 — 스크롤 없음(100dvh), 위 네비·진행바, 가운데 카드만 넘치면 안에서 스크롤(최후수단) ===== */
+body.measuring{overflow:hidden}
+body.measuring .app>header{display:none}
+body.measuring .app{height:100vh;height:100dvh;overflow:hidden;gap:6px;padding-top:calc(6px + env(safe-area-inset-top,0px));padding-bottom:calc(var(--fh,84px) + 4px)}
+body.measuring #view{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:6px}
+body.measuring #view>.card.main{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;gap:8px;padding:10px 12px}
+body.measuring .status{flex:none;max-height:4.5em;overflow:auto;font-size:13px}
+body.measuring .ph,body.measuring .phbtn{width:64px;height:64px}
+body.measuring .carstate{flex:none;gap:4px} body.measuring .carstate .cs{padding:1px 8px}
+body.inapp .app>header,body.inapp .topnav .row{padding-right:60px} /* 앱의 「앱」 버튼(오른쪽 위 고정) 자리 */
+.topnav{flex:none;display:flex;flex-direction:column;gap:2px}
+.topnav .row{display:flex;gap:6px;align-items:center}
+.topnav .btn{min-height:44px;padding:4px 10px;font-size:14px;flex:none}
+.topnav .navstage{flex:1 1 auto;min-width:0;font-size:13px;color:var(--muted);line-height:1.25;overflow:hidden}
+.topnav .navstage b{display:block;color:var(--ink);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topnav .navstage span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pbar{position:relative;display:flex;gap:3px;height:34px;align-items:center;touch-action:none;cursor:pointer;user-select:none;-webkit-user-select:none}
+.pbar .seg{position:relative;height:10px;min-width:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.pbar .seg i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);opacity:.35} .pbar .seg u{position:absolute;left:0;top:0;bottom:0;background:var(--accent)}
+.pbar .cur{position:absolute;top:5px;width:4px;height:24px;margin-left:-2px;border-radius:2px;background:var(--ink);pointer-events:none}
+.pbar .tipx{position:absolute;top:36px;z-index:5;transform:translateX(-50%);max-width:80vw;background:var(--ink);color:var(--bg);font-size:13px;padding:4px 8px;border-radius:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+.tiprow{display:flex;gap:6px;align-items:center;flex:none}
+.tiprow .tipline{flex:1 1 auto;min-width:0;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.tiprow .btn{flex:none;min-height:40px;padding:2px 10px;font-size:14px}
+.card.main>*{flex:none}
+.figbox{position:relative;flex:1 1 0!important;min-height:72px;cursor:zoom-in;border-radius:6px}
+.figbox>img,.figbox>div{position:absolute;inset:0;width:100%!important;height:100%!important;max-width:none!important;margin:0!important;object-fit:contain}
+.figbox>img{background:#fff;border:1px solid var(--line);border-radius:6px}
+.figbox svg{width:100%!important;height:100%!important}
+.figbox .zoomhint{position:absolute;inset:auto 4px 4px auto;width:auto!important;height:auto!important;font-size:12px;background:var(--card);color:var(--muted);border:1px solid var(--line);border-radius:10px;padding:0 6px;pointer-events:none}
+.figbig{position:fixed;inset:0;z-index:35;background:#fff;display:flex;align-items:center;justify-content:center;padding:calc(8px + env(safe-area-inset-top,0px)) 8px calc(8px + env(safe-area-inset-bottom,0px));touch-action:pinch-zoom}
+.figbig>img,.figbig>div{max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;margin:0!important}
+.figbig svg{width:100%!important;height:100%!important}
+.figbig .x{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));left:10px;min-height:48px;background:#222;color:#fff;border-color:#222}
+.unit .pm{order:3}
+.lockbar,.prebadge{flex:none;display:flex;gap:8px;align-items:center;justify-content:space-between;border-radius:8px;padding:4px 10px;font-size:14px;font-weight:700}
+.lockbar{background:var(--hand-bg);color:var(--hand);border:1px solid var(--hand)} .lockbar .btn{min-height:44px;font-size:14px;padding:4px 10px}
+.prebadge{background:var(--sel-bg);color:var(--ink);border:1px solid var(--accent)}
+.card.locked .ph{pointer-events:none}
+/* 아래에서 올라오는 상세 시트 (? 상세기준). 닫혀도 그려 둔다(화면 밖) — 화면 넘기기 시험이 글을 읽음 */
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:24;max-height:78vh;max-height:78dvh;overflow-y:auto;background:var(--card);border-top:2px solid var(--accent);border-radius:14px 14px 0 0;padding:12px max(16px,env(safe-area-inset-right,0px)) calc(max(20px,calc(14px + env(safe-area-inset-bottom,0px))) + var(--padb)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:10px;transform:translateY(110%);transition:transform .18s ease-out;pointer-events:none}
+.sheet.open{transform:none;pointer-events:auto;box-shadow:0 -6px 24px rgba(0,0,0,.25)}
+.sheet .shead{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.dim{position:fixed;inset:0;z-index:23;background:rgba(0,0,0,.45)}
+/* 공통 모달 (설정 · 선측정) */
+.modal{position:fixed;inset:0;z-index:25;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center}
+.modal>.box{background:var(--card);color:var(--ink);width:100%;max-width:640px;max-height:92vh;max-height:92dvh;overflow-y:auto;border-radius:14px 14px 0 0;padding:14px max(16px,env(safe-area-inset-right,0px)) calc(max(20px,calc(14px + env(safe-area-inset-bottom,0px))) + var(--padb)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:10px}
+.modal .mhead{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.modal .mhead .btn{min-height:44px;flex:none;white-space:nowrap}
+input:disabled,select:disabled,textarea:disabled{opacity:.55;cursor:not-allowed}
+.prelist{display:flex;flex-direction:column;gap:4px}
+.prelist .btn{text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:52px}
+/* 목차 사이드바 */
+.toc{position:fixed;top:0;bottom:0;left:0;z-index:22;width:min(88vw,380px);background:var(--card);border-right:1px solid var(--line);display:flex;flex-direction:column;transform:translateX(-105%);transition:transform .18s ease-out;padding-top:env(safe-area-inset-top,0px)}
+.toc.open{transform:none;box-shadow:6px 0 24px rgba(0,0,0,.3)}
+.toc .thead{flex:none;display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;border-bottom:1px solid var(--line)}
+.toc .thead .btn{min-height:44px;font-size:14px;padding:4px 10px}
+.toc .tlist{flex:1 1 auto;min-height:0;overflow-y:auto;padding:4px 8px calc(20px + env(safe-area-inset-bottom,0px))}
+.toc h3{font-size:14px;margin:10px 4px 4px;color:var(--accent)}
+.toc .trow{display:flex;gap:8px;align-items:flex-start;width:100%;text-align:left;font:inherit;font-size:14px;color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--line);padding:8px 4px;min-height:48px;cursor:pointer}
+.toc .trow.cur{background:var(--sel-bg);font-weight:700}
+.toc .trow .ic{flex:none;width:1.6em}
+.toc .trow .sum{display:block;font-size:13px;color:var(--muted);font-weight:normal;overflow-wrap:anywhere}
+/* PiP 메모 창 — 반투명, 드래그로 네 모서리 중 하나로, 접기 */
+.pip{position:fixed;z-index:21;width:min(92vw,340px);max-height:62vh;max-height:62dvh;display:flex;flex-direction:column;border:1px solid var(--accent);border-radius:12px;background:var(--card);background:color-mix(in srgb,var(--card) 84%,transparent);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);box-shadow:0 8px 28px rgba(0,0,0,.35)}
+.pip.br{right:10px;bottom:calc(var(--fh,84px) + 8px)} .pip.bl{left:10px;bottom:calc(var(--fh,84px) + 8px)}
+.pip.tr{right:10px;top:calc(env(safe-area-inset-top,0px) + 96px)} .pip.tl{left:10px;top:calc(env(safe-area-inset-top,0px) + 96px)}
+.pip .phead{flex:none;display:flex;align-items:center;gap:6px;padding:4px 6px 4px 10px;border-bottom:1px solid var(--line);touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.pip .phead b{flex:1 1 auto;min-width:0;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pip .phead .btn{min-height:44px;min-width:44px;padding:2px 8px;background:transparent}
+.pip .pbody{flex:1 1 auto;min-height:0;overflow-y:auto;padding:8px 10px 10px;display:flex;flex-direction:column;gap:8px}
+.pip.min .pbody{display:none}
+.pip textarea{background:var(--input-bg)}
+.chips2{display:flex;flex-wrap:wrap;gap:6px} .chips2 .btn{min-height:44px;padding:4px 10px;font-size:14px;border-radius:22px}
+.arow{display:flex;gap:6px;align-items:center} .arow .play{flex:1 1 auto;min-height:52px;font-weight:700;text-align:left} .arow .btn{min-height:52px}
+.modal .figbox{flex:none!important;height:200px} .fields .pm{min-width:36px;padding:0 4px} .fields input[type=number]{padding:9px 6px}
+body.measuring .shapeopts{grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px} body.measuring .shapeopts .opt{padding:4px;gap:2px;min-height:48px} body.measuring .shapeopts .opt svg{width:52px;height:40px}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px} .slot{border:1px dashed var(--line);border-radius:8px;padding:6px;min-width:0;display:flex;flex-direction:column;gap:4px}
+body.measuring .slot [id^="pc-"],body.measuring .card.main>div>[id^="pc-"]{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* rev 90: 세로가 짧은 휴대폰(≈360×740)에서 카드 안 스크롤이 덜 생기게 조금 더 촘촘히 */
+@media (max-height:800px){body.measuring #view>.card.main{gap:6px;padding:8px 10px} body.measuring .pbar{height:28px} body.measuring h2{font-size:16px}
+  body.measuring .ph,body.measuring .phbtn{width:56px;height:56px} body.measuring .slot{padding:4px;gap:2px} body.measuring .slots{gap:6px} body.measuring .fields{gap:6px}
+  body.measuring .shapeopts .opt svg{width:46px;height:30px} body.measuring .shapeopts .opt{font-size:13px;line-height:1.3;min-height:44px} body.measuring label.f{gap:2px}}
+.setopt{display:flex;flex-wrap:wrap;gap:6px} .setopt .btn{flex:1 1 30%}
+.setopt .btn[aria-pressed="true"]{border-color:var(--accent);background:var(--sel-bg);font-weight:700;border-width:2px}
 </style>
 </head>
 <body>
 <div class="app">
-  <header><h1>서스펜션 측정 실행 <span id="revtag" class="small muted" style="font-weight:normal;cursor:pointer;text-decoration:underline"></span></h1><div id="revlog" class="hidden small" style="max-height:40vh;overflow:auto;border:1px solid var(--line);border-radius:8px;padding:6px 8px;margin:6px 0"></div><p class="small muted" style="margin:2px 0 0">기록과 사진은 이 휴대폰에만 저장됩니다. 끝나면 ZIP으로 묶어 구글 드라이브에 올리세요.</p></header>
+  <header><div style="display:flex;gap:8px;align-items:flex-start"><h1 style="flex:1 1 auto;min-width:0">서스펜션 측정 실행 <span id="revtag" class="small muted" style="font-weight:normal;cursor:pointer;text-decoration:underline"></span></h1><button type="button" class="btn" id="setbtn" style="flex:none;min-height:44px;padding:4px 12px;font-size:14px">⚙️ 설정</button></div><div id="revlog" class="hidden small" style="max-height:40vh;overflow:auto;border:1px solid var(--line);border-radius:8px;padding:6px 8px;margin:6px 0"></div><p class="small muted" style="margin:2px 0 0">기록과 사진은 이 휴대폰에만 저장됩니다. 끝나면 ZIP으로 묶어 구글 드라이브에 올리세요.</p></header>
+  <!-- rev 90: 측정 화면 위 네비 (목차 · 단계 · 선측정 · 설정 + 9단계 진행바). 목록·보기 화면에서는 숨김 -->
+  <div id="topnav" class="topnav hidden">
+    <div class="row">
+      <button type="button" class="btn" id="tocbtn">☰ 목차</button>
+      <div class="navstage" id="navstage"></div>
+      <button type="button" class="btn" id="prebtn">⚡ 선측정</button>
+      <button type="button" class="btn" id="setbtn2" aria-label="설정">⚙️</button>
+    </div>
+    <div class="pbar" id="pbar" role="slider" aria-label="진행 — 누르거나 좌우로 끌어 단계 이동"></div>
+  </div>
   <div id="view"></div>
   <p class="status" id="status" role="status"></p>
 </div>
 <div class="footer hidden" id="footer"><div class="in">
   <button type="button" class="btn" id="prev">이전</button>
+  <button type="button" class="btn" id="memo"><span class="lbl">📝 메모</span><b class="bdg hidden"></b></button>
+  <button type="button" class="btn" id="mic" data-mic=""><span class="lbl">🎙️</span><b class="bdg hidden"></b></button>
   <button type="button" class="btn primary" id="next">확인 · 다음</button>
+</div><div class="in devrow" data-dev="1">
   <button type="button" class="btn" id="devskip" data-dev="1" style="flex:none;border-style:dashed;font-size:12px;opacity:.7">개발용 건너뛰기</button>
   <input id="devjump" data-dev="1" inputmode="numeric" placeholder="번호·S아이디" style="flex:none;width:92px;font-size:12px;border:1px dashed var(--line);border-radius:6px;padding:4px;opacity:.7">
   <button type="button" class="btn" id="devjumpgo" data-dev="1" style="flex:none;border-style:dashed;font-size:12px;opacity:.7">이동</button>
 </div></div>
+<div id="toc" class="toc" aria-hidden="true"></div>
 <input type="file" id="rawpick" class="hidden">
 <input type="file" id="filepick" accept="image/*" capture="environment" class="hidden">
 
@@ -799,13 +927,14 @@ async function storePhoto(task,blob){
 }
 const urls=new Map();
 async function refreshPhotos(task){
+  updateBadges(); // rev 90: 📝 배지(특이사항 사진 수)
   const wrap=document.getElementById("pw-"+task.id);if(!wrap)return;wrap.textContent="";
   const all=await photosOf(run.id);const mine=all.filter(p=>p.taskId===task.id).sort((a,b)=>a.n-b.n);
   mine.forEach(p=>{if(!urls.has(p.id))urls.set(p.id,URL.createObjectURL(p.blob));const im=el("img","ph");im.src=urls.get(p.id);im.alt=task.title+" 사진 "+p.n;
     // rev 87: 누르면(꾹 눌러도) 크게 보기만 — 지우기·칸 옮기기는 그 안의 버튼으로, 실행 뒤 7초 되돌리기 (2026-11-20 유지호: 두 번 눌러 실수로 지워짐)
     im.onclick=()=>openPhoto(p,refreshAllPhotos);im.oncontextmenu=e=>{e.preventDefault();openPhoto(p,refreshAllPhotos)};
     wrap.appendChild(im)});
-  const b=el("button","phbtn","사진 찍기 +");b.type="button";b.onclick=()=>takePhoto(task);wrap.appendChild(b);
+  const b=el("button","phbtn","사진 찍기 +");b.type="button";b.onclick=()=>takePhoto(task);if(wrap.closest(".locked"))b.disabled=true;wrap.appendChild(b); // rev 90: 미리보기(잠금)면 촬영 막음
   const cap=document.getElementById("pc-"+task.id);if(cap)cap.textContent=task.memo?("특이사항 사진 "+mine.length+"장 (선택) · 사진을 누르면 크게 보기·지우기"):("사진 "+mine.length+" / "+(task.photoOpt?"권장 ":"필수 ")+task.shots+"장 · 사진을 누르면 크게 보기·지우기"+(/_s\d+$/.test(task.id)?"·칸 옮기기":""));
 }
 // 화면에 떠 있는 사진 칸들 (칸 옮기기 뒤 양쪽 칸을 다시 그리려고)
@@ -816,7 +945,7 @@ let toastTm=null;
 function toast(msg,undo){let t=document.getElementById("toast");if(t)t.remove();t=el("div","toast");t.id="toast";t.setAttribute("role","status");t.appendChild(el("span",null,msg));
   if(undo){const b=el("button","btn","되돌리기");b.type="button";b.onclick=async()=>{clearTimeout(toastTm);t.remove();await undo()};t.appendChild(b)}
   document.body.appendChild(t);clearTimeout(toastTm);toastTm=setTimeout(()=>t.remove(),7000)}
-const baseOf=id=>String(id).replace(/_(memo|raw|s\d+)$/,"");
+const baseOf=id=>String(id).replace(/_(memo|raw|audio|s\d+)$/,""); // rev 90: _audio(음성) 추가 — 사진 쪽 접미사 처리는 그대로
 function slotTargets(taskId){const m=String(taskId).match(/^(.*)_s(\d+)$/);if(!m)return[];const t=TASKS.find(x=>x.id===m[1])||PARKED.find(x=>x.id===m[1]);
   return t&&t.slots?slotTasks(t).filter(s=>s.id!==taskId):[]}
 const slotName=id=>{const m=String(id).match(/^(.*)_s(\d+)$/);if(!m)return"";const t=TASKS.find(x=>x.id===m[1])||PARKED.find(x=>x.id===m[1]);return t&&t.slots?t.slots[+m[2]-1]:"칸 "+m[2]};
@@ -835,14 +964,250 @@ function openPhoto(p,after){
     tg.forEach(s=>{const b=el("button","btn",s.label);b.type="button";b.onclick=async()=>{close();const old=p.taskId;await photoMove(p,s.id);after();
       toast(s.label+" 칸으로 옮김",async()=>{await photoMove(p,old);after()})};r.appendChild(b)});acts.appendChild(r)}
   const r2=el("div","row");const cb=el("button","btn","닫기");cb.type="button";cb.onclick=close;
-  const db=el("button","btn del","🗑 지우기");db.type="button";db.onclick=async()=>{close();await photoDelete(p);after();toast("사진을 지웠습니다",async()=>{await photoRestore(p);after()})};
+  const db=el("button","btn del","🗑️ 지우기");db.type="button";db.onclick=async()=>{close();await photoDelete(p);after();toast("사진을 지웠습니다",async()=>{await photoRestore(p);after()})};
   r2.appendChild(cb);r2.appendChild(db);acts.appendChild(r2);bg.appendChild(acts);
   pic.onclick=close;document.body.appendChild(bg)}
-// 모든 단계 아래: 특이사항 메모 + 특이사항 사진 (선택, 넘어가는 데 영향 없음). 사진은 taskId "<단계id>_memo"로 저장
-function memoBlock(t){const box=el("div","card");box.style.marginTop="12px";box.style.borderStyle="dashed";box.appendChild(el("h3",null,"특이사항 (선택)"));
-  const lab=el("label","f","메모");const ta=document.createElement("textarea");ta.rows=2;ta.style.width="100%";ta.placeholder="이상한 점, 측정 조건, 나중에 확인할 것";
-  run.notes=run.notes||{};ta.value=run.notes[t.id]||"";ta.oninput=()=>{const x=ta.value.trim();if(x)run.notes[t.id]=x;else delete run.notes[t.id]};ta.onblur=()=>{commitEdits();save()};
-  lab.appendChild(ta);box.appendChild(lab);box.appendChild(photoBlock({id:t.id+"_memo",title:t.title+" 특이사항",memo:true}));return box}
+// 특이사항 메모 + 원터치 상용구 + 특이사항 사진 (선택, 넘어가는 데 영향 없음). 사진은 taskId "<단계id>_memo"로 저장
+// rev 90: 화면 아래 「특이사항 (선택)」 칸을 없애고 아래 바 「📝 메모」 PiP 창과 선측정 창 안에서 쓴다
+const MEMO_CHIPS=["좌우 동일","부식·고착","누유 있음","간섭 주의","스캔 확인"];
+function memoBlock(t,onChange){const box=el("div");box.style.cssText="display:flex;flex-direction:column;gap:8px";
+  const lab=el("label","f","특이사항 메모 (선택)");const ta=document.createElement("textarea");ta.rows=2;ta.style.width="100%";ta.placeholder="이상한 점, 측정 조건, 나중에 확인할 것";
+  run.notes=run.notes||{};ta.value=run.notes[t.id]||"";
+  const set=()=>{const x=ta.value.trim();if(x)run.notes[t.id]=x;else delete run.notes[t.id];if(onChange)onChange()};
+  ta.oninput=set;ta.onblur=()=>{commitEdits();save()};
+  lab.appendChild(ta);box.appendChild(lab);
+  const ch=el("div","chips2");MEMO_CHIPS.forEach(w=>{const b=el("button","btn",w);b.type="button";
+    b.onclick=()=>{const cur=ta.value.trim();if(cur.split(/\s*,\s*/).includes(w)){toast("이미 들어 있습니다: "+w);return}ta.value=cur?cur+", "+w:w;set();commitEdits();save()};ch.appendChild(b)});
+  box.appendChild(ch);
+  box.appendChild(photoBlock({id:t.id+"_memo",title:t.title+" 특이사항",memo:true}));return box}
+
+/* ===== rev 90: 화면별 음성노트 — 🎙️ 한 번 누르면 바로 녹음, 다시 누르면 정지·저장. 사진 저장소(photos)에 taskId "<단계id>_audio", audio:true, at =====
+   녹음 중 이전·다음·이동·목록으로 가면 자동으로 멈추고 저장한 뒤 옮긴다. 형식은 브라우저가 되는 것 중 webm → ogg → mp4 순 */
+const AUD=id=>id+"_audio";
+const isAudio=p=>!!(p&&(p.audio||/_audio$/.test(String(p.taskId))));
+const fmtDur=ms=>{const s=Math.max(0,Math.round((ms||0)/1000));return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0")};
+function audioMime(){if(!window.MediaRecorder)return null;for(const m of ["audio/webm;codecs=opus","audio/webm","audio/ogg;codecs=opus","audio/ogg","audio/mp4","audio/aac"]){try{if(MediaRecorder.isTypeSupported(m))return m}catch(e){}}return ""}
+const audioExt=m=>/ogg/i.test(m||"")?".ogg":/mp4|aac|m4a/i.test(m||"")?".m4a":".webm";
+const audioCount=id=>((run&&run.photos&&run.photos[AUD(id)])||[]).length;
+let recS=null;
+function recButtons(){document.querySelectorAll("[data-mic]").forEach(b=>{const on=!!(recS&&b.dataset.mic&&recS.task.id===b.dataset.mic);b.classList.toggle("rec",on);
+  const txt=on?"🔴 "+fmtDur(Date.now()-recS.t0):(b.dataset.label||"🎙️");const l=b.querySelector(".lbl");if(l)l.textContent=txt;else b.textContent=txt})}
+async function recStart(task){
+  if(recS)return;
+  if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)||!window.MediaRecorder){toast("이 브라우저는 녹음을 지원하지 않습니다.");return}
+  let stream;try{stream=await navigator.mediaDevices.getUserMedia({audio:true})}
+  catch(e){toast("마이크를 쓸 수 없습니다 ("+e.name+") — 브라우저·앱 설정에서 마이크 권한을 허용하세요.");devLog("마이크 실패 | "+e.name+" "+(e.message||""));return}
+  const mime=audioMime();let mr;try{mr=new MediaRecorder(stream,mime?{mimeType:mime}:undefined)}catch(e){stream.getTracks().forEach(x=>x.stop());toast("녹음을 시작할 수 없습니다 ("+e.name+").");return}
+  const s={mr,stream,chunks:[],task,t0:Date.now(),mime,runId:run.id};mr.ondataavailable=e=>{if(e.data&&e.data.size)s.chunks.push(e.data)};
+  mr.start(1000);recS=s;s.tm=setInterval(recButtons,500);recButtons();
+}
+function recStop(){
+  if(!recS)return Promise.resolve();const s=recS;recS=null;clearInterval(s.tm);
+  return new Promise(res=>{let done=false;
+    const fin=async()=>{if(done)return;done=true;try{s.stream.getTracks().forEach(x=>x.stop());const dur=Date.now()-s.t0;const type=s.mr.mimeType||s.mime||"audio/webm";
+      const blob=new Blob(s.chunks,{type});
+      if(blob.size&&run&&run.id===s.runId){await storeAudio(s.task,blob,dur,type);toast("🎙️ 음성 저장 ("+fmtDur(dur)+") · "+s.task.title)}
+      else toast("녹음된 소리가 없어 저장하지 않았습니다.")}catch(e){status("음성 저장 실패: "+(e.message||e),true)}
+      recButtons();updateBadges();refreshAudioLists();res()};
+    if(s.mr.state==="inactive"){fin();return}
+    s.mr.onstop=fin;try{s.mr.stop()}catch(e){fin()}setTimeout(fin,3000)});
+}
+async function recToggle(task){if(recS){const same=recS.task.id===task.id;await recStop();if(same)return}return recStart(task)} // 다른 화면 녹음 중이면 그것을 저장하고 이 화면 녹음 시작
+async function storeAudio(task,blob,dur,mime){const k=AUD(task.id);const id=uid();const n=(await photosOf(run.id)).filter(p=>p.taskId===k).reduce((m,p)=>Math.max(m,p.n||0),0)+1;
+  await put("photos",{id,runId:run.id,taskId:k,n,blob,at:new Date().toISOString(),audio:true,mime,dur});
+  (run.photos[k]=run.photos[k]||[]).push(id);logEdit(task.id,"음성 추가",(run.photos[k].length-1)+"개",run.photos[k].length+"개");await save()}
+async function audioDelete(p){await del("photos",p.id);run.photos[p.taskId]=(run.photos[p.taskId]||[]).filter(x=>x!==p.id);logEdit(baseOf(p.taskId),"음성 삭제 ("+p.n+"번)","있음","");await save()}
+async function audioRestore(p){await put("photos",p);(run.photos[p.taskId]=run.photos[p.taskId]||[]).push(p.id);logEdit(baseOf(p.taskId),"음성 되살림 ("+p.n+"번)","","있음");await save()}
+let player=null,playingId=null;
+function stopPlayer(){if(player){try{player.pause()}catch(e){}}player=null;playingId=null}
+// 그 화면 음성 목록 — 큰 재생/일시정지 버튼 + 지우기(7초 되돌리기). ro=true면 지우기 막음(미리보기 모드)
+function audioList(taskId,ro,after){const box=el("div","alist");box.style.cssText="display:flex;flex-direction:column;gap:6px";
+  const fill=async()=>{if(!run)return;const list=(await photosOf(run.id)).filter(p=>p.taskId===AUD(taskId)).sort((a,b)=>a.n-b.n);box.textContent="";
+    if(!list.length){box.appendChild(el("div","small muted","음성 없음 — 🎙️를 누르면 바로 녹음합니다"));return}
+    const upd=()=>box.querySelectorAll(".play").forEach(b=>b._lab&&b._lab());
+    list.forEach(p=>{const r=el("div","arow");const pl=el("button","btn play");pl.type="button";
+      pl._lab=()=>{pl.textContent=(playingId===p.id&&player&&!player.paused?"⏸ 일시정지":"▶ 재생")+" · 음성 "+p.n+" · "+fmtDur(p.dur)+(p.at?" · "+new Date(p.at).toTimeString().slice(0,5):"")};pl._lab();
+      pl.onclick=()=>{if(playingId===p.id&&player){if(player.paused)player.play().catch(()=>{});else player.pause();return}
+        stopPlayer();if(!urls.has(p.id))urls.set(p.id,URL.createObjectURL(p.blob));player=new Audio(urls.get(p.id));playingId=p.id;
+        player.onplay=upd;player.onpause=upd;player.onended=()=>{playingId=null;upd()};player.play().catch(e=>{toast("재생할 수 없습니다 ("+e.name+")");playingId=null;upd()});upd()};
+      r.appendChild(pl);
+      if(!ro){const d=el("button","btn","🗑️");d.type="button";d.setAttribute("aria-label","음성 "+p.n+" 지우기");
+        d.onclick=async()=>{if(playingId===p.id)stopPlayer();await audioDelete(p);refreshAudioLists();updateBadges();if(after)after();
+          toast("음성 "+p.n+"을(를) 지웠습니다",async()=>{await audioRestore(p);refreshAudioLists();updateBadges();if(after)after()})};r.appendChild(d)}
+      box.appendChild(r)})};
+  box._fill=fill;fill();return box}
+function refreshAudioLists(){document.querySelectorAll(".alist").forEach(b=>b._fill&&b._fill())}
+// 아래 바 배지: 🎙️ = 그 화면 음성 수, 📝 = 메모(1) + 특이사항 사진 + 음성
+function updateBadges(){if(!run||!TASKS[idx])return;const t=TASKS[idx];
+  const set=(b,n)=>{const g=b&&b.querySelector(".bdg");if(!g)return;g.textContent=n;g.classList.toggle("hidden",!n)};
+  const na=audioCount(t.id);set($("#mic"),na);set($("#memo"),((run.notes||{})[t.id]?1:0)+((run.photos||{})[t.id+"_memo"]||[]).length+na)}
+
+/* ===== rev 90: 📝 메모 PiP 창 — 반투명 떠 있는 창. 머리를 끌어 네 모서리 중 하나로, 접기(▁)·닫기(✕) ===== */
+let pipOpen=false,pipCorner="br",pipMin=false;
+function closePip(){pipOpen=false;const p=document.getElementById("pip");if(p){p.remove();if(run){commitEdits();save()}}}
+function renderPip(){const old=document.getElementById("pip");if(old)old.remove();if(!pipOpen||!run||!TASKS[idx])return;
+  const t=TASKS[idx];const lk=isLocked();
+  const p=el("div","pip "+pipCorner+(pipMin?" min":""));p.id="pip";p.setAttribute("role","dialog");p.setAttribute("aria-label","특이사항 메모");
+  const h=el("div","phead");h.appendChild(el("b",null,"📝 "+(idx+1)+". "+t.title));
+  const mn=el("button","btn",pipMin?"▢":"▁");mn.type="button";mn.setAttribute("aria-label",pipMin?"펼치기":"접기");mn.onclick=()=>{pipMin=!pipMin;renderPip()};
+  const x=el("button","btn","✕");x.type="button";x.setAttribute("aria-label","닫기");x.onclick=()=>closePip();
+  h.appendChild(mn);h.appendChild(x);p.appendChild(h);
+  const b=el("div","pbody"+(lk?" locked":""));
+  if(lk)b.appendChild(el("div","small muted","🔒 미리보기 — 보기만 됩니다"));
+  const ar=el("div","arow");const mic=el("button","btn");mic.type="button";mic.dataset.mic=t.id;mic.dataset.label="🎙️ 이 화면 음성 녹음";mic.appendChild(el("span","lbl","🎙️ 이 화면 음성 녹음"));mic.style.flex="1";mic.onclick=()=>recToggle(t);if(lk)mic.disabled=true;ar.appendChild(mic);b.appendChild(ar);
+  b.appendChild(audioList(t.id,lk));
+  b.appendChild(memoBlock(t,updateBadges));
+  if(lk)b.querySelectorAll("textarea,.chips2 button,.phbtn").forEach(z=>z.disabled=true);
+  p.appendChild(b);document.body.appendChild(p);recButtons();
+  let drag=null;
+  h.addEventListener("pointerdown",e=>{if(e.target.closest("button"))return;const r=p.getBoundingClientRect();drag={dx:e.clientX-r.left,dy:e.clientY-r.top,moved:false};try{h.setPointerCapture(e.pointerId)}catch(_){}});
+  h.addEventListener("pointermove",e=>{if(!drag)return;drag.moved=true;p.className="pip"+(pipMin?" min":"");
+    p.style.left=Math.max(0,Math.min(innerWidth-p.offsetWidth,e.clientX-drag.dx))+"px";p.style.top=Math.max(0,Math.min(innerHeight-48,e.clientY-drag.dy))+"px"});
+  const end=()=>{if(!drag)return;const m=drag.moved;drag=null;if(!m)return;const r=p.getBoundingClientRect();
+    pipCorner=(r.top+r.height/2<innerHeight/2?"t":"b")+(r.left+r.width/2<innerWidth/2?"l":"r");p.style.left="";p.style.top="";p.className="pip "+pipCorner+(pipMin?" min":"")};
+  h.addEventListener("pointerup",end);h.addEventListener("pointercancel",end);
+}
+
+/* ===== rev 90: 도식 — 남는 높이에 맞춰 줄이고, 누르면 전체 화면으로 크게 ===== */
+function figNodes(t){const a=[];if(t.view)a.push(carView(t.view));
+  const fk=figFor(t);if(fk){const im=el("img");im.src="figs/"+fk+".svg";im.alt="측정 위치 도식";a.push(im)}else if(t.fig)a.push(figView(t.fig));return a} // 측정 도식(figs/, figure_rebuild/make_figs.py로 생성) — rev 77
+function figBox(node){const b=el("div","figbox");b.appendChild(node);b.appendChild(el("span","zoomhint","🔍"));b.setAttribute("role","button");b.setAttribute("aria-label","도식 크게 보기");b.dataset.keep="1";
+  b.onclick=()=>{const bg=el("div","figbig");const cl=node.cloneNode(true);cl.removeAttribute("style");bg.appendChild(cl);const x=el("button","btn x","✕ 닫기");x.type="button";bg.appendChild(x);bg.onclick=()=>bg.remove();document.body.appendChild(bg)};return b}
+
+/* ===== rev 90: 진행 위치 · 잠금 · 이동 ===== */
+// run.maxIdx = 지금까지 도달한 가장 뒤 화면. 그 안은 자유롭게 고치고, 그 뒤 화면은 미리보기(입력 막힘). 개발용 화면을 켜면 잠금 없음
+const isDev=()=>document.body.classList.contains("dev");
+const isLocked=()=>!!run&&!isDev()&&run.maxIdx!=null&&idx>run.maxIdx;
+function openIdx(r){if(r.maxIdx==null)r.maxIdx=resumeIdx(r);const i=resumeIdx(r);return isDev()?i:Math.min(i,r.maxIdx)}
+async function jumpTo(n){if(n<0||n>=TASKS.length)return;await recStop();const lk=isLocked();
+  if(!lk&&collect)collect();const gone=lk?[]:pruneInapplicable();commitEdits();idx=n;await save();showTask();
+  if(gone.length)status("앞에서 고른 보기가 바뀌어 맞지 않게 된 값 "+gone.length+"개를 지웠습니다: "+gone.join(", "),true);
+  else if(!applies(TASKS[n]))status("지금 고른 조건에서는 안 나오는 화면입니다",true)}
+async function leaveToList(){await recStop();if(collect&&!isLocked())collect();commitEdits();await save();showList()}
+function nearApplicable(i){for(let k=0;k<TASKS.length;k++){if(i+k<TASKS.length&&applies(TASKS[i+k]))return i+k;if(i-k>=0&&applies(TASKS[i-k]))return i-k}return i}
+function fitFooter(){const f=$("#footer");document.documentElement.style.setProperty("--fh",(f&&!f.classList.contains("hidden")?f.offsetHeight:0)+"px")}
+function setMode(m){const on=m==="task";document.body.classList.toggle("measuring",on);$("#topnav").classList.toggle("hidden",!on);
+  document.body.classList.toggle("inapp",!!(window.Capacitor||document.getElementById("app-btn")));
+  if(!on){closeToc();pipOpen=false;const p=document.getElementById("pip");if(p)p.remove();stopPlayer()}
+  document.querySelectorAll(".dim").forEach(x=>x.remove());fitFooter()}
+// 위 진행바: 9단계(STAGES) 칸, 칸 길이 = 그 단계 화면 수. 진하게 = 지금 위치까지, 옅게 = 도달한 곳까지
+function renderNav(){const t=TASKS[idx];const ns=$("#navstage");ns.textContent="";ns.appendChild(el("b",null,STAGES[t.st]));ns.appendChild(el("span",null,(idx+1)+" / "+TASKS.length+" · "+run.title));
+  const pb=$("#pbar");pb.textContent="";const segs=[];
+  STAGES.forEach((name,s)=>{const ids=[];TASKS.forEach((x,i)=>{if(x.st===s)ids.push(i)});const g=el("div","seg");g.style.flex=ids.length+" 1 0";g.title=name;
+    if(ids.length){const reached=run.maxIdx!=null?ids.filter(i=>i<=run.maxIdx).length:0;const done=ids.filter(i=>i<=idx).length;
+      const a=el("i");a.style.width=(reached/ids.length*100)+"%";const u=el("u");u.style.width=(done/ids.length*100)+"%";g.appendChild(a);g.appendChild(u)}
+    segs.push({g,ids,s});pb.appendChild(g)});
+  pb._segs=segs;const cur=el("div","cur");pb.appendChild(cur);
+  requestAnimationFrame(()=>{const z=segs.find(q=>q.ids.includes(idx));if(!z)return;const r=z.g.getBoundingClientRect(),pr=pb.getBoundingClientRect();cur.style.left=(r.left-pr.left+(z.ids.indexOf(idx)+0.5)/z.ids.length*r.width)+"px"});
+  pb.setAttribute("aria-valuemin","1");pb.setAttribute("aria-valuemax",String(TASKS.length));pb.setAttribute("aria-valuenow",String(idx+1));
+}
+function pbarIndex(pb,x){const segs=(pb._segs||[]).filter(z=>z.ids.length);if(!segs.length)return null;let best=segs[0],bd=Infinity;
+  for(const z of segs){const r=z.g.getBoundingClientRect();const d=x<r.left?r.left-x:x>r.right?x-r.right:0;if(d<bd){bd=d;best=z}}
+  const r=best.g.getBoundingClientRect();const k=Math.max(0,Math.min(best.ids.length-1,Math.floor((x-r.left)/Math.max(1,r.width)*best.ids.length)));return best.ids[k]}
+function bindPbar(){const pb=$("#pbar");let on=false,tip=null,cand=null;
+  const show=e=>{const i=pbarIndex(pb,e.clientX);if(i==null)return;cand=nearApplicable(i);const t=TASKS[cand];
+    if(!tip||!tip.isConnected){tip=el("div","tipx");pb.appendChild(tip)}
+    const pr=pb.getBoundingClientRect();tip.style.left=Math.max(90,Math.min(pr.width-90,e.clientX-pr.left))+"px";
+    tip.textContent=(!isDev()&&run.maxIdx!=null&&cand>run.maxIdx?"🔒 ":"")+(cand+1)+". "+t.title+" · "+STAGES[t.st]};
+  const hide=()=>{on=false;if(tip){tip.remove();tip=null}};
+  pb.addEventListener("pointerdown",e=>{if(!run||!document.body.classList.contains("measuring"))return;on=true;try{pb.setPointerCapture(e.pointerId)}catch(_){}show(e)});
+  pb.addEventListener("pointermove",e=>{if(on)show(e)});
+  pb.addEventListener("pointerup",()=>{if(!on)return;hide();const c=cand;cand=null;if(c!=null&&c!==idx)jumpTo(c)});
+  pb.addEventListener("pointercancel",()=>{hide();cand=null})}
+
+/* ===== rev 90: ☰ 목차 — 왼쪽에서 나오는 단계 목록. 상태 ✅ 입력 · ⏭ 건너뜀 · ⬜ 빈칸 · 🔒 미도달 ===== */
+function tocIcon(t,i){if(!isDev()&&run.maxIdx!=null&&i>run.maxIdx)return"🔒";const sk=(run.skipped||{})[t.id];if(sk&&sk!=="조건 안 맞음")return"⏭";if(missing(t))return"⬜";return"✅"}
+function taskSummary(t){const out=[];
+  Object.values(run.values||{}).forEach(x=>{if(x&&typeof x==="object"&&x.task===t.id)out.push(String(x.v)+(x.unit?" "+x.unit:""))});
+  if(t.kind==="shape"){const s=(run.shape||{})[t.axle]||{};const nm=(k,c)=>((SHAPES[k]||[]).find(z=>z[0]===c)||[c,c])[1];if(s.top||s.low)out.push("상단 "+nm("top",s.top||"plate")+" · 하단 "+(s.low?nm("low",s.low):"(안 고름)"))}
+  const np=Object.keys(run.photos||{}).filter(k=>k===t.id||k.startsWith(t.id+"_s")).reduce((a,k)=>a+(run.photos[k]||[]).length,0);if(np)out.push("📷"+np);
+  const na=audioCount(t.id);if(na)out.push("🎙️"+na);if((run.notes||{})[t.id])out.push("📝");
+  const sk=(run.skipped||{})[t.id];if(sk&&sk!=="조건 안 맞음")out.push("건너뜀: "+(sk===true?"해당 없음":sk));
+  if(run.pre&&run.pre[t.id])out.push("⚡ 선측정");return out.join(" · ")}
+function closeToc(){const tc=$("#toc");if(tc){tc.classList.remove("open");tc.setAttribute("aria-hidden","true")}const d=document.getElementById("tocdim");if(d)d.remove()}
+function openToc(){if(!run)return;const tc=$("#toc");tc.textContent="";
+  const hd=el("div","thead");const x=el("button","btn","✕ 닫기");x.type="button";x.onclick=closeToc;
+  const pre=el("button","btn","⚡ 선측정 (미리 입력)");pre.type="button";pre.onclick=()=>{closeToc();openPreSearch()};
+  const ls=el("button","btn","측정 목록으로");ls.type="button";ls.onclick=()=>{closeToc();leaveToList()};
+  hd.appendChild(x);hd.appendChild(pre);hd.appendChild(ls);const lg=el("div","small muted","✅ 입력 · ⏭ 건너뜀 · ⬜ 빈칸 · 🔒 미도달(보기만)");lg.style.flexBasis="100%";hd.appendChild(lg);tc.appendChild(hd);
+  const list=el("div","tlist");let st=-1,curRow=null;
+  TASKS.forEach((t,i)=>{if(!applies(t))return;if(t.st!==st){st=t.st;list.appendChild(el("h3",null,STAGES[st]))}
+    const r=el("button","trow"+(i===idx?" cur":""));r.type="button";r.appendChild(el("span","ic",tocIcon(t,i)));
+    const g=el("span");g.style.minWidth="0";g.appendChild(document.createTextNode((i+1)+". "+t.title));const sm=taskSummary(t);if(sm)g.appendChild(el("span","sum",sm));r.appendChild(g);
+    r.onclick=()=>{closeToc();if(i!==idx)jumpTo(i)};if(i===idx)curRow=r;list.appendChild(r)});
+  tc.appendChild(list);
+  if(!document.getElementById("tocdim")){const dim=el("div","dim");dim.id="tocdim";dim.style.zIndex="21";dim.onclick=closeToc;document.body.appendChild(dim)}
+  tc.classList.add("open");tc.setAttribute("aria-hidden","false");if(curRow)setTimeout(()=>curRow.scrollIntoView({block:"center"}),30)}
+
+/* ===== rev 90: ⚙️ 설정 — 테마 3종 · 기본 작업자 · 하단 여백 보정 (이 휴대폰에 기억) ===== */
+const THEMES=[["light","라이트"],["dark","다크"],["hybrid","하이브리드"]];
+const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+const lsSet=(k,v)=>{try{if(v==null||v==="")localStorage.removeItem(k);else localStorage.setItem(k,v)}catch(e){}};
+function setTheme(k){document.documentElement.dataset.theme=k;lsSet("measure-theme",k)}
+function workerNames(){const t=TASKS.find(x=>x.id==="S001");const f=t&&t.fields&&t.fields.find(x=>x[0]==="worker");return f&&/^pick:/.test(f[3]||"")?f[3].slice(5).split(","):[]}
+function modalBox(title){const m=el("div","modal");const bx=el("div","box");m.appendChild(bx);m.onclick=e=>{if(e.target===m)m.remove()};
+  const hd=el("div","mhead");hd.appendChild(el("h2",null,title));const x=el("button","btn","닫기");x.type="button";x.onclick=()=>m.remove();hd.appendChild(x);bx.appendChild(hd);
+  document.body.appendChild(m);return {m,bx,x}}
+function openSettings(){const {bx}=modalBox("⚙️ 설정");
+  bx.appendChild(el("div","small","화면 테마 — 누르면 바로 바뀝니다"));
+  const tg=el("div","setopt");const cur=document.documentElement.dataset.theme;
+  THEMES.forEach(([k,n])=>{const b=el("button","btn",n);b.type="button";b.setAttribute("aria-pressed",cur===k?"true":"false");b.onclick=()=>{setTheme(k);tg.querySelectorAll(".btn").forEach(z=>z.setAttribute("aria-pressed",z===b?"true":"false"))};tg.appendChild(b)});
+  bx.appendChild(tg);bx.appendChild(el("div","small muted","라이트: 밝은 곳 · 다크: 어두운 차량 하부 · 하이브리드: 밝은 화면에 수치 칸·자동 계산만 어둡게"));
+  const lab=el("label","f","기본 작업자 — 새 측정을 시작하면 기본정보 화면 작업자 칸에 자동으로 들어갑니다");
+  const names=workerNames();const sel=el("select");[["","(없음)"]].concat(names.map(n=>[n,n]),[["__other","직접 입력"]]).forEach(([v,t])=>{const o=el("option",null,t);o.value=v;sel.appendChild(o)});
+  const free=el("input");free.type="text";free.placeholder="이름 입력";const w=lsGet("measure-worker")||"";
+  if(!w)sel.value="";else if(names.includes(w))sel.value=w;else{sel.value="__other";free.value=w}
+  const sync=()=>{free.classList.toggle("hidden",sel.value!=="__other");lsSet("measure-worker",sel.value==="__other"?free.value.trim():sel.value)};
+  sel.onchange=sync;free.oninput=sync;sync();lab.appendChild(sel);lab.appendChild(free);bx.appendChild(lab);
+  bx.appendChild(el("div","small","하단 여백 보정 — 아래 버튼이 휴대폰 내비게이션 바(◁ ○ □)에 가리면 올리세요"));
+  const pg=el("div","setopt");const pv=+(lsGet("measure-padb")||0);
+  [[0,"기본"],[24,"+24px"],[48,"+48px"]].forEach(([v,n])=>{const b=el("button","btn",n);b.type="button";b.setAttribute("aria-pressed",pv===v?"true":"false");
+    b.onclick=()=>{document.documentElement.style.setProperty("--padb",v+"px");lsSet("measure-padb",v?String(v):"");pg.querySelectorAll(".btn").forEach(z=>z.setAttribute("aria-pressed",z===b?"true":"false"));setTimeout(fitFooter,50)};pg.appendChild(b)});
+  bx.appendChild(pg);bx.appendChild(el("div","small muted","설정은 이 휴대폰(브라우저)에만 저장됩니다. 측정 기록에는 들어가지 않습니다."))}
+
+/* ===== rev 90: ⚡ 선측정 (미리 입력) — 지금 위치를 그대로 두고 뒤쪽 화면 값·사진·메모·음성을 미리 넣는다 =====
+   값은 원래 자리(run.values·photos·notes·skipped)에 그대로, run.pre[화면아이디]=시각 표시만 더한다. 그 화면에 가면 배지와 함께 채워져 있다.
+   앞에서 보기를 바꿔 그 화면이 안 나오게 되면 다른 값처럼 pruneInapplicable이 지운다 */
+let preBuilding=false,preSave=null;
+const preable=t=>["measure","hub","choice","photo","form"].includes(t.kind)||!!t.fields||!!t.shots;
+const mediaCount=t=>Object.keys(run.photos||{}).filter(k=>k===t.id||k.startsWith(t.id+"_")).reduce((a,k)=>a+(run.photos[k]||[]).length,0);
+function openPreSearch(){if(!run)return;const {m,bx}=modalBox("⚡ 선측정 (미리 입력)");
+  bx.appendChild(el("p","small muted","지금 화면("+(idx+1)+"번)은 그대로 두고 뒤쪽 화면의 값·사진·메모·음성을 미리 넣습니다. 그 화면에 가면 「⚡ 앞에서 미리 측정한 값입니다」와 함께 채워져 있습니다."));
+  const q=el("input");q.type="text";q.placeholder="찾기 — 항목 이름·S아이디·단계 (예: 로드, S169, 분해)";bx.appendChild(q);
+  const ls=el("div","prelist");bx.appendChild(ls);
+  const cands=TASKS.map((t,i)=>[t,i]).filter(([t,i])=>i>idx&&applies(t)&&preable(t));
+  const draw=()=>{ls.textContent="";const s=q.value.trim().toLowerCase();let n=0;
+    cands.forEach(([t,i])=>{const hay=(t.id+" "+t.title+" "+STAGES[t.st]).toLowerCase();if(s&&!s.split(/\s+/).every(w=>hay.includes(w)))return;if(++n>80)return;
+      const b=el("button","btn");b.type="button";b.appendChild(el("span",null,(i+1)+". "+t.title));
+      b.appendChild(el("span","small muted",STAGES[t.st]+" · "+t.id+(missing(t)?" · 빈칸":" · 입력됨")+(run.pre&&run.pre[t.id]?" · ⚡":"")));
+      b.onclick=()=>{m.remove();openPreEntry(t,i)};ls.appendChild(b)});
+    if(!n)ls.appendChild(el("div","small muted",cands.length?"맞는 항목이 없습니다.":"지금 고른 조건에서 뒤쪽에 미리 넣을 화면이 없습니다."));
+    if(n>80)ls.appendChild(el("div","small muted","… "+(n-80)+"개 더 — 찾을 말을 더 적으세요"))};
+  q.oninput=draw;draw()}
+function openPreEntry(t,i){
+  const {m,bx,x}=modalBox("⚡ "+(i+1)+". "+t.title);m.onclick=null;
+  const before={md:mediaCount(t),note:(run.notes||{})[t.id]||""};
+  bx.appendChild(el("div","prebadge","선측정 — 지금 위치("+(idx+1)+"번)는 그대로입니다 · "+STAGES[t.st]));
+  if(t.tip)bx.appendChild(el("p","small muted",t.tip));
+  if(t.datum)bx.appendChild(datumBox(t.datum[0],t.datum[1]));
+  figNodes(t).forEach(n=>bx.appendChild(figBox(n)));
+  const c=el("div","card");const keep=collect;collect=null;preBuilding=true;
+  try{if(t.kind==="choice")choiceUI(t,c);if(t.fields)formUI(t,c);if(t.kind==="measure"||t.kind==="hub")measureUI(t,c);
+    if(t.slots)slotTasks(t).forEach(st=>{c.appendChild(el("div","small",st.label));c.appendChild(photoBlock(st))});else if(t.shots)c.appendChild(photoBlock(t))}
+  finally{preBuilding=false}
+  const pc=collect;collect=keep;bx.appendChild(c);
+  const mc=el("div","card");mc.appendChild(el("h3",null,"특이사항 · 음성 (선택)"));
+  const mic=el("button","btn");mic.type="button";mic.dataset.mic=t.id;mic.dataset.label="🎙️ 이 화면 음성 녹음";mic.appendChild(el("span","lbl","🎙️ 이 화면 음성 녹음"));mic.onclick=()=>recToggle(t);
+  mc.appendChild(mic);mc.appendChild(audioList(t.id,false));mc.appendChild(memoBlock(t));bx.appendChild(mc);recButtons();
+  bx.appendChild(el("p","small muted","사진·음성·메모는 찍고 적는 즉시 저장됩니다. 값은 「저장」을 눌러야 들어갑니다."));
+  const row=el("div","runrow");const cancel=el("button","btn","닫기 (값 저장 안 함)");cancel.type="button";const ok=el("button","btn primary","저장 — 지금 위치로");ok.type="button";
+  row.appendChild(cancel);row.appendChild(ok);bx.appendChild(row);
+  const close=async()=>{preSave=null;if(recS&&recS.task.id===t.id)await recStop();m.remove();commitEdits();await save();updateBadges();if(pipOpen)renderPip()};
+  const mark=()=>{run.pre=run.pre||{};run.pre[t.id]=new Date().toISOString()};
+  const doSave=async()=>{if(pc)pc();mark();await close();toast("⚡ "+(i+1)+". "+t.title+" — 미리 저장했습니다. 그 화면에 가면 채워져 있습니다.")};
+  cancel.onclick=x.onclick=async()=>{if(mediaCount(t)!==before.md||((run.notes||{})[t.id]||"")!==before.note)mark();await close()};
+  ok.onclick=doSave;preSave=doSave;
+}
 function photoBlock(t){const box=el("div");box.id="pb-"+t.id;shownBlocks[t.id]=t;
   // 범프스토퍼 위치처럼 photoReq.unless 값을 고르면 사진 칸을 숨긴다
   if(t.photoReq&&t.photoReq.unlessKey){const pv=run.values[t.photoReq.unlessKey];if(pv&&pv.v===t.photoReq.unless)box.classList.add("hidden")}const cap=el("div","small muted");cap.id="pc-"+t.id;const w=el("div","photos");w.id="pw-"+t.id;box.appendChild(cap);box.appendChild(w);setTimeout(()=>refreshPhotos(t));return box}
@@ -877,7 +1242,7 @@ function showDev(v){
     d.appendChild(el("div",null,sid+" · "+(i>=0?(i+1)+"단계":st)+" · "+(t?t.title:name)+(old?" · 옛 "+old:"")))});v.appendChild(d);
 }
 async function showList(){
-  unlockRun();$("#footer").classList.add("hidden");const v=$("#view");v.textContent="";
+  if(recS)await recStop();unlockRun();$("#footer").classList.add("hidden");setMode("list");const v=$("#view");v.textContent="";
   // 위쪽 탭: 측정 / 개발용
   {const tb=el("div","opts");[["measure","측정"],["dev","개발용"]].forEach(([k,name])=>{const b=el("button","opt",name);b.type="button";b.setAttribute("aria-pressed",listTab===k?"true":"false");b.onclick=()=>{listTab=k;showList()};tb.appendChild(b)});v.appendChild(tb)}
   if(listTab==="dev"){showDev(v);return}
@@ -898,7 +1263,9 @@ async function showList(){
     // 같은 날 같은 이름의 측정이 이미 있으면 「_2」「_3」…을 붙인다 (폴더·ZIP 이름이 겹쳐 사진이 덮이지 않게)
     {const day=localDay(),taken=new Set((await getAll("runs")).filter(r=>localDay(r.createdAt)===day).map(r=>r.title));
      if(taken.has(t)){let k=2;while(taken.has(t+"_"+k))k++;t=t+"_"+k;devLog("같은 날 같은 차량 이름이 있어 「"+t+"」로 만듦");setTimeout(()=>status("오늘 같은 이름의 측정이 있어 「"+t+"」로 만들었습니다."),50)}}
-    run={id:uid(),idv:2,title:t,scope,createdAt:new Date().toISOString(),pos:0,shape:{F:{},R:{}},values:{},photos:{},skipped:{}};idx=0;await lockRun(run.id);await save();showTask()};
+    run={id:uid(),idv:2,title:t,scope,createdAt:new Date().toISOString(),pos:0,maxIdx:0,shape:{F:{},R:{}},values:{},photos:{},skipped:{}};idx=0;
+    {const w=lsGet("measure-worker");if(w)run.values.worker={v:w,cell:"B3",label:"작업자",task:"S001"}} /* rev 90: ⚙️ 설정의 기본 작업자 */
+    await lockRun(run.id);await save();showTask()};
   c.appendChild(b);v.appendChild(c);
   const lc=el("div","card");lc.appendChild(el("h2",null,"이 휴대폰에 저장된 측정"));v.appendChild(lc);
   const runs=(await getAll("runs")).sort((a,b)=>(b.updatedAt||"").localeCompare(a.updatedAt||""));
@@ -909,7 +1276,7 @@ async function showList(){
      const sk=Object.values(r.skipped||{}).filter(x=>x!=="조건 안 맞음").length;
      left.appendChild(el("div","small muted","시작 "+fmt(r.createdAt)+" · 마지막 수정 "+fmt(r.updatedAt)+" · 작업한 시간 "+dur));
      left.appendChild(el("div","small muted",scopeName(r.scope)+" · 지금 "+(resumeIdx(r)+1)+"번째 화면 / 전체 "+TASKS.length+" · 건너뛴 항목 "+sk+"개"+zipState(r)))}
-    const go=el("button","btn","이어서");go.type="button";go.onclick=async()=>{const fr=await openRun(r);if(!fr)return;run=fr;idx=resumeIdx(fr);showTask()};
+    const go=el("button","btn","이어서");go.type="button";go.onclick=async()=>{const fr=await openRun(r);if(!fr)return;run=fr;idx=openIdx(fr);showTask()};
     const zip=el("button","btn sub","ZIP");zip.type="button";zip.onclick=async()=>{const fr=await openRun(r);if(!fr)return;run=fr;await exportZip();unlockRun()};
     const rm=el("button","btn sub","지우기");rm.type="button";rm.onclick=async()=>{if(!await lockRun(r.id)){status(BUSY,true);return}askDelete(r,lc,row)};
     const see=el("button","btn","보기");see.type="button";see.onclick=async()=>{const fr=await openRun(r);if(!fr)return;run=fr;showView()};
@@ -965,44 +1332,58 @@ function commitEdits(){
       logEdit(owner,label,a,b)})});
   takeSnap();
 }
+// rev 90: 측정 화면 = 한 화면(100dvh, 바깥 스크롤 없음). 위 네비·진행바(#topnav) · 차 상태 배지 · 가운데 카드(제목 · 1줄 팁 [? 상세기준] · 도식(남는 높이에 맞춤, 누르면 크게) · 입력 · 사진) · 아래 바
+// 긴 설명·기준점·수정 기록은 아래에서 올라오는 상세 시트(#detsheet). 카드가 넘칠 때만 카드 안에서 스크롤(최후수단)
 function showTask(){
-  $("#footer").classList.remove("hidden");const t=TASKS[idx];takeSnap();const v=$("#view");v.textContent="";collect=null;confirmSkip=false;
-  const top=el("div");const pr=el("div","progress");const bar=el("i");bar.style.width=(idx/TASKS.length*100)+"%";pr.appendChild(bar);top.appendChild(pr);
-  const sb=el("div","stagebar");sb.appendChild(el("span",null,run.title));sb.appendChild(el("span",null,STAGES[t.st]+" · "+(idx+1)+"/"+TASKS.length));top.appendChild(sb);
-  {const tl=el("button","btn","측정 목록으로");tl.type="button";tl.style.cssText="align-self:flex-end;min-height:40px;padding:4px 12px;font-size:14px;margin-top:6px";tl.onclick=async()=>{if(collect)collect();commitEdits();await save();showList()};top.style.cssText="display:flex;flex-direction:column";top.appendChild(tl)} // rev 89: 스크롤 없이 목록으로v.appendChild(top);
+  $("#footer").classList.remove("hidden");setMode("task");if(run.maxIdx==null)run.maxIdx=resumeIdx(run);
+  const t=TASKS[idx];takeSnap();const v=$("#view");v.textContent="";collect=null;confirmSkip=false;
+  document.querySelectorAll(".dim").forEach(x=>x.remove());
+  const lk=isLocked();renderNav();
   // 단계 순서를 바꿔 가는 중이라 화면 번호(idx+1)와 단계 id가 다를 수 있다.
   const cs=t.car||"static";const carRow=el("div","carstate");carRow.appendChild(el("span","small muted","차 상태"));
   CARSTATES.forEach(([k,name],i)=>{if(i)carRow.appendChild(el("span","arrow","→"));carRow.appendChild(el("span","cs"+(k===cs?" on":""),name))});
   v.appendChild(carRow);
-  const c=el("div","card");const h=el("h2");h.appendChild(el("span","mono muted",(TASKS.indexOf(t)+1)+". ")); /* 화면 번호는 지금 순서대로 자동으로 매긴다. 단계 id(t.id)는 저장 기록용이라 바꾸지 않는다 */h.appendChild(document.createTextNode(t.title));c.appendChild(h);
-  if(t.tip)c.appendChild(el("p","small muted",t.tip));
-  if(t.datum)c.appendChild(datumBox(t.datum[0],t.datum[1]));
-  if(t.view)c.appendChild(carView(t.view));
-  {const fk=figFor(t);if(fk){const im=el("img");im.src="figs/"+fk+".svg";im.alt="측정 위치 도식";im.style.cssText="display:block;width:100%;max-width:380px;margin:8px auto;border:1px solid var(--line);border-radius:6px;background:#fff";c.appendChild(im)}else if(t.fig)c.appendChild(figView(t.fig));} // 측정 도식(figs/, figure_rebuild/make_figs.py로 생성) — rev 77
+  if(lk){const lb=el("div","lockbar");lb.appendChild(el("span",null,"🔒 미리보기 모드 (앞 단계를 완료해야 입력 가능)"));const rb=el("button","btn","현재 작업 위치로 복귀");rb.type="button";rb.onclick=()=>jumpTo(run.maxIdx);lb.appendChild(rb);v.appendChild(lb)}
+  if(run.pre&&run.pre[t.id]){const pb=el("div","prebadge");pb.appendChild(el("span",null,"⚡ 앞에서 미리 측정한 값입니다"));pb.appendChild(el("span","small muted",String(run.pre[t.id]).slice(5,16).replace("T"," ")));v.appendChild(pb)}
+  const c=el("div","card main");const h=el("h2");h.appendChild(el("span","mono muted",(TASKS.indexOf(t)+1)+". ")); /* 화면 번호는 지금 순서대로 자동으로 매긴다. 단계 id(t.id)는 저장 기록용이라 바꾸지 않는다 */h.appendChild(document.createTextNode(t.title));c.appendChild(h);
+  // 상세 시트 (전체 설명 · 기준점 · 이 항목 수정 기록) — 닫혀 있어도 화면 밖에 그려 둔다
+  const sh=el("div","sheet");sh.id="detsheet";sh.setAttribute("aria-hidden","true");
+  const closeSheet=()=>{sh.classList.remove("open");sh.setAttribute("aria-hidden","true");const d=document.getElementById("sheetdim");if(d)d.remove()};
+  const openSheet=()=>{sh.classList.add("open");sh.setAttribute("aria-hidden","false");if(!document.getElementById("sheetdim")){const d=el("div","dim");d.id="sheetdim";d.onclick=closeSheet;document.body.appendChild(d)}};
+  {const sh1=el("div","shead");sh1.appendChild(el("h3",null,"상세기준"));const x=el("button","btn","닫기");x.type="button";x.dataset.keep="1";x.onclick=closeSheet;sh1.appendChild(x);sh.appendChild(sh1)}
+  const mine=(run.log||[]).filter(e=>e.task===t.id||String(e.task).startsWith(t.id+"_"));
+  const needSheet=!!((t.tip&&t.tip.length>24)||t.datum||mine.length);
+  if(t.tip||needSheet){const tr=el("div","tiprow");const tp=el("p","small muted tipline",t.tip||"");if(needSheet)tp.onclick=openSheet;tr.appendChild(tp);
+    if(needSheet){const qb=el("button","btn","? 상세기준");qb.type="button";qb.dataset.keep="1";qb.onclick=openSheet;tr.appendChild(qb)}c.appendChild(tr)}
+  if(t.tip)sh.appendChild(el("p",null,t.tip));
+  if(t.datum)sh.appendChild(datumBox(t.datum[0],t.datum[1]));
+  if(mine.length){const d=document.createElement("details");d.className="card small";
+    const sm=document.createElement("summary");sm.textContent="이 항목 수정 기록 ("+mine.length+")";d.appendChild(sm);
+    mine.slice().reverse().forEach(e=>d.appendChild(el("div",null,e.at.slice(5)+" · "+e.what+": "+(e.from||"(빈칸)")+" → "+(e.to||"(빈칸)"))));sh.appendChild(d)}
+  figNodes(t).forEach(n=>c.appendChild(figBox(n)));
   if(t.derived)c.appendChild(derivedView()); // 도식(기준면 사슬) 아래에 계산값
   (t.warn||[]).forEach(w=>{if(w.ids.some(id=>String(run.skipped[id]||"").startsWith(w.pre))){const b=el("div","card small",w.text);b.style.borderColor="var(--warn)";b.style.color="var(--warn)";c.appendChild(b)}});
-  if(t.kind==="info"&&t.items){const ul=el("ul","small");t.items.forEach(x=>ul.appendChild(el("li",null,x)));c.appendChild(ul)}
+  if(t.kind==="info"&&t.items){const ul=el("ul","small");ul.style.margin="0";t.items.forEach(x=>ul.appendChild(el("li",null,x)));c.appendChild(ul)}
   // 중간 점검 화면: 지금까지(이 화면 앞) 빈 단계를 바로 보여 준다
   if(t.showMissing){const empty=TASKS.slice(0,idx).filter(missing);const box=el("div","card small");box.style.background="var(--bg)";
     if(!empty.length)box.appendChild(el("div",null,"지금까지 빈 단계 없음"));
     else{box.appendChild(el("div",null,"지금까지 빈 단계 "+empty.length+"개 — 누르면 그 화면으로 갑니다"));const ul=el("ul");ul.style.margin="0";
-      empty.forEach(e=>{const li=el("li");const a=el("a",null,(TASKS.indexOf(e)+1)+". "+e.title);a.href="#";a.onclick=async ev=>{ev.preventDefault();if(collect)collect();commitEdits();idx=TASKS.indexOf(e);await save();showTask()};li.appendChild(a);ul.appendChild(li)});box.appendChild(ul)}
+      empty.forEach(e=>{const li=el("li");const a=el("a",null,(TASKS.indexOf(e)+1)+". "+e.title);a.href="#";a.onclick=ev=>{ev.preventDefault();jumpTo(TASKS.indexOf(e))};li.appendChild(a);ul.appendChild(li)});box.appendChild(ul)}
     c.appendChild(box)}
   if(t.kind==="choice")choiceUI(t,c);
   if(t.kind==="shape")shapeUI(t,c);
   if(t.fields)formUI(t,c); // form 단계, 또는 안내(info) 단계에 붙인 입력 칸
   if(t.kind==="measure"||t.kind==="hub")measureUI(t,c);
   // slots: 이유가 다른 사진을 칸별로 따로 찍는다. 사진은 "<단계id>_s1", "_s2"… 로 저장
-  if(t.slots)slotTasks(t).forEach(st=>{c.appendChild(el("div","small",st.label));c.appendChild(photoBlock(st))});
+  // rev 90: 칸별 사진은 칸 상자를 격자로 (한 화면에 들어가게)
+  if(t.slots){const sg=el("div","slots");slotTasks(t).forEach(st=>{const d=el("div","slot");d.appendChild(el("div","small",st.label));d.appendChild(photoBlock(st));sg.appendChild(d)});c.appendChild(sg)}
   else if(t.shots)c.appendChild(photoBlock(t));
-  v.appendChild(c);
-  v.appendChild(memoBlock(t));
-  {const mine=(run.log||[]).filter(e=>e.task===t.id||String(e.task).startsWith(t.id+"_"));
-   if(mine.length){const d=document.createElement("details");d.className="card small";d.style.marginTop="12px";
-     const sm=document.createElement("summary");sm.textContent="이 항목 수정 기록 ("+mine.length+")";d.appendChild(sm);
-     mine.slice().reverse().forEach(e=>d.appendChild(el("div",null,e.at.slice(5)+" · "+e.what+": "+(e.from||"(빈칸)")+" → "+(e.to||"(빈칸)"))));v.appendChild(d)}}
-  const back=el("button","btn","측정 목록으로");back.type="button";back.onclick=async()=>{if(collect)collect();commitEdits();await save();showList()};v.appendChild(back);
-  $("#prev").disabled=idx===0;$("#next").textContent=idx===TASKS.length-1?"확인 · 끝":"확인 · 다음";window.scrollTo(0,0);
+  v.appendChild(c);v.appendChild(sh);
+  // 특이사항 메모·사진·음성은 아래 바 「📝 메모」(PiP 창)와 「🎙️」로 (rev 90). 측정 목록으로는 ☰ 목차 안에
+  if(lk){c.classList.add("locked");c.querySelectorAll("input,select,textarea,button").forEach(x=>{if(!x.dataset.keep)x.disabled=true});collect=null}
+  $("#prev").disabled=idx===0;$("#next").textContent=lk?"⤴ 작업 위치로":(idx===TASKS.length-1?"확인 · 끝":"확인 · 다음");
+  $("#mic").disabled=lk;$("#mic").dataset.mic=t.id;
+  updateBadges();recButtons();if(pipOpen)renderPip();fitFooter();window.scrollTo(0,0);
 }
 // 간섭검사 도식 (단순 선 그림, 재는 곳을 화살표 하나로)
 // 화면별 측정 도식 (rev 77). 값이 [코일오버/스트럿, 분리형]이면 리어 스프링 형태(springR)로 고른다.
@@ -1056,7 +1437,7 @@ function shapeUI(t,c){
   const cur=run.shape[t.axle]=run.shape[t.axle]||{};
   if(t.axle==="R"){const same=el("button","btn","앞과 같음");same.type="button";same.onclick=()=>{run.shape.R=JSON.parse(JSON.stringify(run.shape.F));showTask()};c.appendChild(same)}
   [["top","상단 끝"],["low","하단 끝"]].forEach(([k,label])=>{
-    c.appendChild(el("div","small",label));const g=el("div","opts");
+    c.appendChild(el("div","small",label));const g=el("div","opts shapeopts"); // rev 90: shapeopts = 측정 화면에서 3열·작은 그림
     SHAPES[k].forEach(([val,name])=>{const b=el("button","opt");b.type="button";b.setAttribute("aria-pressed",cur[k]===val?"true":"false");
       if(ICON[val]&&k!=="susp"){const s=document.createElement("span");s.innerHTML=svg(val);b.appendChild(s)}
       b.appendChild(el("span",null,name||val));
@@ -1114,7 +1495,11 @@ function fieldInput(key,label,cell,unit){
   if(unit==="date"){inp.type="date";inp.value=(pv&&pv.v)||today()}
   else if(unit==="mm"||unit==="deg"){inp.type="number";inp.inputMode="decimal";inp.step="0.5";inp.value=pv?(pv.raw!=null?pv.raw:pv.v):""}
   else{inp.type="text";inp.value=pv?pv.v:""}
-  if(unit==="mm"||unit==="deg"){const u=el("div","unit");u.appendChild(inp);u.appendChild(el("span",null,unit==="deg"?"°":"mm"));lab.appendChild(u)}else lab.appendChild(inp);
+  if(unit==="mm"||unit==="deg"){const u=el("div","unit");u.appendChild(inp);u.appendChild(el("span",null,unit==="deg"?"°":"mm"));
+    // rev 90: ± 부호 전환 — 휴대폰 숫자 키패드에 − 가 없는 경우가 있어서
+    const pm=el("button","btn pm","±");pm.type="button";pm.setAttribute("aria-label","부호 바꾸기 (+ ↔ −)");
+    pm.onclick=e=>{e.preventDefault();const x=inp.value.trim();if(x===""||isNaN(+x)){toast("값을 먼저 넣은 뒤 ±를 누르면 부호가 바뀝니다");inp.focus();return}inp.value=String(-Number(x));inp.dispatchEvent(new Event("input",{bubbles:true}))};
+    u.appendChild(pm);lab.appendChild(u)}else lab.appendChild(inp);
   return [lab,inp];
 }
 function formUI(t,c){
@@ -1136,6 +1521,7 @@ function rawBox(t){const box=el("div","card");box.style.background="var(--bg)";c
   box.appendChild(b);show();return box}
 function measureUI(t,c){
   const key=t.key||("m"+t.id);const prev=run.values[key];const [lab,inp]=fieldInput(key,"잰 값",t.cell,"mm");c.appendChild(lab);
+  const pre=preBuilding; // rev 90: 선측정 창에서 만든 화면이면 건너뛰기 버튼이 화면을 넘기지 않고 선측정 저장을 부른다
   let fromRim=null;
   if(t.kind==="hub"){const ck=el("label","check");fromRim=el("input");fromRim.type="checkbox";fromRim.id="rim-"+t.id;fromRim.checked=!!(prev&&prev.fromRim);
     ck.appendChild(fromRim);ck.appendChild(document.createTextNode("림 하단부터 쟀음 (림 외경의 반을 뺀 값을 적습니다)"));c.appendChild(ck);
@@ -1161,11 +1547,11 @@ function measureUI(t,c){
       box.appendChild(el("div","small","코일오버라서 이 스프링 길이는 여기서 건너뛸 수 있습니다."));
       box.appendChild(el("div","small muted","쇽을 탈거한 뒤 분해하기 전에 조립 상태 스프링 길이를 재면, 드룹 → 정하중으로 바퀴가 올라온 거리 × 스프링 모션비만큼 빼서 이 값을 역산할 수 있습니다 (모션비를 일정하게 보는 근사라 추정값). 그래서 건너뛰면 탈거 후 조립 상태 길이 측정이 필수가 됩니다. 줄자로 재기 어려울 때만 건너뛰세요."));
       const sk=el("button","btn","건너뛰기 (탈거 후 조립 길이로 역산)");sk.type="button";
-      sk.onclick=()=>{skipNow=true;inp.value="";go(1)};box.appendChild(sk);c.appendChild(box)}}
+      sk.onclick=()=>{skipNow=true;inp.value="";if(pre&&preSave)preSave();else go(1)};box.appendChild(sk);c.appendChild(box)}}
   if(t.laterSkip){const box=el("div","card");box.style.background="var(--bg)";
     box.appendChild(el("div","small muted",t.laterNote||""));
     const sk=el("button","btn","건너뛰기 ("+t.laterSkip+")");sk.type="button";
-    sk.onclick=()=>{skipNow=t.laterSkip;inp.value="";go(1)};box.appendChild(sk);c.appendChild(box)}
+    sk.onclick=()=>{skipNow=t.laterSkip;inp.value="";if(pre&&preSave)preSave();else go(1)};box.appendChild(sk);c.appendChild(box)}
   let keep=run.skipped[t.id];if(!(keep&&typeof keep==="string"&&keep!=="조건 안 맞음"&&(t.laterSkip||t.coilSkip)))keep=null;
   if(keep&&!(run.values[key])){const kb=el("div","card small");kb.style.background="var(--bg)";kb.appendChild(el("span",null,"건너뜀: "+keep+" "));const cx=el("button","btn","건너뛰기 취소");cx.type="button";cx.onclick=()=>{keep=null;kb.remove()};kb.appendChild(cx);c.appendChild(kb)}
   let na=null;
@@ -1253,7 +1639,7 @@ function datumBox(a,kind){const d=datumOf(run.shape,a);const b=el("div","card sm
   const rows={car:[["위 (B)",d.B],["아래 (K)",d.K]],damper:[["위 (R)",d.R],["아래 (K)",d.K]],mount:[["B",d.B],["R",d.R]]}[kind]||[];
   b.appendChild(el("div",null,"기준점 — 체결 타입에 맞춰 자동 표시"));rows.forEach(([k,v])=>b.appendChild(el("div",null,k+": "+v)));return b}
 function derivedView(){const D=derive(run.values||{},run.shape||{},run.skipped||{});const box=el("div");
-  ["F","R"].forEach(a=>{const c=el("div","card small");c.style.background="var(--bg)";c.appendChild(el("h3",null,(a==="F"?"프론트":"리어")+" 계산값 (자동 · AI도출-미검증)"));
+  ["F","R"].forEach(a=>{const c=el("div","card small autocalc");c.appendChild(el("h3",null,(a==="F"?"프론트":"리어")+" 계산값 (자동 · AI도출-미검증)")); // rev 90: 자동 계산 칸 색(테마)
     D[a].items.forEach(it=>{const row=el("div",null,it.name+": "+(it.v==null?"— (입력 부족)":it.v+(it.k==="mr_damper"?"":" mm")));if(it.warn){row.style.color="var(--warn)";row.textContent+=" ⚠ "+it.warn}
       const f=el("div","muted","  = "+it.f);c.appendChild(row);c.appendChild(f)});box.appendChild(c)});
   box.appendChild(el("p","small muted","그림: 기준면 사슬 (B 안착면 · R 로드 체결 자리면 · K 하단 기준). 이상값(⚠)이면 아직 분해 상태일 때 다시 재세요."));return box}
@@ -1300,6 +1686,9 @@ function pruneInapplicable(){
   return gone;
 }
 async function go(d){
+  await recStop(); // rev 90: 녹음 중이면 멈추고 저장한 뒤 옮긴다
+  // rev 90: 미리보기(잠금) 화면에서는 값을 읽지도 검사하지도 않고 화면만 옮긴다
+  if(isLocked()){let n=idx+d;while(n>=0&&n<TASKS.length&&!applies(TASKS[n]))n+=d;if(n<0||n>=TASKS.length)return;idx=n;showTask();return}
   if(collect)collect();
   {const gone=pruneInapplicable();commitEdits();pruneMsg=gone.length?"앞에서 고른 보기가 바뀌어 맞지 않게 된 값 "+gone.length+"개를 지웠습니다: "+gone.join(", "):null}const t=TASKS[idx];
   // 개발 확인용: devSkip이면 사진·빈칸 검사를 건너뛴다 (실사용 전 버튼 제거)
@@ -1315,10 +1704,11 @@ async function go(d){
   let n=idx+d;
   while(n>=0&&n<TASKS.length&&!applies(TASKS[n])){run.skipped[TASKS[n].id]="조건 안 맞음";n+=d}
   if(d>0&&n>=TASKS.length){await save();showEnd();return}
-  idx=Math.max(0,Math.min(TASKS.length-1,n));await save();showTask();if(pruneMsg){status(pruneMsg,true);pruneMsg=null}
+  idx=Math.max(0,Math.min(TASKS.length-1,n));if(d>0&&idx>(run.maxIdx==null?-1:run.maxIdx))run.maxIdx=idx; // rev 90: 도달한 가장 뒤 화면
+  await save();showTask();if(pruneMsg){status(pruneMsg,true);pruneMsg=null}
 }
 function showEnd(){
-  $("#footer").classList.add("hidden");const v=$("#view");v.textContent="";
+  $("#footer").classList.add("hidden");setMode("list");const v=$("#view");v.textContent="";
   const c=el("div","card");c.appendChild(el("h2",null,"지금까지 만든 단계 끝"));
   // 빈 단계: 화면 번호 · 제목을 한 줄씩. 5개를 넘으면 접어 두고 「… 더 보기」로 펼친다
   const empty=TASKS.filter(missing);
@@ -1347,7 +1737,7 @@ function resumeIdx(r){const i=r.posId?TASKS.findIndex(t=>t.id===r.posId):-1;retu
 // 옛 아이디(마인드맵 번호 2-06c 등)로 저장된 측정을 새 아이디(S001…)로 바꾼다. 측정마다 한 번만 (idv:2 표시).
 async function migrateIds(){
   const mp={};SCREEN_IDS.forEach(r=>{if(r[1])mp[r[1]]=r[0]});
-  const conv=x=>{if(x==null)return x;const m=String(x).match(/^(.*?)(_memo|_s\d+)?$/);return mp[m[1]]?mp[m[1]]+(m[2]||""):x};
+  const conv=x=>{if(x==null)return x;const m=String(x).match(/^(.*?)(_memo|_audio|_s\d+)?$/);return mp[m[1]]?mp[m[1]]+(m[2]||""):x};
   const keys=o=>{const n={};Object.entries(o||{}).forEach(([k,v])=>n[conv(k)]=v);return n};
   let done=0;
   for(const r of await getAll("runs")){if(r.idv===2)continue;
@@ -1370,7 +1760,7 @@ function photoName(r,car,base,tag,nn){const t=TASKS.find(x=>x.id===base)||PARKED
   const ti=String(t.title||base).replace(/^⚠\s*/,"");const ax=/^프론트/.test(ti)?"FRT":/^리어/.test(ti)?"RR":"ALL";
   const item=ti.replace(/^(프론트|리어)\s*/,"").replace(/^⚠\s*/,"").replace(/\([^)]*\)/g,"").replace(/\s*·\s*(드룹|분해 전|분해 후|탈거 후)\s*$/,"").replace(/[↔·\s]+/g,"").slice(0,24);
   return [localDay(r.createdAt).replace(/-/g,""),car,STAGE[t.st]||"9보류",ax,base,item||base,tag].filter(Boolean).map(fsafe).join("_")+"_"+nn}
-function stepOf(taskId){const base=String(taskId).replace(/_(memo|raw|s\d+)$/,"");const i=TASKS.findIndex(t=>t.id===base);const t=i>=0?TASKS[i]:PARKED.find(x=>x.id===base);
+function stepOf(taskId){const base=String(taskId).replace(/_(memo|raw|audio|s\d+)$/,"");const i=TASKS.findIndex(t=>t.id===base);const t=i>=0?TASKS[i]:PARKED.find(x=>x.id===base);
   let title=t?t.title:base;const m=String(taskId).match(/_s(\d+)$/);if(m&&t&&t.slots)title+=" "+t.slots[+m[1]-1];
   return {no:i>=0?i+1:0,title,base}}
 const stepLabel=s=>(s.no?s.no+"단계":"보류")+" "+s.title;
@@ -1378,26 +1768,27 @@ function memoOrder(photos){
   // 메모가 처음 생긴 시각(수정 기록) 또는 특이사항 사진을 처음 찍은 시각 중 이른 것 순서로 번호를 매긴다
   const first={};const mark=(base,at)=>{if(at&&(!first[base]||at<first[base]))first[base]=at};
   (run.log||[]).forEach(e=>{if(e.what==="특이사항 메모"&&e.to)mark(String(e.task),e.at.replace(" ","T"))});
-  photos.filter(p=>p.taskId.endsWith("_memo")).forEach(p=>{if(!p.at)return;const d=new Date(p.at),z=n=>String(n).padStart(2,"0");/* 수정 기록은 휴대폰 시각, 사진 at은 UTC라 휴대폰 시각으로 맞춘다 */mark(p.taskId.slice(0,-5),d.getFullYear()+"-"+z(d.getMonth()+1)+"-"+z(d.getDate())+"T"+z(d.getHours())+":"+z(d.getMinutes())+":"+z(d.getSeconds()))});
-  const bases=new Set([...Object.keys(run.notes||{}),...photos.filter(p=>p.taskId.endsWith("_memo")).map(p=>p.taskId.slice(0,-5))]);
+  photos.filter(p=>p.taskId.endsWith("_memo")||isAudio(p)).forEach(p=>{if(!p.at)return;const d=new Date(p.at),z=n=>String(n).padStart(2,"0");/* 수정 기록은 휴대폰 시각, 사진 at은 UTC라 휴대폰 시각으로 맞춘다 */mark(baseOf(p.taskId),d.getFullYear()+"-"+z(d.getMonth()+1)+"-"+z(d.getDate())+"T"+z(d.getHours())+":"+z(d.getMinutes())+":"+z(d.getSeconds()))});
+  const bases=new Set([...Object.keys(run.notes||{}),...photos.filter(p=>p.taskId.endsWith("_memo")||isAudio(p)).map(p=>baseOf(p.taskId))]); // rev 90: 음성만 있는 화면도 특이사항 번호를 받는다
   return [...bases].sort((a,b)=>(first[a]||"9").localeCompare(first[b]||"9")||stepOf(a).no-stepOf(b).no);
 }
 function csvCell(x){x=x==null?"":String(x);return /[",\n]/.test(x)?'"'+x.replace(/"/g,'""')+'"':x}
-function recordCsv(memoNo){
-  const rows=[["화면","항목","값","단위","측정시트 칸","상태","사진 장수","특이사항"]];
+function recordCsv(memoNo,aud){
+  aud=aud||{};const auc=id=>{const a=aud[id]||[];return a.length?a.length+"개: "+a.map(x=>String(x.file).replace(/^음성\//,"")).join("; "):""}; // rev 90: 맨 끝 「음성」 열 (개수: 파일)
+  const rows=[["화면","항목","값","단위","측정시트 칸","상태","사진 장수","특이사항","음성"]];
   TASKS.forEach((t,i)=>{
     const vals=Object.entries(run.values||{}).filter(([k,v])=>v&&v.task===t.id);
     const nph=Object.keys(run.photos||{}).filter(k=>k===t.id||/^.+_s\d+$/.test(k)&&k.startsWith(t.id+"_s")).reduce((s,k)=>s+(run.photos[k]||[]).length,0);
     // 「조건 안 맞음」은 저장된 표시가 아니라 지금 보기로 다시 판단한다 (옛 표시가 남아 있어도 틀리지 않게)
     const sk=run.skipped&&run.skipped[t.id];const st=!applies(t)?"조건 안 맞음":(sk&&sk!=="조건 안 맞음"?(sk===true?"해당 없음":String(sk)):"");
     const mn=memoNo[t.id]?"메모사항 "+memoNo[t.id]+"번":"";
-    if(!vals.length)rows.push([(i+1)+"단계",t.title,"","",t.cell||"",st,nph||"",mn]);
-    vals.forEach(([k,v])=>rows.push([(i+1)+"단계",v.label||t.title,v.v+(v.fromRim?(v.rim?" (림 하단부터 "+v.raw+")":" (림 하단부터 잰 값 — 림 외경 없어 빼지 않음)"):""),v.unit||"",v.cell||"",st,nph||"",mn]));
+    if(!vals.length)rows.push([(i+1)+"단계",t.title,"","",t.cell||"",st,nph||"",mn,auc(t.id)]);
+    vals.forEach(([k,v])=>rows.push([(i+1)+"단계",v.label||t.title,v.v+(v.fromRim?(v.rim?" (림 하단부터 "+v.raw+")":" (림 하단부터 잰 값 — 림 외경 없어 빼지 않음)"):""),v.unit||"",v.cell||"",st,nph||"",mn,auc(t.id)]));
   });
   // 지금 흐름에 없는 화면(보류·폐기)에 적혀 있던 값도 빠뜨리지 않고 맨 아래에 「보류」로 적는다
   Object.entries(run.values||{}).forEach(([k,v])=>{if(!v||TASKS.some(t=>t.id===v.task))return;const s=stepOf(v.task||k);
-    rows.push(["보류",v.label||s.title,v.v,v.unit||"",v.cell||"","지금 흐름에 없는 화면","",memoNo[s.base]?"메모사항 "+memoNo[s.base]+"번":""])});
-  {const D=derive(run.values||{},run.shape||{},run.skipped||{});["F","R"].forEach(a=>D[a].items.forEach(it=>{if(it.v!=null)rows.push(["계산값",(a==="F"?"프론트 ":"리어 ")+it.name,it.v,it.k==="mr_damper"?"":"mm","","자동 계산 (AI도출-미검증)","",it.f+(it.warn?" ⚠ "+it.warn:"")])}))}
+    rows.push(["보류",v.label||s.title,v.v,v.unit||"",v.cell||"","지금 흐름에 없는 화면","",memoNo[s.base]?"메모사항 "+memoNo[s.base]+"번":"",auc(s.base)])});
+  {const D=derive(run.values||{},run.shape||{},run.skipped||{});["F","R"].forEach(a=>D[a].items.forEach(it=>{if(it.v!=null)rows.push(["계산값",(a==="F"?"프론트 ":"리어 ")+it.name,it.v,it.k==="mr_damper"?"":"mm","","자동 계산 (AI도출-미검증)","",it.f+(it.warn?" ⚠ "+it.warn:""),""])}))}
   return "﻿"+rows.map(r=>r.map(csvCell).join(",")).join("\r\n");
 }
 /* ===== rev 86: 측정 ZIP 불러오기 (2026-11-20 유지호) =====
@@ -1435,26 +1826,35 @@ async function importZip(file){
       if(raw){const nm=p.split("/").pop();const m=nm.match(/_raw_\d+_(.+)$/);ph.fname=m?m[1]:nm}
       await put("photos",ph);(r.photos[taskId]=r.photos[taskId]||[]).push(id);ok++;
       if(ok%20===0)status("사진 넣는 중… "+ok+"장")}}
+  // rev 90: 음성노트 (record.json audio[화면아이디] = [{file:"음성/…", n, at, sec, mime}]) → 사진 저장소에 taskId "<화면아이디>_audio", audio:true
+  let aok=0;
+  for(const [sid,arr] of Object.entries(rec.audio||{})){
+    for(const a of arr||[]){const f=a&&a.file&&zip.file(base+a.file);if(!f){missing++;continue}
+      const mime=a.mime||(/\.ogg$/i.test(a.file)?"audio/ogg":/\.m4a$/i.test(a.file)?"audio/mp4":"audio/webm");
+      const blob=new Blob([await f.async("arraybuffer")],{type:mime});const id=uid();const k=sid+"_audio";
+      await put("photos",{id,runId:r.id,taskId:k,n:a.n||((r.photos[k]||[]).length+1),blob,at:a.at||at,audio:true,mime,dur:a.sec!=null?a.sec*1000:null});
+      (r.photos[k]=r.photos[k]||[]).push(id);aok++}}
+  if(rec.pre)r.pre=rec.pre;r.maxIdx=TASKS.length-1; // 불러온 측정은 끝난 기록으로 보고 잠그지 않는다 (보기·고치기용)
   r.imported={file:file.name,rev:rec.rev,at:nowStr(),missing};
-  r.log.push({at:nowStr(),task:"",what:"ZIP 불러오기",from:file.name+" (rev "+(rec.rev??"?")+")",to:"rev "+curRev+" · 사진 "+ok+"장"});
+  r.log.push({at:nowStr(),task:"",what:"ZIP 불러오기",from:file.name+" (rev "+(rec.rev??"?")+")",to:"rev "+curRev+" · 사진 "+ok+"장"+(aok?" · 음성 "+aok+"개":"")});
   // 불러온 그대로는 「ZIP 만듦」 상태로 둔다 — 고치면 「ZIP 만든 뒤 고침 n건」이 붙는다
   r.exportedAt=new Date().toISOString();r.exportedLog=r.log.length;r.updatedAt=new Date().toISOString();r.posId=TASKS[0].id;
   await put("runs",r);await migrateIds();
   if(rec.rev!=null&&rec.rev!==curRev)warn.push("rev "+rec.rev+"에서 만든 기록입니다 (지금 rev "+curRev+") — 화면 아이디 기준으로 맞췄고, 지금 흐름에 없는 화면 값은 「보기」 맨 아래에 따로 보입니다");
-  if(missing)warn.push("record.json에는 있는데 ZIP에 없는 사진 "+missing+"장");
-  await showList();status("불러옴: 「"+title+"」 사진 "+ok+"장"+(warn.length?" · "+warn.join(" · "):""),!!(missing||+fm[1]>1));
+  if(missing)warn.push("record.json에는 있는데 ZIP에 없는 사진·음성 "+missing+"개");
+  await showList();status("불러옴: 「"+title+"」 사진 "+ok+"장"+(aok?" · 음성 "+aok+"개":"")+(warn.length?" · "+warn.join(" · "):""),!!(missing||+fm[1]>1));
 }
 
 /* ===== rev 86: 측정 보기 — 화면 순서대로 값·건너뛴 이유·메모·사진을 한눈에, 누르면 그 화면으로 가서 고친다 ===== */
 let viewFilter="all";
 async function showView(keep){
-  const y=window.scrollY;$("#footer").classList.add("hidden");const v=$("#view");v.textContent="";if(!keep)window.scrollTo(0,0);
+  const y=window.scrollY;$("#footer").classList.add("hidden");setMode("list");const v=$("#view");v.textContent="";if(!keep)window.scrollTo(0,0);
   const head=el("div","card");head.appendChild(el("h2",null,run.title));
   const curRev=CHANGELOG[CHANGELOG.length-1][0];
   head.appendChild(el("div","small muted","측정 시작 "+localDay(run.createdAt)+(run.imported?" · ZIP에서 불러옴 (만든 판 rev "+(run.imported.rev??"?")+" → 지금 rev "+curRev+")":"")));
   const hb=el("div","runrow");const back=el("button","btn","측정 목록으로");back.type="button";back.onclick=showList;
   const zb=el("button","btn","ZIP 만들기");zb.type="button";zb.onclick=exportZip;
-  const cont=el("button","btn primary","이어서 측정");cont.type="button";cont.onclick=()=>{idx=resumeIdx(run);showTask()};
+  const cont=el("button","btn primary","이어서 측정");cont.type="button";cont.onclick=()=>{idx=openIdx(run);showTask()};
   hb.appendChild(back);hb.appendChild(zb);hb.appendChild(cont);head.appendChild(hb);
   const fl=el("div","opts");[["all","전부"],["has","값·사진 있는 것"],["empty","빈칸만"]].forEach(([k,n])=>{const b=el("button","opt",n);b.type="button";b.setAttribute("aria-pressed",viewFilter===k?"true":"false");b.onclick=()=>{viewFilter=k;showView()};fl.appendChild(b)});
   head.appendChild(fl);v.appendChild(head);
@@ -1465,14 +1865,15 @@ async function showView(keep){
   const fmtV=x=>String(x.v)+(x.unit?" "+x.unit:"")+(x.fromRim?" (림 하단부터)":"");
   const thumbs=(list,title)=>{const w=el("div","photos");w.style.marginTop="6px";list.sort((a,b)=>String(a.taskId).localeCompare(String(b.taskId))||a.n-b.n).forEach(p=>{
       if(p.fname){w.appendChild(el("span","small muted","파일: "+p.fname));return}
+      if(isAudio(p)){w.appendChild(el("span","small muted","🎙️ 음성 "+p.n));return} // rev 90
       if(!urls.has(p.id))urls.set(p.id,URL.createObjectURL(p.blob));const im=el("img","vph");im.src=urls.get(p.id);im.alt=title;im.loading="lazy";
       im.onclick=()=>openPhoto(p,()=>showView(true));
       w.appendChild(im)});return w};
   let stage=-1,card=null,hidden=0,shown=0;
   TASKS.forEach((t,i)=>{
-    const mine=vals.filter(([k,x])=>x.task===t.id);const sk=(run.skipped||{})[t.id];const note=(run.notes||{})[t.id];const ph=byBase[t.id]||[];
+    const mine=vals.filter(([k,x])=>x.task===t.id);const sk=(run.skipped||{})[t.id];const note=(run.notes||{})[t.id];const ph=(byBase[t.id]||[]).filter(p=>!isAudio(p));const au=(byBase[t.id]||[]).filter(isAudio);
     const shp=t.kind==="shape"&&run.shape&&run.shape[t.axle]&&(run.shape[t.axle].top||run.shape[t.axle].low)?run.shape[t.axle]:null;
-    const has=mine.length||ph.length||note||shp;const ap=applies(t);
+    const has=mine.length||ph.length||au.length||note||shp;const ap=applies(t);
     if(!ap&&!has){hidden++;return}
     const isInfo=t.kind==="info";const empty=!has&&!sk&&!isInfo;
     if(viewFilter==="has"&&!has)return;if(viewFilter==="empty"&&!empty)return;
@@ -1486,6 +1887,7 @@ async function showView(keep){
     if(empty)g.appendChild(el("div","vempty",made[t.id]&&made[t.id]>day?"측정 뒤("+made[t.id]+")에 생긴 화면":"빈칸"));
     if(note)g.appendChild(el("div","small","메모: "+note));
     if(ph.length)g.appendChild(thumbs(ph,t.title));
+    if(au.length){g.appendChild(el("div","small","🎙️ 음성 "+au.length+"개"));g.appendChild(audioList(t.id,false))} // rev 90: 큰 버튼으로 재생/일시정지 · 지우기(7초 되돌리기)
     const eb=el("button","btn","고치기");eb.type="button";eb.onclick=()=>{idx=i;showTask();if(!ap)status("지금 고른 보기로는 안 나오는 화면입니다",true)};
     row.appendChild(g);row.appendChild(eb);card.appendChild(row)});
   // 지금 흐름에 없는 화면(보류·폐기)에 남은 값 — 지우지 않고 보여만 준다
@@ -1504,7 +1906,7 @@ async function exportZip(){
   if(!window.JSZip){status("ZIP 도구를 불러오지 못했습니다. 인터넷 연결 후 다시 여세요.",true);return}
   status("ZIP 만드는 중…");
   const root=new JSZip();const car=fsafe(run.title);const zip=root.folder(localDay(run.createdAt)+"_"+car);
-  const photos=await photosOf(run.id);const list={};
+  const photos=await photosOf(run.id);const list={};const alist={}; // rev 90: alist = 음성노트 (record.json audio)
   const order=memoOrder(photos);const memoNo={};order.forEach((b,i)=>memoNo[b]=i+1);
   // 파일 이름의 순번은 화면마다 찍은 순서대로 01부터 다시 매긴다 (옛 기록에 순번이 겹쳐 있어도 ZIP에서 덮이지 않게)
   // 사진대조표.csv: 사진 아이디(휴대폰 저장소의 고유 열쇠) ↔ 파일 이름 · 화면 아이디 · 화면 번호 · 몇 번째 사진
@@ -1515,21 +1917,25 @@ async function exportZip(){
     // 앞에서 보기를 바꿔 해당 없게 된 화면의 사진은 지우지 않고 「사진/임시/」에 따로 담는다 (특이사항 사진은 그대로)
     const st=TASKS.find(x=>x.id===s.base);const temp=!memo&&st&&!applies(st);
     if(p.fname){const nm="로우데이터/"+photoName(run,car,s.base,"raw",nn)+"_"+fsafe(p.fname);zip.file(nm,p.blob);(list[p.taskId]=list[p.taskId]||[]).push(nm);map.push([p.id,nm,s.base,s.no+"단계",s.title,"로우데이터",k,loc(p.at)]);return}
+    // rev 90: 음성노트 → 음성/ 폴더, 사진과 같은 이름 규칙 (…_화면아이디_항목_음성_순번.webm|.ogg|.m4a)
+    if(isAudio(p)){const mime=p.mime||(p.blob&&p.blob.type)||"";const nm="음성/"+photoName(run,car,s.base,"음성",nn)+audioExt(mime);zip.file(nm,p.blob);
+      (alist[s.base]=alist[s.base]||[]).push({file:nm,n:k,at:p.at||null,sec:p.dur!=null?Math.round(p.dur/100)/10:null,mime});
+      map.push([p.id,nm.slice(3),s.base,s.no?s.no+"단계":"보류",s.title,"음성",k,loc(p.at)]);return}
     const sl=(p.taskId.match(/_s(\d+)$/)||[])[1];const name="사진/"+(temp?"임시/":"")+photoName(run,car,s.base,memo?"메모":(sl?"s"+sl:""),nn)+".jpg";
     zip.file(name,p.blob);if(memo&&(run.notes||{})[s.base])zip.file(name.replace(/\.jpg$/,".txt"),"\ufeff"+run.notes[s.base]); // rev 85: 메모 달린 사진은 같은 이름 txt로 메모 함께 (2026-11-19 유지호)
     (list[p.taskId]=list[p.taskId]||[]).push(name);
     map.push([p.id,name.slice(3),s.base,s.no?s.no+"단계":"보류",s.title,memo?"특이사항 메모사항 "+memoNo[s.base]+"번":temp?"임시 (조건 안 맞음)":(/_s\d+$/.test(p.taskId)?"칸 "+p.taskId.split("_s")[1]:"측정"),k,loc(p.at)])});
   zip.file("사진대조표.csv","﻿"+map.map(r=>r.map(csvCell).join(",")).join("\r\n"));
-  zip.file("측정기록.csv",recordCsv(memoNo));
+  zip.file("측정기록.csv",recordCsv(memoNo,alist));
   if(order.length){
     const txt=[run.title+" — 특이사항","측정 시작 "+localDay(run.createdAt)+" · 메모가 생긴 순서",""];
-    order.forEach(b=>{const s=stepOf(b);txt.push("[메모사항 "+memoNo[b]+"번] "+stepLabel(s));txt.push((run.notes||{})[b]||"(메모 없음 — 사진만)");
-      const ph=list[b+"_memo"]||[];if(ph.length)txt.push("사진: "+ph.map(x=>x.slice(3)).join(", "));txt.push("")});
+    order.forEach(b=>{const s=stepOf(b);txt.push("[메모사항 "+memoNo[b]+"번] "+stepLabel(s));const ph=list[b+"_memo"]||[];const au=alist[b]||[];txt.push((run.notes||{})[b]||(ph.length?"(메모 없음 — 사진만)":"(메모 없음 — 음성만)"));
+      if(ph.length)txt.push("사진: "+ph.map(x=>x.slice(3)).join(", "));if(au.length)txt.push("음성 "+au.length+"개: "+au.map(x=>x.file).join(", "));txt.push("")});
     zip.file("특이사항.txt","﻿"+txt.join("\r\n"));
   }
   const DV=derive(run.values||{},run.shape||{},run.skipped||{});
-  const record={format:"neotech-suspension-measure/1",rev:CHANGELOG[CHANGELOG.length-1][0],datum:{F:DV.F.datum,R:DV.R.datum},derived:{F:{items:DV.F.items,warn:DV.F.warn},R:{items:DV.R.items,warn:DV.R.warn}},drawing:{F:DV.F.drawing,R:DV.R.drawing},sheet:"서스펜션 측정시트_양식_261026 (구글시트) / 측정시트",title:run.title,scope:run.scope||"all",createdAt:run.createdAt,updatedAt:run.updatedAt,shape:run.shape,values:run.values,skipped:run.skipped,log:run.log||[],notes:run.notes||{},photos:list,
-    note:"values[*].cell = 측정시트 탭 값 칸 주소 (양식 261026 병합 칸 기준 — AI 확인, 실제 채운 시트로는 확인 전). fromRim=true면 v는 raw−림외경/2. photos[화면아이디_raw] = 로우데이터 파일."};
+  const record={format:"neotech-suspension-measure/1",rev:CHANGELOG[CHANGELOG.length-1][0],datum:{F:DV.F.datum,R:DV.R.datum},derived:{F:{items:DV.F.items,warn:DV.F.warn},R:{items:DV.R.items,warn:DV.R.warn}},drawing:{F:DV.F.drawing,R:DV.R.drawing},sheet:"서스펜션 측정시트_양식_261026 (구글시트) / 측정시트",title:run.title,scope:run.scope||"all",createdAt:run.createdAt,updatedAt:run.updatedAt,shape:run.shape,values:run.values,skipped:run.skipped,log:run.log||[],notes:run.notes||{},photos:list,audio:alist,pre:run.pre||{},
+    note:"values[*].cell = 측정시트 탭 값 칸 주소 (양식 261026 병합 칸 기준 — AI 확인, 실제 채운 시트로는 확인 전). fromRim=true면 v는 raw−림외경/2. photos[화면아이디_raw] = 로우데이터 파일. audio[화면아이디] = 음성노트 파일(음성/, sec 초) · pre[화면아이디] = 선측정(그 화면 전에 미리 넣은) 시각 — rev 90."};
   zip.file("record.json",JSON.stringify(record,null,1));
   const blob=await root.generateAsync({type:"blob"});
   const fname=localDay(run.createdAt)+"_"+safe(run.title)+"_측정.zip";
@@ -1542,7 +1948,15 @@ async function exportZip(){
 }
 
 try{if(localStorage.getItem("measure-dev")==="1")document.body.classList.add("dev")}catch(e){}
-$("#prev").onclick=()=>go(-1);$("#next").onclick=()=>go(1);let devSkip=false;$("#devskip").onclick=()=>{devSkip=true;go(1)};
+$("#prev").onclick=()=>go(-1);$("#next").onclick=()=>isLocked()?jumpTo(run.maxIdx):go(1);let devSkip=false;
+// rev 90: 아래 바 📝 메모(PiP) · 🎙️ 녹음, 위 네비 ☰ 목차 · ⚡ 선측정 · ⚙️ 설정, 진행바 누르기·끌기
+$("#memo").onclick=()=>{if(pipOpen)closePip();else{pipOpen=true;renderPip()}};
+$("#mic").onclick=()=>{if(!run||isLocked())return;recToggle(TASKS[idx])};
+$("#tocbtn").onclick=()=>{if(collect&&!isLocked())collect();openToc()};
+$("#prebtn").onclick=()=>openPreSearch();$("#setbtn").onclick=openSettings;$("#setbtn2").onclick=openSettings;
+bindPbar();
+document.addEventListener("visibilitychange",()=>{if(document.hidden&&recS)recStop()}); // 화면이 꺼지거나 다른 앱으로 가면 녹음 저장
+if(window.ResizeObserver)new ResizeObserver(()=>fitFooter()).observe($("#footer"));addEventListener("resize",()=>{fitFooter();if(document.body.classList.contains("measuring")&&run)renderNav()});$("#devskip").onclick=()=>{devSkip=true;go(1)};
 // rev 83 개발용 이동: 화면 위 「n/전체」의 번호 또는 S아이디로 바로 감 — 사진·빈칸 검사 없음, 조건 안 맞는 화면도 보여 줌 (실사용 전 버튼 제거)
 $("#devjumpgo").onclick=async()=>{const q=$("#devjump").value.trim().toUpperCase();let n=-1;if(/^S\d+$/.test(q))n=TASKS.findIndex(x=>x.id===q);else if(/^\d+$/.test(q))n=+q-1;if(n<0||n>=TASKS.length){status("없는 화면입니다: "+q+" (1~"+TASKS.length+" 또는 S아이디)",true);return}if(collect)collect();commitEdits();idx=n;await save();showTask();$("#devjump").value="";if(!applies(TASKS[n]))status("개발용 이동 — 지금 고른 조건에서는 안 나오는 화면입니다",true)};
 // rev 89: 입력칸을 누르면 키보드·아래 고정 바에 가리지 않게 화면 가운데로
@@ -1640,7 +2054,8 @@ const CHANGELOG=[
  [86,"2026-11-20 14:00","유지호 11-20 요청(샤오미 15 울트라): ① 측정 ZIP 불러오기 — 값·사진·메모를 새 측정으로 넣고, 다른 판(rev)은 화면 아이디 기준으로 맞춤(빠진 화면 값은 보류로 보존, 측정 뒤 생긴 화면은 따로 표시) ② 측정 「보기」 — 화면 순서대로 값·건너뛴 이유·메모·사진, 「고치기」로 그 화면에 감, 전부/값 있는 것/빈칸만 ③ 하단 내비게이션 바 겹침 — viewport-fit=cover 뺌, 카메라 화면 높이를 보이는 화면에 맞추고 셔터 아래 여백 ④ 카메라 렌즈 고르기(브라우저가 알려 주는 후면·전면 카메라) · 줌 배율 버튼·밀대·두 손가락 줌 · 눌러서 초점 · 4:3 최대 해상도 요청 · 「기본 카메라 앱」 버튼"],
  [87,"2026-11-20 16:00","유지호 11-20 피드백(샤오미 15 울트라 줌 안 됨 · 아이폰 됨 · 초점 맞추기 어려움 · 사진 실수 삭제): ① 카메라 줌을 못 받는 휴대폰은 디지털 줌(화면 확대 후 그 범위만 잘라 저장, 1~5배) ② 수동 초점 — 브라우저가 초점 거리를 알려 주면 「자동/수동」+밀대(아이폰 사파리는 미지원) ③ 누른 자리 초점에 노란 동그라미 ④ 셔터 한 번에 3장을 보고 가장 선명한 것 저장 ⑤ 「카메라 정보」 버튼 — 렌즈·줌·초점 지원 여부를 화면에 (캡처해 보내기) ⑥ 사진은 눌러도(꾹 눌러도) 크게 보기만, 지우기·다른 칸으로 옮기기는 그 안의 버튼, 실행 뒤 7초 「되돌리기」 — 측정 화면·보기 화면 같음"],
  [88,"2026-11-20 17:00","유지호 결정: 디지털 줌 뺌(쓸모없음) — 브라우저가 카메라 줌을 지원하지 않으면 줌 칸을 숨기고 「기본 카메라 앱」 안내"],
- [89,"2026-11-20 18:00","현장 시인성(유지호 요청): 버튼 48px·아래 버튼 이전:다음 1:2.5·측정값 칸 22px 굵게·보조 글자 14px·대비 높임 · 측정 화면 위 「측정 목록으로」 · 목록 버튼 두 줄 · 입력칸 누르면 가운데로 · 아래 여백 최소 20px"]
+ [89,"2026-11-20 18:00","현장 시인성(유지호 요청): 버튼 48px·아래 버튼 이전:다음 1:2.5·측정값 칸 22px 굵게·보조 글자 14px·대비 높임 · 측정 화면 위 「측정 목록으로」 · 목록 버튼 두 줄 · 입력칸 누르면 가운데로 · 아래 여백 최소 20px"],
+ [90,"2026-11-20 20:00","한 손 조작 UI 전면 개편(유지호 요청): ① D2Coding 고정폭 글꼴·숫자 고정폭 · ⚙ 설정(테마 라이트/다크/하이브리드 즉시 전환, 기본 작업자 → 새 측정 기본정보 자동, 하단 여백 보정) ② 측정 화면 스크롤 없음(한 화면) — 위 네비(☰ 목차·단계·⚡ 선측정·⚙)·차 상태 배지, 팁 1줄 + 「? 상세기준」 시트(전체 설명·기준점·수정 기록), 도식은 남는 높이에 맞춤·누르면 크게, 측정값 칸 24px + ± 부호 버튼, 「특이사항」 칸 → 아래 바 📝 메모 PiP 창(반투명·끌어서 모서리·접기, 상용구 칩·특이사항 사진·음성) ③ 화면별 음성노트 🎙(누르면 녹음·다시 누르면 저장, 이동하면 자동 저장, 재생·지우기 7초 되돌리기, ZIP 음성/ 폴더·record.json audio·측정기록.csv 음성 열·특이사항.txt·불러오기 복원) ④ 9단계 진행바(누르거나 끌면 단계 툴팁·이동) · 목차 사이드바(✅⏭⬜🔒·값 요약) · 도달 전 화면은 🔒 미리보기(입력 막힘, 작업 위치로 복귀, 개발용 모드는 잠금 없음) ⑤ viewport-fit=cover 다시 넣고 아래 바 max(20px, 14px+안전 영역)+보정, 아래 바 이전 1 : 메모 1.1 : 🎙 1.1 : 다음 2.2 ⑥ ⚡ 선측정 — 지금 위치 그대로 뒤쪽 화면 값·사진·메모·음성을 미리 넣고, 그 화면에 가면 「⚡ 앞에서 미리 측정한 값입니다」"]
 ];
 // 지금은 베타: 숫자 번호는 「베타 rev N」으로 보인다. 정식 v1이 되면 그때부터 번호를 문자열("1","2"…)로 적어 「rev 1」부터 센다 (유지호 2026-10-22).
 if(!CHANGELOG.every(Array.isArray))setTimeout(()=>status("변경 로그 줄 끝 쉼표 확인 필요",true),600);
