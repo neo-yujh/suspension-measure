@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1"><!-- rev 86: viewport-fit=cover 뺌 — 안드로이드에서 화면이 하단 내비게이션 바 밑까지 그려져 카메라 버튼이 겹치던 것 (2026-11-20 유지호, 샤오미 15 울트라) -->
 <meta name="robots" content="noindex,nofollow">
 <title>서스펜션 측정 실행</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap">
@@ -47,7 +47,7 @@ label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mu
 .photos{display:flex;gap:8px;flex-wrap:wrap}
 .ph{width:88px;height:88px;border-radius:6px;border:1px solid var(--line);object-fit:cover}
 .phbtn{width:88px;height:88px;border-radius:6px;border:1px dashed var(--line);display:flex;align-items:center;justify-content:center;text-align:center;font-size:12px;color:var(--muted);cursor:pointer;background:var(--bg);font-family:inherit}
-.footer{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.footer{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:10px max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
 .footer .in{max-width:640px;margin:0 auto;display:flex;gap:8px} .footer .btn{flex:1}
 .status{font-size:12px;color:var(--muted);min-height:1.5em;margin:0} .status.err{color:var(--warn)}
 .runrow{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;padding-bottom:8px;border-bottom:1px solid var(--line)} .grow{flex:1 1 auto;min-width:0}
@@ -61,9 +61,24 @@ label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mu
 .hidden{display:none!important}
 body:not(.dev) [data-dev]{display:none!important} /* rev 85: 개발용 버튼은 「개발용」 탭에서 켤 때만 (2026-11-19 유지호) */
 /* 화면 안 카메라 */
-.cam{position:fixed;inset:0;background:#000;z-index:30;display:flex;flex-direction:column}
+/* rev 86: 높이를 보이는 화면(dvh)에 맞추고 아래 여백을 넉넉히 — 하단 내비게이션 바에 셔터가 겹치지 않게 */
+.cam{position:fixed;left:0;right:0;top:0;height:100vh;height:100dvh;background:#000;z-index:30;display:flex;flex-direction:column;touch-action:none}
 .cam video{flex:1;width:100%;min-height:0;object-fit:contain;background:#000}
-.cam .bar{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:12px max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:#000}
+.cam .bar{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(28px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:#000}
+.cam .zoom{display:flex;flex-direction:column;gap:8px;padding:8px 16px 0;background:#000;color:#fff}
+.cam .chips{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.cam .chip{font:inherit;font-size:13px;min-width:44px;min-height:36px;border-radius:18px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.1);color:#fff;padding:4px 10px;cursor:pointer}
+.cam .chip[aria-pressed="true"]{background:#fff;color:#000;font-weight:700}
+.cam input[type=range]{width:100%;accent-color:#fff}
+.cam .zl{position:absolute;left:0;right:0;text-align:center;color:#fff;font-size:15px;font-weight:700;text-shadow:0 1px 3px #000;top:calc(40px + env(safe-area-inset-top,0px))}
+/* rev 86: 측정 보기 화면 */
+.vrow{display:flex;gap:8px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line)} .vrow .grow{min-width:0;overflow-wrap:anywhere}
+.vrow .btn{min-height:36px;padding:4px 10px;font-size:13px;flex:none}
+.vval{font-family:var(--f-mono);font-size:14px} .vempty{color:var(--warn);font-size:13px}
+.vph{width:64px;height:64px;border-radius:6px;border:1px solid var(--line);object-fit:cover;cursor:pointer}
+.big{position:fixed;left:0;right:0;top:0;height:100vh;height:100dvh;background:#000;z-index:40;display:flex;align-items:center;justify-content:center}
+.big img{max-width:100%;max-height:100%;object-fit:contain}
+.big .cap{position:absolute;left:0;right:0;bottom:0;padding:10px 16px 28px;color:#fff;font-size:13px;background:rgba(0,0,0,.6);overflow-wrap:anywhere}
 .cam .shutter{width:72px;height:72px;border-radius:50%;border:4px solid #fff;background:#fff;box-shadow:inset 0 0 0 4px #000;cursor:pointer}
 .cam .side{min-width:88px;color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:8px 10px;font:inherit;font-size:13px;cursor:pointer}
 .cam .hint{position:absolute;top:calc(10px + env(safe-area-inset-top,0px));left:0;right:0;text-align:center;color:#fff;font-size:14px;text-shadow:0 1px 3px #000;padding:0 16px}
@@ -654,27 +669,78 @@ async function save(){const nowMs=Date.now();if(run.lastActive){run.activeMs=(ru
 
 /* ===== 사진: 화면 안 카메라, 안 되면 휴대폰 카메라 앱 ===== */
 let camStream=null;
+// rev 86 (2026-11-20 유지호, 샤오미 15 울트라): 휴대폰의 후면 카메라(광각·초광각·망원)를 다 쓸 수 있게
+//  ① 렌즈 고르기 — 브라우저가 알려 주는 카메라 목록(enumerateDevices)으로 버튼을 만든다. 마지막에 쓴 렌즈는 이 휴대폰에 기억
+//  ② 줌 — 카메라가 줌을 지원하면(getCapabilities().zoom) 배율 버튼(0.6·1·2·3·5·10배 중 범위 안) + 밀대 + 두 손가락 벌리기
+//  ③ 화면을 눌러 초점 (지원할 때만) ④ 「기본 카메라 앱」 — 브라우저가 렌즈를 다 안 알려 주는 휴대폰은 카메라 앱으로 찍어 넣는다
+//  해상도는 4:3 최대(4032×3024)를 요청 — 휴대폰이 그보다 작게 주면 그대로 쓴다. 찍은 사진은 보이는 그대로(줌 포함) 저장
+const CAM_KEY="measure-cam";
+function camLabel(d,i){const s=(d.label||"").toLowerCase();const m=s.match(/camera2?\s*(\d+)/);
+  return (/front|전면|user/.test(s)?"전면":"후면")+" "+(m?"#"+m[1]:(i+1))}
+async function camOpen(deviceId){
+  const video={width:{ideal:4032},height:{ideal:3024},zoom:true};
+  if(deviceId)video.deviceId={exact:deviceId};else video.facingMode={ideal:"environment"};
+  try{return await navigator.mediaDevices.getUserMedia({video,audio:false})}
+  catch(e){delete video.zoom;if(e.name==="OverconstrainedError"&&deviceId){delete video.deviceId;video.facingMode={ideal:"environment"}}return await navigator.mediaDevices.getUserMedia({video,audio:false})}
+}
 async function takePhoto(task){
   if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)){return pickFile(task)}
-  try{camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1920},height:{ideal:1080}},audio:false})}
+  let want=null;try{want=localStorage.getItem(CAM_KEY)}catch(e){}
+  try{camStream=await camOpen(want)}
   catch(e){status("카메라를 쓸 수 없어 휴대폰 카메라 앱으로 엽니다 ("+e.name+").",true);return pickFile(task)}
-  const box=el("div","cam");const v=el("video");v.playsInline=true;v.muted=true;v.autoplay=true;v.srcObject=camStream;box.appendChild(v);
-  box.appendChild(el("div","hint",task.title+" · "+((run.photos[task.id]||[]).length+1)+"번째"));
+  const box=el("div","cam");const v=el("video");v.playsInline=true;v.muted=true;v.autoplay=true;box.appendChild(v);
+  const hint=el("div","hint");box.appendChild(hint);const zl=el("div","zl");box.appendChild(zl);
+  const setHint=()=>{const n=(run.photos[task.id]||[]).length;hint.textContent=task.title+" · "+(n+1)+"번째"+(n?" (찍은 것 "+n+"장)":"")};setHint();
+  const zoomBox=el("div","zoom");const lensRow=el("div","chips");const zoomRow=el("div","chips");const slider=document.createElement("input");slider.type="range";
+  zoomBox.appendChild(lensRow);zoomBox.appendChild(zoomRow);zoomBox.appendChild(slider);box.appendChild(zoomBox);
   const bar=el("div","bar");const close=el("button","side","닫기");close.type="button";
   const shut=el("button","shutter");shut.type="button";shut.setAttribute("aria-label","찍기");
-  const torch=el("button","side","플래시 끔");torch.type="button";
-  bar.appendChild(close);bar.appendChild(shut);bar.appendChild(torch);box.appendChild(bar);document.body.appendChild(box);
-  const track=camStream.getVideoTracks()[0];let on=false;
-  const caps=track.getCapabilities?track.getCapabilities():{};
-  if(!caps.torch){torch.disabled=true;torch.textContent="플래시 없음"}
+  const right=el("div");right.style.cssText="display:flex;flex-direction:column;gap:6px";
+  const torch=el("button","side","플래시 끔");torch.type="button";const nat=el("button","side","기본 카메라 앱");nat.type="button";
+  right.appendChild(torch);right.appendChild(nat);
+  bar.appendChild(close);bar.appendChild(shut);bar.appendChild(right);box.appendChild(bar);document.body.appendChild(box);
+  let track=null,caps={},on=false,zoom=1;
+  const applyZoom=async z=>{if(!caps.zoom)return;z=Math.min(caps.zoom.max,Math.max(caps.zoom.min,z));zoom=z;slider.value=z;zl.textContent=(Math.round(z*10)/10)+"×";
+    zoomRow.querySelectorAll(".chip").forEach(b=>b.setAttribute("aria-pressed",Math.abs(+b.dataset.z-z)<0.05?"true":"false"));
+    try{await track.applyConstraints({advanced:[{zoom:z}]})}catch(e){}};
+  const setup=async()=>{
+    v.srcObject=camStream;track=camStream.getVideoTracks()[0];caps=track.getCapabilities?track.getCapabilities():{};on=false;
+    if(caps.torch){torch.disabled=false;torch.textContent="플래시 끔"}else{torch.disabled=true;torch.textContent="플래시 없음"}
+    if(caps.focusMode&&caps.focusMode.includes("continuous")){try{await track.applyConstraints({advanced:[{focusMode:"continuous"}]})}catch(e){}}
+    zoomRow.textContent="";zl.textContent="";
+    if(caps.zoom&&caps.zoom.max>caps.zoom.min){
+      const st=track.getSettings?track.getSettings():{};zoom=st.zoom||1;
+      slider.min=caps.zoom.min;slider.max=caps.zoom.max;slider.step=caps.zoom.step||0.1;slider.value=zoom;slider.classList.remove("hidden");
+      const pre=[caps.zoom.min<1?caps.zoom.min:null,1,2,3,5,10].filter((z,i,a)=>z!=null&&z>=caps.zoom.min&&z<=caps.zoom.max&&a.indexOf(z)===i);
+      pre.forEach(z=>{const b=el("button","chip",(Math.round(z*10)/10)+"×");b.type="button";b.dataset.z=z;b.onclick=()=>applyZoom(z);zoomRow.appendChild(b)});
+      applyZoom(zoom)}
+    else{slider.classList.add("hidden");zoomRow.appendChild(el("span","small","이 렌즈는 브라우저 줌을 지원하지 않습니다 — 다른 렌즈를 고르거나 「기본 카메라 앱」"))}
+    // 렌즈 목록은 카메라 허락을 받은 뒤에야 이름이 나온다
+    lensRow.textContent="";
+    try{const devs=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==="videoinput");const cur=(track.getSettings&&track.getSettings().deviceId)||"";
+      if(devs.length>1)devs.forEach((d,i)=>{const b=el("button","chip",camLabel(d,i));b.type="button";b.title=d.label||"";b.setAttribute("aria-pressed",d.deviceId===cur?"true":"false");
+        b.onclick=async()=>{if(d.deviceId===cur)return;camStream.getTracks().forEach(t=>t.stop());try{camStream=await camOpen(d.deviceId);try{localStorage.setItem(CAM_KEY,d.deviceId)}catch(e){}}catch(e){status("이 렌즈를 열 수 없습니다 ("+e.name+")",true);camStream=await camOpen(null)}await setup()};lensRow.appendChild(b)});
+      else lensRow.appendChild(el("span","small","브라우저가 알려 준 카메라가 1개입니다 — 망원·초광각은 줌 배율로 바뀌거나 「기본 카메라 앱」으로 찍으세요"))}catch(e){}
+  };
+  await setup();
+  slider.oninput=()=>applyZoom(+slider.value);
+  // 두 손가락 벌리기·오므리기로 줌
+  let pinch=null;const dist=ts=>Math.hypot(ts[0].clientX-ts[1].clientX,ts[0].clientY-ts[1].clientY);
+  v.addEventListener("touchstart",e=>{if(e.touches.length===2)pinch={d:dist(e.touches),z:zoom}},{passive:true});
+  v.addEventListener("touchmove",e=>{if(pinch&&e.touches.length===2&&caps.zoom)applyZoom(pinch.z*dist(e.touches)/pinch.d)},{passive:true});
+  v.addEventListener("touchend",e=>{if(e.touches.length<2)pinch=null},{passive:true});
+  // 화면을 눌러 그 자리에 초점 (지원하는 휴대폰만, 안 되면 아무 일 없음)
+  v.addEventListener("click",async e=>{if(!caps.pointsOfInterest&&!(caps.focusMode||[]).includes("single-shot"))return;const r=v.getBoundingClientRect();
+    try{await track.applyConstraints({advanced:[{pointsOfInterest:[{x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height}],focusMode:"single-shot"}]})}catch(err){}});
   torch.onclick=async()=>{try{on=!on;await track.applyConstraints({advanced:[{torch:on}]});torch.textContent=on?"플래시 켬":"플래시 끔"}catch(e){torch.disabled=true}};
-  const stop=()=>{camStream.getTracks().forEach(t=>t.stop());camStream=null;box.remove()};
+  const stop=()=>{if(camStream)camStream.getTracks().forEach(t=>t.stop());camStream=null;box.remove()};
   close.onclick=stop;
+  nat.onclick=()=>{stop();pickFile(task)};
   shut.onclick=async()=>{
+    if(!v.videoWidth)return;
     const c=document.createElement("canvas");c.width=v.videoWidth;c.height=v.videoHeight;c.getContext("2d").drawImage(v,0,0);
-    const blob=await new Promise(r=>c.toBlob(r,"image/jpeg",0.88));
-    shut.disabled=true;await storePhoto(task,blob);shut.disabled=false;
-    box.querySelector(".hint").textContent=task.title+" · "+((run.photos[task.id]||[]).length+1)+"번째 (찍은 것 "+(run.photos[task.id]||[]).length+"장)";
+    const blob=await new Promise(r=>c.toBlob(r,"image/jpeg",0.9));
+    shut.disabled=true;await storePhoto(task,blob);shut.disabled=false;setHint();
   };
 }
 function pickFile(task){const fp=$("#filepick");fp.onchange=async()=>{const f=fp.files[0];fp.value="";if(!f)return;const blob=await shrink(f);await storePhoto(task,blob)};fp.click()}
@@ -770,7 +836,15 @@ async function showList(){
     const go=el("button","btn","이어서");go.type="button";go.onclick=async()=>{const fr=await openRun(r);if(!fr)return;run=fr;idx=resumeIdx(fr);showTask()};
     const zip=el("button","btn","ZIP");zip.type="button";zip.onclick=async()=>{const fr=await openRun(r);if(!fr)return;run=fr;await exportZip();unlockRun()};
     const rm=el("button","btn","지우기");rm.type="button";rm.onclick=async()=>{if(!await lockRun(r.id)){status(BUSY,true);return}askDelete(r,lc,row)};
-    row.appendChild(left);row.appendChild(rm);row.appendChild(zip);row.appendChild(go);lc.appendChild(row)});
+    const see=el("button","btn","보기");see.type="button";see.onclick=async()=>{const fr=await openRun(r);if(!fr)return;run=fr;showView()};
+    if(r.imported)left.appendChild(el("div","small muted","ZIP에서 불러옴 · 만든 판 rev "+(r.imported.rev??"?")+" · "+r.imported.at.slice(5,16)+(r.imported.missing?" · 없는 사진 "+r.imported.missing+"장":"")));
+    row.appendChild(left);row.appendChild(rm);row.appendChild(zip);row.appendChild(see);row.appendChild(go);lc.appendChild(row)});
+  // rev 86: 다른 휴대폰·PC에서 만든 측정 ZIP을 불러와 보고 고친다 (2026-11-20 유지호)
+  {const ic=el("div","card");ic.appendChild(el("h2",null,"측정 ZIP 불러오기"));
+   ic.appendChild(el("p","small muted","이 웹에서 만든 측정 ZIP(안에 record.json이 있는 것)을 고르면 값·사진·메모를 이 휴대폰에 새 측정으로 넣습니다. 불러온 뒤 「보기」로 안을 보고, 화면을 눌러 고친 다음 ZIP을 다시 만드세요. 원래 ZIP 파일은 바뀌지 않습니다."));
+   const ib=el("button","btn","ZIP 파일 고르기");ib.type="button";
+   ib.onclick=()=>{const fp=document.createElement("input");fp.type="file";fp.accept=".zip,application/zip,application/x-zip-compressed";fp.onchange=()=>{const f=fp.files[0];if(f)importZip(f)};fp.click()};
+   ic.appendChild(ib);v.appendChild(ic)}
   if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().catch(()=>{})}
 }
 
@@ -1249,6 +1323,106 @@ function recordCsv(memoNo){
   {const D=derive(run.values||{},run.shape||{},run.skipped||{});["F","R"].forEach(a=>D[a].items.forEach(it=>{if(it.v!=null)rows.push(["계산값",(a==="F"?"프론트 ":"리어 ")+it.name,it.v,it.k==="mr_damper"?"":"mm","","자동 계산 (AI도출-미검증)","",it.f+(it.warn?" ⚠ "+it.warn:"")])}))}
   return "﻿"+rows.map(r=>r.map(csvCell).join(",")).join("\r\n");
 }
+/* ===== rev 86: 측정 ZIP 불러오기 (2026-11-20 유지호) =====
+   다른 판(rev)에서 만든 ZIP을 불러올 때의 원칙 — 설계 메모 DESIGN.md 「ZIP 불러오기와 판 차이」
+   ① 값·사진·메모의 열쇠는 화면 아이디(S001…)다. 아이디는 다시 쓰지 않으므로(SCREEN_IDS) 판이 달라도 같은 화면에 붙는다.
+   ② 지금 흐름에서 빠진 화면(보류·폐기)의 값은 지우지 않고 「보기」 맨 아래 「지금 흐름에 없는 화면」과 측정기록.csv 「보류」 줄로 남긴다.
+   ③ 그 측정 뒤에 새로 생긴 화면은 빈칸이 아니라 「측정 뒤에 생긴 화면」으로 표시한다 (SCREEN_IDS의 만든 날 기준).
+   ④ 마인드맵 번호를 쓰던 옛 기록(rev 61 전)은 기존 아이디 변환(migrateIds)을 그대로 탄다.
+   ⑤ 이 웹보다 새 형식(format 숫자가 큼)이면 불러오되 경고한다. 원래 ZIP은 고치지 않는다 — 고친 것은 ZIP을 새로 만든다. */
+async function importZip(file){
+  if(!window.JSZip){status("ZIP 도구를 불러오지 못했습니다. 인터넷 연결 후 다시 여세요.",true);return}
+  status("ZIP 읽는 중… ("+file.name+")");
+  let zip;try{zip=await JSZip.loadAsync(file)}catch(e){status("ZIP을 열 수 없습니다 ("+(e.message||e)+").",true);return}
+  const rj=Object.keys(zip.files).filter(n=>/(^|\/)record\.json$/.test(n)&&!zip.files[n].dir);
+  if(!rj.length){status("이 ZIP 안에 record.json이 없습니다 — 측정 웹에서 만든 ZIP인지 확인하세요.",true);return}
+  const base=rj[0].replace(/record\.json$/,"");
+  let rec;try{rec=JSON.parse((await zip.file(rj[0]).async("string")).replace(/^﻿/,""))}catch(e){status("record.json을 읽을 수 없습니다 ("+e.message+").",true);return}
+  const fm=String(rec&&rec.format||"").match(/^neotech-suspension-measure\/(\d+)$/);
+  if(!fm){status("측정 웹 기록 형식이 아닙니다 (format: "+(rec&&rec.format)+").",true);return}
+  const warn=[];if(+fm[1]>1)warn.push("이 웹보다 새 형식("+rec.format+")이라 일부 값이 안 보일 수 있습니다");
+  const curRev=CHANGELOG[CHANGELOG.length-1][0];
+  // 같은 날 같은 이름이 이미 있으면 「_불러옴」 「_불러옴2」…
+  let title=String(rec.title||file.name.replace(/\.zip$/i,""));
+  {const day=localDay(rec.createdAt),taken=new Set((await getAll("runs")).filter(r=>localDay(r.createdAt)===day).map(r=>r.title));
+   if(taken.has(title)){let t2=title+"_불러옴",k=2;while(taken.has(t2))t2=title+"_불러옴"+(k++);warn.push("이 휴대폰에 같은 날 「"+title+"」이 있어 「"+t2+"」로 넣었습니다");title=t2}}
+  const r={id:uid(),title,scope:rec.scope||"all",createdAt:rec.createdAt||new Date().toISOString(),pos:0,
+    shape:rec.shape||{F:{},R:{}},values:rec.values||{},photos:{},skipped:rec.skipped||{},notes:rec.notes||{},log:(rec.log||[]).slice()};
+  if((rec.rev||0)>=61)r.idv=2; // 61 전 기록은 아래 migrateIds가 새 아이디로 바꾼다
+  let ok=0,missing=0;const at=rec.updatedAt||r.createdAt;
+  for(const [taskId,paths] of Object.entries(rec.photos||{})){
+    let n=0;for(const p of paths||[]){const f=zip.file(base+p);if(!f){missing++;continue}n++;
+      const raw=/^로우데이터\//.test(p)||/_raw$/.test(taskId);
+      const buf=await f.async("arraybuffer");const blob=new Blob([buf],{type:raw?"application/octet-stream":"image/jpeg"});
+      const id=uid();const ph={id,runId:r.id,taskId,n,blob,at};
+      if(raw){const nm=p.split("/").pop();const m=nm.match(/_raw_\d+_(.+)$/);ph.fname=m?m[1]:nm}
+      await put("photos",ph);(r.photos[taskId]=r.photos[taskId]||[]).push(id);ok++;
+      if(ok%20===0)status("사진 넣는 중… "+ok+"장")}}
+  r.imported={file:file.name,rev:rec.rev,at:nowStr(),missing};
+  r.log.push({at:nowStr(),task:"",what:"ZIP 불러오기",from:file.name+" (rev "+(rec.rev??"?")+")",to:"rev "+curRev+" · 사진 "+ok+"장"});
+  // 불러온 그대로는 「ZIP 만듦」 상태로 둔다 — 고치면 「ZIP 만든 뒤 고침 n건」이 붙는다
+  r.exportedAt=new Date().toISOString();r.exportedLog=r.log.length;r.updatedAt=new Date().toISOString();r.posId=TASKS[0].id;
+  await put("runs",r);await migrateIds();
+  if(rec.rev!=null&&rec.rev!==curRev)warn.push("rev "+rec.rev+"에서 만든 기록입니다 (지금 rev "+curRev+") — 화면 아이디 기준으로 맞췄고, 지금 흐름에 없는 화면 값은 「보기」 맨 아래에 따로 보입니다");
+  if(missing)warn.push("record.json에는 있는데 ZIP에 없는 사진 "+missing+"장");
+  await showList();status("불러옴: 「"+title+"」 사진 "+ok+"장"+(warn.length?" · "+warn.join(" · "):""),!!(missing||+fm[1]>1));
+}
+
+/* ===== rev 86: 측정 보기 — 화면 순서대로 값·건너뛴 이유·메모·사진을 한눈에, 누르면 그 화면으로 가서 고친다 ===== */
+let viewFilter="all";
+async function showView(){
+  $("#footer").classList.add("hidden");const v=$("#view");v.textContent="";window.scrollTo(0,0);
+  const head=el("div","card");head.appendChild(el("h2",null,run.title));
+  const curRev=CHANGELOG[CHANGELOG.length-1][0];
+  head.appendChild(el("div","small muted","측정 시작 "+localDay(run.createdAt)+(run.imported?" · ZIP에서 불러옴 (만든 판 rev "+(run.imported.rev??"?")+" → 지금 rev "+curRev+")":"")));
+  const hb=el("div","runrow");const back=el("button","btn","측정 목록으로");back.type="button";back.onclick=showList;
+  const zb=el("button","btn","ZIP 만들기");zb.type="button";zb.onclick=exportZip;
+  const cont=el("button","btn primary","이어서 측정");cont.type="button";cont.onclick=()=>{idx=resumeIdx(run);showTask()};
+  hb.appendChild(back);hb.appendChild(zb);hb.appendChild(cont);head.appendChild(hb);
+  const fl=el("div","opts");[["all","전부"],["has","값·사진 있는 것"],["empty","빈칸만"]].forEach(([k,n])=>{const b=el("button","opt",n);b.type="button";b.setAttribute("aria-pressed",viewFilter===k?"true":"false");b.onclick=()=>{viewFilter=k;showView()};fl.appendChild(b)});
+  head.appendChild(fl);v.appendChild(head);
+  const photos=await photosOf(run.id);const byBase={};photos.forEach(p=>{const b=stepOf(p.taskId).base;(byBase[b]=byBase[b]||[]).push(p)});
+  const vals=Object.entries(run.values||{}).filter(([k,x])=>x&&typeof x==="object");
+  const made={};SCREEN_IDS.forEach(r=>made[r[0]]=r[2]);const day=localDay(run.createdAt);
+  const shapeName=(kind,c)=>((SHAPES[kind]||[]).find(x=>x[0]===c)||[c,c])[1];
+  const fmtV=x=>String(x.v)+(x.unit?" "+x.unit:"")+(x.fromRim?" (림 하단부터)":"");
+  const thumbs=(list,title)=>{const w=el("div","photos");w.style.marginTop="6px";list.sort((a,b)=>String(a.taskId).localeCompare(String(b.taskId))||a.n-b.n).forEach(p=>{
+      if(p.fname){w.appendChild(el("span","small muted","파일: "+p.fname));return}
+      if(!urls.has(p.id))urls.set(p.id,URL.createObjectURL(p.blob));const im=el("img","vph");im.src=urls.get(p.id);im.alt=title;im.loading="lazy";
+      im.onclick=()=>{const bg=el("div","big");const i2=el("img");i2.src=urls.get(p.id);bg.appendChild(i2);
+        bg.appendChild(el("div","cap",stepLabel(stepOf(p.taskId))+(p.taskId.endsWith("_memo")?" · 특이사항 사진":"")+" · "+p.n+"번째 — 누르면 닫힘"));bg.onclick=()=>bg.remove();document.body.appendChild(bg)};
+      w.appendChild(im)});return w};
+  let stage=-1,card=null,hidden=0,shown=0;
+  TASKS.forEach((t,i)=>{
+    const mine=vals.filter(([k,x])=>x.task===t.id);const sk=(run.skipped||{})[t.id];const note=(run.notes||{})[t.id];const ph=byBase[t.id]||[];
+    const shp=t.kind==="shape"&&run.shape&&run.shape[t.axle]&&(run.shape[t.axle].top||run.shape[t.axle].low)?run.shape[t.axle]:null;
+    const has=mine.length||ph.length||note||shp;const ap=applies(t);
+    if(!ap&&!has){hidden++;return}
+    const isInfo=t.kind==="info";const empty=!has&&!sk&&!isInfo;
+    if(viewFilter==="has"&&!has)return;if(viewFilter==="empty"&&!empty)return;
+    if(t.st!==stage){stage=t.st;card=el("div","card");card.appendChild(el("h2",null,STAGES[t.st]||"기타"));v.appendChild(card)}
+    shown++;
+    const row=el("div","vrow");const g=el("div","grow");const h=el("div");h.appendChild(el("span","mono muted",(i+1)+". "));h.appendChild(document.createTextNode(t.title));g.appendChild(h);
+    mine.forEach(([k,x])=>{const d=el("div","vval",(mine.length>1||x.label!==t.title?(x.label||k)+": ":"")+fmtV(x));g.appendChild(d)});
+    if(shp)g.appendChild(el("div","vval","상단 "+shapeName("top",shp.top||"plate")+" · 하단 "+(shp.low?shapeName("low",shp.low):"(안 고름)")));
+    if(sk)g.appendChild(el("div","small muted","건너뜀: "+sk));
+    if(!ap)g.appendChild(el("div","small muted","지금 고른 보기로는 안 나오는 화면 (값은 남아 있음)"));
+    if(empty)g.appendChild(el("div","vempty",made[t.id]&&made[t.id]>day?"측정 뒤("+made[t.id]+")에 생긴 화면":"빈칸"));
+    if(note)g.appendChild(el("div","small","메모: "+note));
+    if(ph.length)g.appendChild(thumbs(ph,t.title));
+    const eb=el("button","btn","고치기");eb.type="button";eb.onclick=()=>{idx=i;showTask();if(!ap)status("지금 고른 보기로는 안 나오는 화면입니다",true)};
+    row.appendChild(g);row.appendChild(eb);card.appendChild(row)});
+  // 지금 흐름에 없는 화면(보류·폐기)에 남은 값 — 지우지 않고 보여만 준다
+  const orphan=vals.filter(([k,x])=>!TASKS.some(t=>t.id===x.task));
+  const orphanPh=Object.keys(byBase).filter(b=>!TASKS.some(t=>t.id===b));
+  if((orphan.length||orphanPh.length)&&viewFilter!=="empty"){const c=el("div","card");c.appendChild(el("h2",null,"지금 흐름에 없는 화면 (판이 바뀌며 빠진 화면)"));
+    c.appendChild(el("p","small muted","옛 판에서 잰 값입니다. 지우지 않고 측정기록.csv에 「보류」 줄로 나갑니다."));
+    orphan.forEach(([k,x])=>{const s=stepOf(x.task||k);c.appendChild(el("div","vval",(x.task||k)+" · "+(x.label||s.title)+": "+fmtV(x)))});
+    orphanPh.forEach(b=>{c.appendChild(el("div","small",b+" · "+stepOf(b).title));c.appendChild(thumbs(byBase[b],b))});v.appendChild(c)}
+  if(!shown)v.appendChild(el("p","small muted","고른 조건에 맞는 화면이 없습니다."));
+  if(hidden)v.appendChild(el("p","small muted","고른 체결 타입·형태로는 안 나오는 빈 화면 "+hidden+"개는 뺐습니다."));
+}
+
 async function exportZip(){
   if(!window.JSZip){status("ZIP 도구를 불러오지 못했습니다. 인터넷 연결 후 다시 여세요.",true);return}
   status("ZIP 만드는 중…");
@@ -1383,7 +1557,8 @@ const CHANGELOG=[
  [82,"2026-11-17 18:30","유지호 rev 81 검토 반영(포크판을 정식판으로 올림): 휀더 아치 그림이 타이어에 붙던 것 고침(휀더·허브 그림 4장) · 하단 타입 「아이 투 클레비스」 뺌(상단·하단을 따로 고르니 아이·클레비스로 충분) · 하단 기준 K = 볼트 중심, 볼트가 여럿이면 지면에 가장 가까운 것(클레비스는 아래 볼트 — 그림·자동 계산 같이) · 스프링 ↔ 주변 여유를 탈거 전 순정 스프링 달린 상태로(S137·S140, 분리형도) · 3D 스캔 안내의 「리바운드 스트로크 확인용」 문구 바로잡음 · 회사 기준 스트로크(S079·S085) 재정의 예정 표시 · 클레비스 너클 폭은 차량 너클(가공품)을 탈거 후 잼(S195·S196) · 아이 부시 속관 양 끝면 길이 추가(하단 S224·S225, 상단 S226·S227) · 스테빌 브래킷 위치를 높이·축↔구멍 거리(S228·S229)·판 각도(S230·S231) 3값으로"],
  [83,"2026-11-19 10:00","개발용 이동(유지호 요청): 「개발용 건너뛰기」 옆에 번호(화면 위 n/전체) 또는 S아이디를 넣고 「이동」 — 검토할 때 일일이 넘기지 않게. 사진·빈칸 검사 없음"],
  [84,"2026-11-19 11:00","계산값 이름을 사내 설계 매뉴얼 기호로(유지호 결정): Lmax·Lmin·Lstatic·Stroke, 범프·리바운드 스트로크. 매뉴얼에 없는 기호(LD·L_I·h·u_T·u_S)는 한글 이름으로. record.json 키는 그대로"],
- [85,"2026-11-19 15:00","유지호 11-19 결정 반영: 개발용 버튼은 시작 화면 「개발용」 탭에서 켤 때만 보임 · 휠 탈거 뒤 호스·ABS 브래킷 사진과 달린 곳(댐퍼 몸통이면 자리 업무 3D 스캔 높이) · 하단 상대물은 「하단 장착부 치수」로 통일(현장, 하단 타입별 1값 — 항목은 AI 제안) · 상단 마운트 볼트 PCD·각도, 상단 아이 위 스프링 시트 높이(자리 업무 3D 스캔) · S065·S068 「댐퍼 외부 범프스토퍼」 · 메모 달린 사진은 같은 이름 txt"]
+ [85,"2026-11-19 15:00","유지호 11-19 결정 반영: 개발용 버튼은 시작 화면 「개발용」 탭에서 켤 때만 보임 · 휠 탈거 뒤 호스·ABS 브래킷 사진과 달린 곳(댐퍼 몸통이면 자리 업무 3D 스캔 높이) · 하단 상대물은 「하단 장착부 치수」로 통일(현장, 하단 타입별 1값 — 항목은 AI 제안) · 상단 마운트 볼트 PCD·각도, 상단 아이 위 스프링 시트 높이(자리 업무 3D 스캔) · S065·S068 「댐퍼 외부 범프스토퍼」 · 메모 달린 사진은 같은 이름 txt"],
+ [86,"2026-11-20 14:00","유지호 11-20 요청(샤오미 15 울트라): ① 측정 ZIP 불러오기 — 값·사진·메모를 새 측정으로 넣고, 다른 판(rev)은 화면 아이디 기준으로 맞춤(빠진 화면 값은 보류로 보존, 측정 뒤 생긴 화면은 따로 표시) ② 측정 「보기」 — 화면 순서대로 값·건너뛴 이유·메모·사진, 「고치기」로 그 화면에 감, 전부/값 있는 것/빈칸만 ③ 하단 내비게이션 바 겹침 — viewport-fit=cover 뺌, 카메라 화면 높이를 보이는 화면에 맞추고 셔터 아래 여백 ④ 카메라 렌즈 고르기(브라우저가 알려 주는 후면·전면 카메라) · 줌 배율 버튼·밀대·두 손가락 줌 · 눌러서 초점 · 4:3 최대 해상도 요청 · 「기본 카메라 앱」 버튼"]
 ];
 // 지금은 베타: 숫자 번호는 「베타 rev N」으로 보인다. 정식 v1이 되면 그때부터 번호를 문자열("1","2"…)로 적어 「rev 1」부터 센다 (유지호 2026-10-22).
 if(!CHANGELOG.every(Array.isArray))setTimeout(()=>status("변경 로그 줄 끝 쉼표 확인 필요",true),600);
