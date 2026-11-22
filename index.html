@@ -8,9 +8,9 @@
 <script>/* rev 90: 테마를 그리기 전에 정한다 (깜빡임 방지). 저장된 값 없으면 휴대폰 밝기 설정을 따름 */try{const k=localStorage.getItem("measure-theme");document.documentElement.dataset.theme=/^(light|dark|hybrid)$/.test(k)?k:(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");const pb=+localStorage.getItem("measure-padb")||0;if(pb)document.documentElement.style.setProperty("--padb",pb+"px")}catch(e){}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
-/* rev 90: D2Coding 고정폭 글꼴 (jsdelivr, 1.3.2 고정). 못 받으면 아래 대체 글꼴 */
-@font-face{font-family:'D2Coding';font-style:normal;font-weight:400;font-display:swap;src:local('D2Coding'),url(https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding@1.3.2/D2Coding.woff2) format('woff2'),url(https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding@1.3.2/D2Coding.woff) format('woff')}
-@font-face{font-family:'D2Coding';font-style:normal;font-weight:700;font-display:swap;src:local('D2Coding Bold'),local('D2CodingBold'),url(https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding@1.3.2/D2CodingBold.woff2) format('woff2'),url(https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding@1.3.2/D2CodingBold.woff) format('woff')}
+/* rev 91: D2Coding 고정폭 글꼴 — vendor/ 폴더에 넣어 둔 파일(joungkyun/font-d2coding 1.3.2, OFL)을 쓴다. 인터넷 없는 정비소·차 밑에서도 같은 글꼴 (rev 90은 jsdelivr에서 받음) */
+@font-face{font-family:'D2Coding';font-style:normal;font-weight:400;font-display:swap;src:local('D2Coding'),url(vendor/D2Coding.woff2) format('woff2')}
+@font-face{font-family:'D2Coding';font-style:normal;font-weight:700;font-display:swap;src:local('D2Coding Bold'),local('D2CodingBold'),url(vendor/D2CodingBold.woff2) format('woff2')}
 /* 휴대폰 한 손 조작: 위 진행 막대, 가운데 할 일 카드 하나, 아래 고정 버튼. 기록·사진은 이 휴대폰 브라우저 안(IndexedDB)에만 저장하고, 끝나면 ZIP 하나로 묶어 구글 드라이브에 올린다. */
 /* rev 90: 테마 3종 (⚙️ 설정에서 바꿈, 이 휴대폰에 기억) — light · dark · hybrid(밝은 화면 + 수치 칸·자동 계산 칸만 어두운 바탕에 하늘색 숫자)
    --input-bg 입력칸 바탕 · --num-bg/--num 수치 입력칸 · --calc-bg/--calc-ink 자동 계산 결과 칸 · --padb 하단 여백 보정(설정) */
@@ -40,7 +40,7 @@
   --accent:#06B6D4; --accent-ink:#041014; --hand:#FDBA74; --hand-bg:#3B2612;
   --ok:#4ADE80; --warn:#F59E0B; --sel-bg:#083344; --icon:#E2E8F0;
   --input-bg:#090D12; --num-bg:#090D12; --num:#38BDF8; --calc-bg:#090D12; --calc-ink:#38BDF8; --calc-muted:#94A3B8; color-scheme:dark}}
-:root{--f-body:'D2Coding','JetBrains Mono','Nanum Gothic Coding',monospace; --f-mono:'D2Coding','JetBrains Mono','Nanum Gothic Coding',monospace; --padb:0px; --fh:84px}
+:root{--f-body:'D2Coding','JetBrains Mono','Nanum Gothic Coding',monospace; --f-mono:'D2Coding','JetBrains Mono','Nanum Gothic Coding',monospace; --padb:0px; --fh:84px; --bottom-offset:calc(max(20px,calc(14px + env(safe-area-inset-bottom,0px))) + var(--padb))} /* rev 91: 아래 고정 바·시트·창 아래 여백 = 내비 바 안전 영역 자동 + 설정 「하단 여백 보정」(--padb) */
 *{box-sizing:border-box}
 html,body{height:100%;margin:0}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;font-variant-numeric:tabular-nums slashed-zero}
@@ -72,7 +72,7 @@ input[type=number]{font-size:24px;font-weight:700;min-height:54px;background:var
 .photos{display:flex;gap:8px;flex-wrap:wrap}
 .ph{width:88px;height:88px;border-radius:6px;border:1px solid var(--line);object-fit:cover}
 .phbtn{width:88px;height:88px;border-radius:6px;border:1px dashed var(--line);display:flex;align-items:center;justify-content:center;text-align:center;font-size:12px;color:var(--muted);cursor:pointer;background:var(--bg);font-family:inherit}
-.footer{position:fixed;left:0;right:0;bottom:0;z-index:15;background:var(--card);border-top:1px solid var(--line);padding:8px max(16px,env(safe-area-inset-right,0px)) calc(max(20px,calc(14px + env(safe-area-inset-bottom,0px))) + var(--padb)) max(16px,env(safe-area-inset-left,0px))}
+.footer{position:fixed;left:0;right:0;bottom:0;z-index:15;background:var(--card);border-top:1px solid var(--line);padding:8px max(16px,env(safe-area-inset-right,0px)) var(--bottom-offset) max(16px,env(safe-area-inset-left,0px))}
 /* rev 90: 이전 1 : 📝 메모 1.1 : 🎙️ 1.1 : 확인·다음 2.2, 최소 52px. 개발용 버튼은 둘째 줄 */
 .footer .in{max-width:640px;margin:0 auto;display:flex;gap:6px} .footer .btn{flex:1 1 0;min-width:0;min-height:52px;padding:6px 4px;white-space:nowrap;position:relative}
 .footer #memo,.footer #mic{flex:1.1 1 0} .footer #next{flex:2.2 1 0}
@@ -135,7 +135,7 @@ body.measuring .carstate{flex:none;gap:4px} body.measuring .carstate .cs{padding
 body.inapp .app>header,body.inapp .topnav .row{padding-right:60px} /* 앱의 「앱」 버튼(오른쪽 위 고정) 자리 */
 .topnav{flex:none;display:flex;flex-direction:column;gap:2px}
 .topnav .row{display:flex;gap:6px;align-items:center}
-.topnav .btn{min-height:44px;padding:4px 10px;font-size:14px;flex:none}
+.topnav .btn{min-height:48px;min-width:48px;padding:4px 10px;font-size:14px;flex:none} /* rev 91: 장갑 낀 손 — 48px */
 .topnav .navstage{flex:1 1 auto;min-width:0;font-size:13px;color:var(--muted);line-height:1.25;overflow:hidden}
 .topnav .navstage b{display:block;color:var(--ink);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .topnav .navstage span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -163,13 +163,13 @@ body.inapp .app>header,body.inapp .topnav .row{padding-right:60px} /* 앱의 「
 .prebadge{background:var(--sel-bg);color:var(--ink);border:1px solid var(--accent)}
 .card.locked .ph{pointer-events:none}
 /* 아래에서 올라오는 상세 시트 (? 상세기준). 닫혀도 그려 둔다(화면 밖) — 화면 넘기기 시험이 글을 읽음 */
-.sheet{position:fixed;left:0;right:0;bottom:0;z-index:24;max-height:78vh;max-height:78dvh;overflow-y:auto;background:var(--card);border-top:2px solid var(--accent);border-radius:14px 14px 0 0;padding:12px max(16px,env(safe-area-inset-right,0px)) calc(max(20px,calc(14px + env(safe-area-inset-bottom,0px))) + var(--padb)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:10px;transform:translateY(110%);transition:transform .18s ease-out;pointer-events:none}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:24;max-height:78vh;max-height:78dvh;overflow-y:auto;background:var(--card);border-top:2px solid var(--accent);border-radius:14px 14px 0 0;padding:12px max(16px,env(safe-area-inset-right,0px)) var(--bottom-offset) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:10px;transform:translateY(110%);transition:transform .18s ease-out;pointer-events:none}
 .sheet.open{transform:none;pointer-events:auto;box-shadow:0 -6px 24px rgba(0,0,0,.25)}
 .sheet .shead{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .dim{position:fixed;inset:0;z-index:23;background:rgba(0,0,0,.45)}
 /* 공통 모달 (설정 · 선측정) */
 .modal{position:fixed;inset:0;z-index:25;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center}
-.modal>.box{background:var(--card);color:var(--ink);width:100%;max-width:640px;max-height:92vh;max-height:92dvh;overflow-y:auto;border-radius:14px 14px 0 0;padding:14px max(16px,env(safe-area-inset-right,0px)) calc(max(20px,calc(14px + env(safe-area-inset-bottom,0px))) + var(--padb)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:10px}
+.modal>.box{background:var(--card);color:var(--ink);width:100%;max-width:640px;max-height:92vh;max-height:92dvh;overflow-y:auto;border-radius:14px 14px 0 0;padding:14px max(16px,env(safe-area-inset-right,0px)) var(--bottom-offset) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:10px}
 .modal .mhead{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .modal .mhead .btn{min-height:44px;flex:none;white-space:nowrap}
 input:disabled,select:disabled,textarea:disabled{opacity:.55;cursor:not-allowed}
@@ -179,8 +179,9 @@ input:disabled,select:disabled,textarea:disabled{opacity:.55;cursor:not-allowed}
 .toc{position:fixed;top:0;bottom:0;left:0;z-index:22;width:min(88vw,380px);background:var(--card);border-right:1px solid var(--line);display:flex;flex-direction:column;transform:translateX(-105%);transition:transform .18s ease-out;padding-top:env(safe-area-inset-top,0px)}
 .toc.open{transform:none;box-shadow:6px 0 24px rgba(0,0,0,.3)}
 .toc .thead{flex:none;display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;border-bottom:1px solid var(--line)}
-.toc .thead .btn{min-height:44px;font-size:14px;padding:4px 10px}
-.toc .tlist{flex:1 1 auto;min-height:0;overflow-y:auto;padding:4px 8px calc(20px + env(safe-area-inset-bottom,0px))}
+.toc .thead .btn{min-height:48px;font-size:14px;padding:4px 10px}
+.toc .thead .back{flex:1 1 100%;min-height:56px;font-size:16px;font-weight:700} /* rev 91: 사이드바 맨 위 「← 측정 목록으로」 — 한 손으로 바로 빠져나가게 */
+.toc .tlist{flex:1 1 auto;min-height:0;overflow-y:auto;padding:4px 8px var(--bottom-offset)}
 .toc h3{font-size:14px;margin:10px 4px 4px;color:var(--accent)}
 .toc .trow{display:flex;gap:8px;align-items:flex-start;width:100%;text-align:left;font:inherit;font-size:14px;color:var(--ink);background:transparent;border:0;border-bottom:1px solid var(--line);padding:8px 4px;min-height:48px;cursor:pointer}
 .toc .trow.cur{background:var(--sel-bg);font-weight:700}
@@ -1079,6 +1080,34 @@ function figBox(node){const b=el("div","figbox");b.appendChild(node);b.appendChi
 const isDev=()=>document.body.classList.contains("dev");
 const isLocked=()=>!!run&&!isDev()&&run.maxIdx!=null&&idx>run.maxIdx;
 function openIdx(r){if(r.maxIdx==null)r.maxIdx=resumeIdx(r);const i=resumeIdx(r);return isDev()?i:Math.min(i,r.maxIdx)}
+/* ===== rev 91: 판(rev) 승계 — 옛 판에서 만든 기록을 열면 지금 판 구조로 한 단계씩 올린다 =====
+   · run.rev = 그 기록을 마지막으로 맞춘 판. rev 91 전 휴대폰 기록은 없음(0으로 봄), ZIP 불러오기는 record.json의 rev.
+   · 저장 구조가 바뀌는 판을 만들면 RUN_UPGRADES 끝에 [판, "무엇을", 함수(r)] 한 줄을 더한다. 함수는 몇 번 돌아도 결과가 같아야 한다(멱등).
+   · 열 때(openRun)·ZIP 불러올 때(importZip) 자동으로 돈다. 원본 ZIP·record.json은 고치지 않는다.
+   · 한 일은 run.revHist에 남긴다 — 수정 기록(run.log)에 넣지 않는다(「ZIP 만든 뒤 고침」이 늘지 않게).
+   · 화면 아이디 바꾸기(rev 61 전 → S001…)는 기존 migrateIds(idv:2)가 따로 맡는다. 저장소 스키마(IndexedDB)는 건드리지 않는다. */
+// 실제 입력 흔적(값·사진·특이사항 사진·음성·로우데이터·메모·사람이 고른 건너뛰기·형태 선택)이 있는 가장 뒤 화면 번호. 자동 「조건 안 맞음」과 ⚡선측정 화면은 뺀다
+function traceMaxIdx(r){const pre=r.pre||{};let mx=-1;
+  const hit=id=>{const b=baseOf(id);if(pre[b])return;const i=TASKS.findIndex(t=>t.id===b);if(i>mx)mx=i};
+  Object.entries(r.values||{}).forEach(([k,v])=>{if(v&&typeof v==="object"&&v.task)hit(v.task)});
+  Object.entries(r.photos||{}).forEach(([k,a])=>{if(a&&a.length)hit(k)});
+  Object.entries(r.notes||{}).forEach(([k,n])=>{if(n)hit(k)});
+  Object.entries(r.skipped||{}).forEach(([k,s])=>{if(s&&s!=="조건 안 맞음")hit(k)});
+  TASKS.forEach((t,i)=>{if(t.kind==="shape"&&!pre[t.id]){const s=(r.shape||{})[t.axle];if(s&&(s.top||s.low)&&i>mx)mx=i}});
+  return mx}
+// 도달 위치가 없거나 실제 흔적보다 앞이면 흔적까지 올린다 (rev 90 전 기록이 앞 단계에서 잠기던 문제)
+function repairMaxIdx(r){const want=Math.max(resumeIdx(r),traceMaxIdx(r));const was=r.maxIdx;if(was==null||was<want){r.maxIdx=want;return (was==null?"없음":String(was+1))+" → "+(want+1)+"번 화면"}return null}
+const RUN_UPGRADES=[
+ [90,"도달 위치(maxIdx)·선측정·음성 칸 마련",r=>{if(!r.pre)r.pre={};return null}],
+ [91,"도달 위치를 실제 입력 흔적까지 복구",repairMaxIdx],
+];
+const CUR_REV=()=>CHANGELOG[CHANGELOG.length-1][0];
+function upgradeRun(r){const from=+r.rev||0,to=CUR_REV(),did=[];
+  RUN_UPGRADES.forEach(([v,name,fn])=>{if(v>from){const m=fn(r);if(m)did.push(name+(typeof m==="string"?" ("+m+")":""))}});
+  {const m=repairMaxIdx(r);if(m)did.push("도달 위치 복구 ("+m+")")} // 판이 같아도 흔적보다 잠긴 기록은 늘 바로잡는다
+  const changed=from<to||did.length>0; // 더 새 판에서 만든 기록(from>to)은 판 숫자를 내리지 않는다
+  if(changed){r.revHist=(r.revHist||[]).concat([{from,to,at:nowStr(),did}]);r.rev=Math.max(from,to)}
+  return changed?{from,to,did}:null}
 async function jumpTo(n){if(n<0||n>=TASKS.length)return;await recStop();const lk=isLocked();
   if(!lk&&collect)collect();const gone=lk?[]:pruneInapplicable();commitEdits();idx=n;await save();showTask();
   if(gone.length)status("앞에서 고른 보기가 바뀌어 맞지 않게 된 값 "+gone.length+"개를 지웠습니다: "+gone.join(", "),true);
@@ -1128,8 +1157,8 @@ function closeToc(){const tc=$("#toc");if(tc){tc.classList.remove("open");tc.set
 function openToc(){if(!run)return;const tc=$("#toc");tc.textContent="";
   const hd=el("div","thead");const x=el("button","btn","✕ 닫기");x.type="button";x.onclick=closeToc;
   const pre=el("button","btn","⚡ 선측정 (미리 입력)");pre.type="button";pre.onclick=()=>{closeToc();openPreSearch()};
-  const ls=el("button","btn","측정 목록으로");ls.type="button";ls.onclick=()=>{closeToc();leaveToList()};
-  hd.appendChild(x);hd.appendChild(pre);hd.appendChild(ls);const lg=el("div","small muted","✅ 입력 · ⏭ 건너뜀 · ⬜ 빈칸 · 🔒 미도달(보기만)");lg.style.flexBasis="100%";hd.appendChild(lg);tc.appendChild(hd);
+  const ls=el("button","btn back","← 측정 목록으로");ls.type="button";ls.onclick=()=>{closeToc();leaveToList()}; // rev 91: 맨 위 한 줄 크게
+  hd.appendChild(ls);hd.appendChild(x);hd.appendChild(pre);const lg=el("div","small muted","✅ 입력 · ⏭ 건너뜀 · ⬜ 빈칸 · 🔒 미도달(보기만)");lg.style.flexBasis="100%";hd.appendChild(lg);tc.appendChild(hd);
   const list=el("div","tlist");let st=-1,curRow=null;
   TASKS.forEach((t,i)=>{if(!applies(t))return;if(t.st!==st){st=t.st;list.appendChild(el("h3",null,STAGES[st]))}
     const r=el("button","trow"+(i===idx?" cur":""));r.type="button";r.appendChild(el("span","ic",tocIcon(t,i)));
@@ -1161,7 +1190,7 @@ function openSettings(){const {bx}=modalBox("⚙️ 설정");
   sel.onchange=sync;free.oninput=sync;sync();lab.appendChild(sel);lab.appendChild(free);bx.appendChild(lab);
   bx.appendChild(el("div","small","하단 여백 보정 — 아래 버튼이 휴대폰 내비게이션 바(◁ ○ □)에 가리면 올리세요"));
   const pg=el("div","setopt");const pv=+(lsGet("measure-padb")||0);
-  [[0,"기본"],[24,"+24px"],[48,"+48px"]].forEach(([v,n])=>{const b=el("button","btn",n);b.type="button";b.setAttribute("aria-pressed",pv===v?"true":"false");
+  [[0,"+0px"],[24,"+24px"],[48,"+48px"]].forEach(([v,n])=>{const b=el("button","btn",n);b.type="button";b.setAttribute("aria-pressed",pv===v?"true":"false");
     b.onclick=()=>{document.documentElement.style.setProperty("--padb",v+"px");lsSet("measure-padb",v?String(v):"");pg.querySelectorAll(".btn").forEach(z=>z.setAttribute("aria-pressed",z===b?"true":"false"));setTimeout(fitFooter,50)};pg.appendChild(b)});
   bx.appendChild(pg);bx.appendChild(el("div","small muted","설정은 이 휴대폰(브라우저)에만 저장됩니다. 측정 기록에는 들어가지 않습니다."))}
 
@@ -1229,7 +1258,9 @@ async function lockRun(id){
   return new Promise(res=>{navigator.locks.request("measure-run-"+id,{ifAvailable:true},lock=>{if(!lock){res(false);return}heldId=id;res(true);return new Promise(r=>heldRelease=r)}).catch(()=>res(true))});
 }
 // 잠금을 잡은 뒤 저장소에서 최신 기록을 다시 읽는다 (목록을 띄운 뒤 다른 탭에서 저장했을 수 있어서)
-async function openRun(r){if(!await lockRun(r.id)){status(BUSY,true);return null}return (await getAll("runs")).find(x=>x.id===r.id)||null}
+async function openRun(r){if(!await lockRun(r.id)){status(BUSY,true);return null}const fr=(await getAll("runs")).find(x=>x.id===r.id)||null;
+  if(fr){const up=upgradeRun(fr);if(up){await put("runs",fr);devLog("「"+fr.title+"」 rev "+(up.from||"?")+" → "+up.to+(up.did.length?": "+up.did.join(" · "):""))}} // rev 91: 판 승계
+  return fr}
 function showDev(v){
   {const c0=el("div","card");c0.appendChild(el("h2",null,"개발용 화면"));const on=document.body.classList.contains("dev");
    c0.appendChild(el("p","small muted","켜면 측정 화면 아래에 「개발용 건너뛰기」·「번호·S아이디 이동」이 보입니다. 사진·빈칸 검사 없이 넘어가니 현장 측정 때는 끄세요. 이 휴대폰에만 적용."));
@@ -1263,7 +1294,7 @@ async function showList(){
     // 같은 날 같은 이름의 측정이 이미 있으면 「_2」「_3」…을 붙인다 (폴더·ZIP 이름이 겹쳐 사진이 덮이지 않게)
     {const day=localDay(),taken=new Set((await getAll("runs")).filter(r=>localDay(r.createdAt)===day).map(r=>r.title));
      if(taken.has(t)){let k=2;while(taken.has(t+"_"+k))k++;t=t+"_"+k;devLog("같은 날 같은 차량 이름이 있어 「"+t+"」로 만듦");setTimeout(()=>status("오늘 같은 이름의 측정이 있어 「"+t+"」로 만들었습니다."),50)}}
-    run={id:uid(),idv:2,title:t,scope,createdAt:new Date().toISOString(),pos:0,maxIdx:0,shape:{F:{},R:{}},values:{},photos:{},skipped:{}};idx=0;
+    run={id:uid(),idv:2,rev:CUR_REV(),title:t,scope,createdAt:new Date().toISOString(),pos:0,maxIdx:0,shape:{F:{},R:{}},values:{},photos:{},skipped:{}};idx=0;
     {const w=lsGet("measure-worker");if(w)run.values.worker={v:w,cell:"B3",label:"작업자",task:"S001"}} /* rev 90: ⚙️ 설정의 기본 작업자 */
     await lockRun(run.id);await save();showTask()};
   c.appendChild(b);v.appendChild(c);
@@ -1768,13 +1799,20 @@ function memoOrder(photos){
   // 메모가 처음 생긴 시각(수정 기록) 또는 특이사항 사진을 처음 찍은 시각 중 이른 것 순서로 번호를 매긴다
   const first={};const mark=(base,at)=>{if(at&&(!first[base]||at<first[base]))first[base]=at};
   (run.log||[]).forEach(e=>{if(e.what==="특이사항 메모"&&e.to)mark(String(e.task),e.at.replace(" ","T"))});
-  photos.filter(p=>p.taskId.endsWith("_memo")||isAudio(p)).forEach(p=>{if(!p.at)return;const d=new Date(p.at),z=n=>String(n).padStart(2,"0");/* 수정 기록은 휴대폰 시각, 사진 at은 UTC라 휴대폰 시각으로 맞춘다 */mark(baseOf(p.taskId),d.getFullYear()+"-"+z(d.getMonth()+1)+"-"+z(d.getDate())+"T"+z(d.getHours())+":"+z(d.getMinutes())+":"+z(d.getSeconds()))});
-  const bases=new Set([...Object.keys(run.notes||{}),...photos.filter(p=>p.taskId.endsWith("_memo")||isAudio(p)).map(p=>baseOf(p.taskId))]); // rev 90: 음성만 있는 화면도 특이사항 번호를 받는다
+  photos.filter(p=>p.taskId.endsWith("_memo")).forEach(p=>{if(p.at)mark(baseOf(p.taskId),localIso(p.at))});
+  // rev 91: 음성만 있는 화면은 메모사항 번호를 받지 않는다 (rev 90은 받아서 뒤 번호가 밀렸음) — 음성은 audioOrder()의 「음성노트 M번」
+  const bases=new Set([...Object.keys(run.notes||{}),...photos.filter(p=>p.taskId.endsWith("_memo")).map(p=>baseOf(p.taskId))]);
   return [...bases].sort((a,b)=>(first[a]||"9").localeCompare(first[b]||"9")||stepOf(a).no-stepOf(b).no);
 }
+// 수정 기록은 휴대폰 시각, 사진·음성 at은 UTC라 휴대폰 시각(YYYY-MM-DDTHH:MM:SS)으로 맞춘다
+function localIso(x){const d=new Date(x),z=n=>String(n).padStart(2,"0");return d.getFullYear()+"-"+z(d.getMonth()+1)+"-"+z(d.getDate())+"T"+z(d.getHours())+":"+z(d.getMinutes())+":"+z(d.getSeconds())}
+// rev 91: 음성노트 번호 — 음성이 있는 화면마다 처음 녹음한 시각 순서로 1번부터 (메모사항 번호와 따로 센다)
+function audioOrder(photos){const first={};
+  photos.filter(isAudio).forEach(p=>{const b=baseOf(p.taskId),at=p.at?localIso(p.at):"9";if(!first[b]||at<first[b])first[b]=at});
+  return Object.keys(first).sort((a,b)=>first[a].localeCompare(first[b])||stepOf(a).no-stepOf(b).no)}
 function csvCell(x){x=x==null?"":String(x);return /[",\n]/.test(x)?'"'+x.replace(/"/g,'""')+'"':x}
-function recordCsv(memoNo,aud){
-  aud=aud||{};const auc=id=>{const a=aud[id]||[];return a.length?a.length+"개: "+a.map(x=>String(x.file).replace(/^음성\//,"")).join("; "):""}; // rev 90: 맨 끝 「음성」 열 (개수: 파일)
+function recordCsv(memoNo,aud,audNo){
+  aud=aud||{};audNo=audNo||{};const auc=id=>{const a=aud[id]||[];return a.length?"음성노트 "+(audNo[id]||"?")+"번 ("+a.length+"개)":""}; // rev 91: 맨 끝 「음성」 열 = 음성노트 M번 (N개) — 파일 이름은 사진대조표.csv·record.json audio
   const rows=[["화면","항목","값","단위","측정시트 칸","상태","사진 장수","특이사항","음성"]];
   TASKS.forEach((t,i)=>{
     const vals=Object.entries(run.values||{}).filter(([k,v])=>v&&v.task===t.id);
@@ -1836,6 +1874,7 @@ async function importZip(file){
       (r.photos[k]=r.photos[k]||[]).push(id);aok++}}
   if(rec.pre)r.pre=rec.pre;r.maxIdx=TASKS.length-1; // 불러온 측정은 끝난 기록으로 보고 잠그지 않는다 (보기·고치기용)
   r.imported={file:file.name,rev:rec.rev,at:nowStr(),missing};
+  r.rev=+rec.rev||0;upgradeRun(r); // rev 91: 판 승계 — 만든 판부터 지금 판까지 RUN_UPGRADES를 차례로 (maxIdx는 위에서 끝까지 열었으므로 흔적 복구는 그대로 둠)
   r.log.push({at:nowStr(),task:"",what:"ZIP 불러오기",from:file.name+" (rev "+(rec.rev??"?")+")",to:"rev "+curRev+" · 사진 "+ok+"장"+(aok?" · 음성 "+aok+"개":"")});
   // 불러온 그대로는 「ZIP 만듦」 상태로 둔다 — 고치면 「ZIP 만든 뒤 고침 n건」이 붙는다
   r.exportedAt=new Date().toISOString();r.exportedLog=r.log.length;r.updatedAt=new Date().toISOString();r.posId=TASKS[0].id;
@@ -1908,6 +1947,7 @@ async function exportZip(){
   const root=new JSZip();const car=fsafe(run.title);const zip=root.folder(localDay(run.createdAt)+"_"+car);
   const photos=await photosOf(run.id);const list={};const alist={}; // rev 90: alist = 음성노트 (record.json audio)
   const order=memoOrder(photos);const memoNo={};order.forEach((b,i)=>memoNo[b]=i+1);
+  const aorder=audioOrder(photos);const audNo={};aorder.forEach((b,i)=>audNo[b]=i+1); // rev 91: 음성노트 번호는 따로
   // 파일 이름의 순번은 화면마다 찍은 순서대로 01부터 다시 매긴다 (옛 기록에 순번이 겹쳐 있어도 ZIP에서 덮이지 않게)
   // 사진대조표.csv: 사진 아이디(휴대폰 저장소의 고유 열쇠) ↔ 파일 이름 · 화면 아이디 · 화면 번호 · 몇 번째 사진
   const seq={};const loc=x=>{if(!x)return"";const d=new Date(x),z=n=>String(n).padStart(2,"0");return d.getFullYear()+"-"+z(d.getMonth()+1)+"-"+z(d.getDate())+" "+z(d.getHours())+":"+z(d.getMinutes())+":"+z(d.getSeconds())};
@@ -1920,17 +1960,20 @@ async function exportZip(){
     // rev 90: 음성노트 → 음성/ 폴더, 사진과 같은 이름 규칙 (…_화면아이디_항목_음성_순번.webm|.ogg|.m4a)
     if(isAudio(p)){const mime=p.mime||(p.blob&&p.blob.type)||"";const nm="음성/"+photoName(run,car,s.base,"음성",nn)+audioExt(mime);zip.file(nm,p.blob);
       (alist[s.base]=alist[s.base]||[]).push({file:nm,n:k,at:p.at||null,sec:p.dur!=null?Math.round(p.dur/100)/10:null,mime});
-      map.push([p.id,nm.slice(3),s.base,s.no?s.no+"단계":"보류",s.title,"음성",k,loc(p.at)]);return}
+      map.push([p.id,nm.slice(3),s.base,s.no?s.no+"단계":"보류",s.title,"음성노트 "+audNo[s.base]+"번",k,loc(p.at)]);return}
     const sl=(p.taskId.match(/_s(\d+)$/)||[])[1];const name="사진/"+(temp?"임시/":"")+photoName(run,car,s.base,memo?"메모":(sl?"s"+sl:""),nn)+".jpg";
     zip.file(name,p.blob);if(memo&&(run.notes||{})[s.base])zip.file(name.replace(/\.jpg$/,".txt"),"\ufeff"+run.notes[s.base]); // rev 85: 메모 달린 사진은 같은 이름 txt로 메모 함께 (2026-11-19 유지호)
     (list[p.taskId]=list[p.taskId]||[]).push(name);
     map.push([p.id,name.slice(3),s.base,s.no?s.no+"단계":"보류",s.title,memo?"특이사항 메모사항 "+memoNo[s.base]+"번":temp?"임시 (조건 안 맞음)":(/_s\d+$/.test(p.taskId)?"칸 "+p.taskId.split("_s")[1]:"측정"),k,loc(p.at)])});
   zip.file("사진대조표.csv","﻿"+map.map(r=>r.map(csvCell).join(",")).join("\r\n"));
-  zip.file("측정기록.csv",recordCsv(memoNo,alist));
-  if(order.length){
+  zip.file("측정기록.csv",recordCsv(memoNo,alist,audNo));
+  if(order.length||aorder.length){
     const txt=[run.title+" — 특이사항","측정 시작 "+localDay(run.createdAt)+" · 메모가 생긴 순서",""];
-    order.forEach(b=>{const s=stepOf(b);txt.push("[메모사항 "+memoNo[b]+"번] "+stepLabel(s));const ph=list[b+"_memo"]||[];const au=alist[b]||[];txt.push((run.notes||{})[b]||(ph.length?"(메모 없음 — 사진만)":"(메모 없음 — 음성만)"));
-      if(ph.length)txt.push("사진: "+ph.map(x=>x.slice(3)).join(", "));if(au.length)txt.push("음성 "+au.length+"개: "+au.map(x=>x.file).join(", "));txt.push("")});
+    order.forEach(b=>{const s=stepOf(b);txt.push("[메모사항 "+memoNo[b]+"번] "+stepLabel(s));const ph=list[b+"_memo"]||[];const au=alist[b]||[];txt.push((run.notes||{})[b]||"(메모 없음 — 사진만)");
+      if(ph.length)txt.push("사진: "+ph.map(x=>x.slice(3)).join(", "));if(au.length)txt.push("음성노트 "+audNo[b]+"번 ("+au.length+"개): "+au.map(x=>x.file).join(", "));txt.push("")});
+    // rev 91: 메모 없이 음성만 있는 화면은 「음성노트 M번」으로 따로 (메모사항 번호를 차지하지 않음)
+    const aonly=aorder.filter(b=>!memoNo[b]);if(aonly.length){txt.push("— 음성노트만 있는 화면 —","");
+      aonly.forEach(b=>{const au=alist[b]||[];txt.push("[음성노트 "+audNo[b]+"번] "+stepLabel(stepOf(b)));txt.push("음성 "+au.length+"개: "+au.map(x=>x.file).join(", "));txt.push("")})}
     zip.file("특이사항.txt","﻿"+txt.join("\r\n"));
   }
   const DV=derive(run.values||{},run.shape||{},run.skipped||{});
@@ -2055,7 +2098,8 @@ const CHANGELOG=[
  [87,"2026-11-20 16:00","유지호 11-20 피드백(샤오미 15 울트라 줌 안 됨 · 아이폰 됨 · 초점 맞추기 어려움 · 사진 실수 삭제): ① 카메라 줌을 못 받는 휴대폰은 디지털 줌(화면 확대 후 그 범위만 잘라 저장, 1~5배) ② 수동 초점 — 브라우저가 초점 거리를 알려 주면 「자동/수동」+밀대(아이폰 사파리는 미지원) ③ 누른 자리 초점에 노란 동그라미 ④ 셔터 한 번에 3장을 보고 가장 선명한 것 저장 ⑤ 「카메라 정보」 버튼 — 렌즈·줌·초점 지원 여부를 화면에 (캡처해 보내기) ⑥ 사진은 눌러도(꾹 눌러도) 크게 보기만, 지우기·다른 칸으로 옮기기는 그 안의 버튼, 실행 뒤 7초 「되돌리기」 — 측정 화면·보기 화면 같음"],
  [88,"2026-11-20 17:00","유지호 결정: 디지털 줌 뺌(쓸모없음) — 브라우저가 카메라 줌을 지원하지 않으면 줌 칸을 숨기고 「기본 카메라 앱」 안내"],
  [89,"2026-11-20 18:00","현장 시인성(유지호 요청): 버튼 48px·아래 버튼 이전:다음 1:2.5·측정값 칸 22px 굵게·보조 글자 14px·대비 높임 · 측정 화면 위 「측정 목록으로」 · 목록 버튼 두 줄 · 입력칸 누르면 가운데로 · 아래 여백 최소 20px"],
- [90,"2026-11-20 20:00","한 손 조작 UI 전면 개편(유지호 요청): ① D2Coding 고정폭 글꼴·숫자 고정폭 · ⚙ 설정(테마 라이트/다크/하이브리드 즉시 전환, 기본 작업자 → 새 측정 기본정보 자동, 하단 여백 보정) ② 측정 화면 스크롤 없음(한 화면) — 위 네비(☰ 목차·단계·⚡ 선측정·⚙)·차 상태 배지, 팁 1줄 + 「? 상세기준」 시트(전체 설명·기준점·수정 기록), 도식은 남는 높이에 맞춤·누르면 크게, 측정값 칸 24px + ± 부호 버튼, 「특이사항」 칸 → 아래 바 📝 메모 PiP 창(반투명·끌어서 모서리·접기, 상용구 칩·특이사항 사진·음성) ③ 화면별 음성노트 🎙(누르면 녹음·다시 누르면 저장, 이동하면 자동 저장, 재생·지우기 7초 되돌리기, ZIP 음성/ 폴더·record.json audio·측정기록.csv 음성 열·특이사항.txt·불러오기 복원) ④ 9단계 진행바(누르거나 끌면 단계 툴팁·이동) · 목차 사이드바(✅⏭⬜🔒·값 요약) · 도달 전 화면은 🔒 미리보기(입력 막힘, 작업 위치로 복귀, 개발용 모드는 잠금 없음) ⑤ viewport-fit=cover 다시 넣고 아래 바 max(20px, 14px+안전 영역)+보정, 아래 바 이전 1 : 메모 1.1 : 🎙 1.1 : 다음 2.2 ⑥ ⚡ 선측정 — 지금 위치 그대로 뒤쪽 화면 값·사진·메모·음성을 미리 넣고, 그 화면에 가면 「⚡ 앞에서 미리 측정한 값입니다」"]
+ [90,"2026-11-20 20:00","한 손 조작 UI 전면 개편(유지호 요청): ① D2Coding 고정폭 글꼴·숫자 고정폭 · ⚙ 설정(테마 라이트/다크/하이브리드 즉시 전환, 기본 작업자 → 새 측정 기본정보 자동, 하단 여백 보정) ② 측정 화면 스크롤 없음(한 화면) — 위 네비(☰ 목차·단계·⚡ 선측정·⚙)·차 상태 배지, 팁 1줄 + 「? 상세기준」 시트(전체 설명·기준점·수정 기록), 도식은 남는 높이에 맞춤·누르면 크게, 측정값 칸 24px + ± 부호 버튼, 「특이사항」 칸 → 아래 바 📝 메모 PiP 창(반투명·끌어서 모서리·접기, 상용구 칩·특이사항 사진·음성) ③ 화면별 음성노트 🎙(누르면 녹음·다시 누르면 저장, 이동하면 자동 저장, 재생·지우기 7초 되돌리기, ZIP 음성/ 폴더·record.json audio·측정기록.csv 음성 열·특이사항.txt·불러오기 복원) ④ 9단계 진행바(누르거나 끌면 단계 툴팁·이동) · 목차 사이드바(✅⏭⬜🔒·값 요약) · 도달 전 화면은 🔒 미리보기(입력 막힘, 작업 위치로 복귀, 개발용 모드는 잠금 없음) ⑤ viewport-fit=cover 다시 넣고 아래 바 max(20px, 14px+안전 영역)+보정, 아래 바 이전 1 : 메모 1.1 : 🎙 1.1 : 다음 2.2 ⑥ ⚡ 선측정 — 지금 위치 그대로 뒤쪽 화면 값·사진·메모·음성을 미리 넣고, 그 화면에 가면 「⚡ 앞에서 미리 측정한 값입니다」"],
+ [91,"2026-11-20 22:00","rev 90 한계 보완(유지호 요청): ① D2Coding 글꼴을 vendor/ 폴더에 넣어 인터넷 없이도 같은 글꼴(외부 주소 뺌) ② 앱 마이크 권한(앱 쪽 수정, 웹은 그대로) ③ 아래 고정 바·시트·창 아래 여백을 --bottom-offset(내비 바 안전 영역 + 설정 「하단 여백 보정」 +0/+24/+48px) 하나로 묶음 — 누르면 바로 바뀌고 이 휴대폰에 기억 ④ 판(rev) 승계 — 기록을 열거나 ZIP을 불러오면 만든 판부터 지금 판까지 올리기 단계(RUN_UPGRADES)를 차례로 적용, 도달 위치(maxIdx)가 없거나 실제 입력 흔적(값·사진·음성·로우데이터·메모·건너뛰기)보다 앞이면 흔적까지 복구(옛 기록이 앞 단계에서 잠기던 문제) ⑤ 특이사항 번호 — 메모 글·특이사항 사진이 있는 화면만 「메모사항 N번」, 음성만 있는 화면은 번호를 차지하지 않고 「음성노트 M번」으로 따로(측정기록.csv 음성 열 = 음성노트 M번 (N개), 사진대조표·특이사항.txt 같음) ⑥ ☰ 목차 버튼 48px 이상, 목차 맨 위에 「← 측정 목록으로」 큰 버튼"]
 ];
 // 지금은 베타: 숫자 번호는 「베타 rev N」으로 보인다. 정식 v1이 되면 그때부터 번호를 문자열("1","2"…)로 적어 「rev 1」부터 센다 (유지호 2026-10-22).
 if(!CHANGELOG.every(Array.isArray))setTimeout(()=>status("변경 로그 줄 끝 쉼표 확인 필요",true),600);
